@@ -1,0 +1,36 @@
+[PropertyInfo]
+border1,javax.swing.border.Border,false,false, , ,false,<vorgabe>
+border2,javax.swing.border.Border,false,false, , ,false,<vorgabe>
+border3,javax.swing.border.Border,false,false, , ,false,<vorgabe>
+border4,javax.swing.border.Border,false,false, , ,false,<vorgabe>
+border5,javax.swing.border.Border,false,false, , ,false,<vorgabe>
+border6,javax.swing.border.Border,false,false, , ,false,<vorgabe>
+btAbbrechen,javax.swing.JButton,false,false, , ,false,<vorgabe>
+btOK,javax.swing.JButton,false,false, , ,false,<vorgabe>
+JList1,javax.swing.JList,false,false, , ,false,<vorgabe>
+JPanel1,javax.swing.JPanel,false,false, , ,false,<vorgabe>
+JPanel2,javax.swing.JPanel,false,false, , ,false,<vorgabe>
+JPanel3,javax.swing.JPanel,false,false, , ,false,<vorgabe>
+JPanel4,javax.swing.JPanel,false,false, , ,false,<vorgabe>
+JScrollPane1,javax.swing.JScrollPane,false,false, , ,false,<vorgabe>
+laCokeSiteLocal,javax.swing.JLabel,false,false, , ,false,<vorgabe>
+laCokeSiteServer,javax.swing.JLabel,false,false, , ,false,<vorgabe>
+laDomain,javax.swing.JLabel,false,false, , ,false,<vorgabe>
+laPassword,javax.swing.JLabel,false,false, , ,false,<vorgabe>
+laPlayername,javax.swing.JLabel,false,false, , ,false,<vorgabe>
+laPort,javax.swing.JLabel,false,false, , ,false,<vorgabe>
+laUser,javax.swing.JLabel,false,false, , ,false,<vorgabe>
+panel1,javax.swing.JPanel,false,false, , ,false,<vorgabe>
+snakePanel,snake.SnakePanel,false,false, , ,false,<vorgabe>
+tfCorsoSiteLocal,javax.swing.JTextField,false,false, , ,false,<vorgabe>
+tfCorsoSiteServer,javax.swing.JTextField,false,false, , ,false,<vorgabe>
+tfDomain,javax.swing.JTextField,false,false, , ,false,<vorgabe>
+tfPassword,javax.swing.JPasswordField,false,false, , ,false,<vorgabe>
+tfPlayername,javax.swing.JTextField,false,false, , ,false,<vorgabe>
+tfPort,javax.swing.JTextField,false,false, , ,false,<vorgabe>
+tfUser,javax.swing.JTextField,false,false, , ,false,<vorgabe>
+[IconNames]
+
+
+
+
