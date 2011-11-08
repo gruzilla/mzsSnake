@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="snake/src"/>
+	<classpathentry kind="src" path="snake/res"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="snake/lib/mozartspaces-dist-2.1-SNAPSHOT-r10844-all-with-dependencies.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
