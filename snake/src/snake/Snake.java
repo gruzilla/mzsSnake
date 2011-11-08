@@ -269,16 +269,7 @@ public class Snake extends JFrame implements WindowListener
 			MzsCore core = DefaultMzsCore.newInstance();
 
 			conn = Util.getConnection();
-			snake.data.SpaceStartPoint startOIDPoint = Util.ConnectSpace();
 			snakeLog.flush();
-			if (startOIDPoint == null)
-			{
-				snakeLog.writeLogEntry("Can't connect to second corso site");
-				System.out.println("Corso Error occured: Can't connect to second corso site.");
-				Messages.errorMessage(this, "Can't connect to second corso site.");
-				return false;
-			}
-
 			snakeLog.writeLogEntry("Successfully connected to 2. corso site");
 			myPlayer.saveToSpace(); //save player to space
 			gameList.initialise(conn); //load game list
