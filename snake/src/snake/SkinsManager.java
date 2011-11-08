@@ -70,7 +70,7 @@ public class SkinsManager
 	 */
 	private boolean skinIsCorrect(File skinFile)
 	{
-		//Prüfen ob alle notwendigen Files für den Skin vorhanden sind
+		//Prï¿½fen ob alle notwendigen Files fï¿½r den Skin vorhanden sind
 		String[] list = skinFile.list();
 		boolean correct = fileExists(list,snakeHeadFilename) &&
 		fileExists(list,snakePartFilename) &&
@@ -82,7 +82,7 @@ public class SkinsManager
 		fileExists(list,crashSoundFilename) &&
 		fileExists(list,dieSoundFilename);
 		//if (!correct)
-			//  System.out.println("Nicht korrekt angelegter Skin wurde gefunden: " + skinFile.getAbsoluteFile());
+		//  System.out.println("Nicht korrekt angelegter Skin wurde gefunden: " + skinFile.getAbsoluteFile());
 		return correct;
 	}
 

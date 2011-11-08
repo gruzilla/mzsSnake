@@ -7,6 +7,6 @@ package snake.data;
  */
 public enum GameType
 {
-  time, //game for time (amount of points in a certain time)
-  points //game for points (duration until a certain number of points is reached)
+	time, //game for time (amount of points in a certain time)
+	points //game for points (duration until a certain number of points is reached)
 }

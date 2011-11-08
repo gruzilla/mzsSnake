@@ -6,9 +6,9 @@ package snake.data;
  */
 public enum SnakeState
 {
-  unknown, //not yet loaded
-  active, //snake is active in game
-  unverwundbar, //snake is invulnerable and cannot be crashed
-  unsichtbar, //snake invisible for other players (not used)
-  crashed //snake crashed (against itself, other snake or wall)
+	unknown, //not yet loaded
+	active, //snake is active in game
+	unverwundbar, //snake is invulnerable and cannot be crashed
+	unsichtbar, //snake invisible for other players (not used)
+	crashed //snake crashed (against itself, other snake or wall)
 }

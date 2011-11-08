@@ -106,7 +106,7 @@ public class Snake extends JFrame implements WindowListener
 		this.pack();
 		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		this.setLocation(env.getCenterPoint().x - this.getWidth() / 2,
-										 env.getCenterPoint().y - this.getHeight() / 2);
+				env.getCenterPoint().y - this.getHeight() / 2);
 		this.setMaximizedBounds(env.getMaximumWindowBounds());
 		//this.setExtendedState(this.getExtendedState() | this.MAXIMIZED_BOTH);
 		this.addComponentListener(new Snake_this_componentAdapter(this));
@@ -232,7 +232,7 @@ public class Snake extends JFrame implements WindowListener
 	 */
 	public void initMyGameSprites()
 	{
-	 // System.out.println("Initializing MyGameSprites.");
+		// System.out.println("Initializing MyGameSprites.");
 		if (snakePanel == null)
 		{
 			snakePanel = new SnakePanel(this, period, settings, gameList, myPlayer, levelManager);
@@ -267,7 +267,7 @@ public class Snake extends JFrame implements WindowListener
 		{
 			Util.init(settings);
 			MzsCore core = DefaultMzsCore.newInstance();
-			
+
 			conn = Util.getConnection();
 			snake.data.SpaceStartPoint startOIDPoint = Util.ConnectSpace();
 			snakeLog.flush();

@@ -1,6 +1,5 @@
 package snake;
 
-import corso.lang.*;
 import javax.swing.*;
 import java.awt.image.*;
 import java.awt.event.*;
@@ -411,7 +410,7 @@ public class SnakePanel extends JPanel implements Runnable
 			{
 				if (!game.getPlayer(i).equals(myPlayer))
 				{
-					//System.out.println("Füge SnakeSprite Hinzu: " + game.getPlayer(i));
+					//System.out.println("Fï¿½ge SnakeSprite Hinzu: " + game.getPlayer(i));
 					otherSnakeSprites[counter] = new SnakeSprite(imgLoader, conn, game.getPlayer(i), this);
 					counter++;
 				}

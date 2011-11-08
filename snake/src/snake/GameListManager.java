@@ -12,7 +12,7 @@ import snake.corso.Util;
  * players. A gamelist notifier thread updates the gamelist automatically if notifications
  * occur. GameListManager also keeps track of the current game, and provides methods to
  * create, join and leave a game, and set the state of the own player and the current game.
- * Wenn game data changes, the current game is checked if it can be started (when all
+ * When game data changes, the current game is checked if it can be started (when all
  * players are ready). The GameListManager can also listen to changes, and give changes
  * on to a set DataChangeListener.
  * @author Thomas Scheller, Markus Karolus
@@ -63,9 +63,9 @@ public class GameListManager implements IDataChangeListener
 			{
 				// create notification item on this object ****************************
 				CorsoNotificationItem notifItem =
-						new CorsoNotificationItem(gameListOid,
-									0,
-									CorsoNotificationItem.CURRENT_TIMESTAMP);
+					new CorsoNotificationItem(gameListOid,
+							0,
+							CorsoNotificationItem.CURRENT_TIMESTAMP);
 
 				// add the notification item to a vector ******************************
 				Vector notifVec = new Vector();
@@ -73,7 +73,7 @@ public class GameListManager implements IDataChangeListener
 
 				// create notification ************************************************
 				CorsoNotification notification =
-						conn.createNotification(notifVec, strat);
+					conn.createNotification(notifVec, strat);
 
 				CorsoData data = conn.createData();
 				// start notification and wait until oid is written *******************
@@ -82,7 +82,7 @@ public class GameListManager implements IDataChangeListener
 
 					//System.out.println("waiting until oid is written");
 					CorsoNotificationItem fired =
-							notification.start(CorsoConnection.INFINITE_TIMEOUT, data);
+						notification.start(CorsoConnection.INFINITE_TIMEOUT, data);
 
 					// reading out the value of the written oid *************************
 					if (fired != null && running) //only read when still running
@@ -168,7 +168,7 @@ public class GameListManager implements IDataChangeListener
 	{
 		synchronized (gameList)
 		{
-		 // System.out.println("GameListManager: DataChanged " + changeEvent.getType());
+			// System.out.println("GameListManager: DataChanged " + changeEvent.getType());
 			checkCurrentGame();
 			if (changeListener != null)
 			{
@@ -381,7 +381,7 @@ public class GameListManager implements IDataChangeListener
 				myPlayer.saveToSpace();
 
 				//gameList.setGamePlayerReady(currentGame, myPlayer, ready);
-			 // System.out.println("Set my playerstate: " + newState);
+				// System.out.println("Set my playerstate: " + newState);
 
 				if (isLeader)
 				{
@@ -396,7 +396,7 @@ public class GameListManager implements IDataChangeListener
 					{
 						//set game ready if player initialized
 						gameList.setGameState(currentGame, GameState.ready);
-					 // System.out.println("set gameState ready");
+						// System.out.println("set gameState ready");
 						gameListOid.writeShareable(gameList, CorsoConnection.INFINITE_TIMEOUT);
 					}
 					else if (newState == PlayerState.loaded)
@@ -489,14 +489,14 @@ public class GameListManager implements IDataChangeListener
 	 * @param collisionOther true if collision with other snakes is on
 	 */
 	public void setGameData(GameType gameType, int winValue, boolean collisionWall, boolean collisionOwn,
-													boolean collisionOther)
+			boolean collisionOther)
 	{
 		synchronized (gameList)
 		{
 			try
 			{
 				gameList.getGame(currentGame).setGameData(gameType, winValue, collisionWall, collisionOwn,
-																									collisionOther);
+						collisionOther);
 				gameListOid.writeShareable(gameList, CorsoConnection.INFINITE_TIMEOUT);
 			}
 			catch (CorsoException ex)
@@ -654,7 +654,7 @@ public class GameListManager implements IDataChangeListener
 					System.out.println("	Player ready: " + currentGame.getPlayer(i).getPlayerState());
 				}
 				System.out.println("	myPlayer Leader: " + myPlayerIsLeader());
-				*/
+				 */
 
 				//set game state active if game is ready (loaded) and player is leader
 				if (state == GameState.running && myPlayerIsLeader())
@@ -697,7 +697,7 @@ public class GameListManager implements IDataChangeListener
 		catch (CorsoException ex)
 		{
 			System.out.println(
-					"Corso Read-Error occured: HighScore can't be read, created new.");
+			"Corso Read-Error occured: HighScore can't be read, created new.");
 			//ex.printStackTrace(System.out);
 
 			highScore.init();
