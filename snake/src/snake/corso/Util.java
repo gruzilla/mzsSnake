@@ -7,13 +7,14 @@ import org.mozartspaces.core.CapiUtil;
 import org.mozartspaces.core.ContainerReference;
 import org.mozartspaces.core.DefaultMzsCore;
 import org.mozartspaces.core.MzsCore;
+import org.mozartspaces.core.MzsCoreException;
 
 import snake.*;
 
 /**
  * Manages the connection to the xvsm space.
  * Reads the settings from the file
- * @author Jakob Lahmer, Matthias Steinbšck based on work by Thomas Scheller, Markus Karolus
+ * @author Jakob Lahmer, Matthias Steinbï¿½ck based on work by Thomas Scheller, Markus Karolus
  */
 public class Util
 {
@@ -33,10 +34,10 @@ public class Util
 	}
 
 	/**
-	 * Connect to "local" corso_coke with the parameters defined in this class.
+	 * Connect to "local" XVSM Server with the parameters defined in this class.
 	 * If an error occurs we throw an Exception.
 	 *
-	 * @return the connection to our corso_coke
+	 * @return the connection to our XVSM Server
 	 */
 	public static Capi getConnection() throws Exception
 	{
@@ -77,11 +78,29 @@ public class Util
 		}
 	}
 
+	
 	public static URI getSpaceUri() {
 		return Util.settings.getUri();
 	}
 
+	
+	/**
+	 * Loads a ContainerReference for a container name. The Container will be created, if it
+	 * is not available
+	 * 
+	 * @param containerName name of the container in space
+	 * @return ContainerReference or null
+	 */
 	public static ContainerReference getContainer(String containerName) {
-	return CapiUtil.lookupOrCreateContainer(containerName, getSpaceUri(), ContainerCoordinatorMapper.getCoordinators(containerName), null, conn);
+		try {
+			return CapiUtil.lookupOrCreateContainer(containerName, getSpaceUri(), ContainerCoordinatorMapper.getCoordinators(containerName), null, conn);
+		} catch (MzsCoreException e) {
+			
+			e.printStackTrace();
+			System.err.println("Util: Could not load Container (" + containerName + "): " + e.getMessage());
+			
+		}
+		return null;
 	}
 }
+
