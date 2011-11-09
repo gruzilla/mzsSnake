@@ -1,10 +1,19 @@
 package snake;
 
+import java.io.Serializable;
+import java.util.List;
 import java.util.Vector;
 
 import org.mozartspaces.core.Capi;
+import org.mozartspaces.core.CapiUtil;
+import org.mozartspaces.core.ContainerReference;
+import org.mozartspaces.core.Entry;
+import org.mozartspaces.notifications.Notification;
+import org.mozartspaces.notifications.NotificationListener;
+import org.mozartspaces.notifications.Operation;
 
 import snake.data.*;
+import snake.corso.ContainerCoordinatorMapper;
 import snake.corso.Util;
 
 /**
@@ -59,6 +68,15 @@ public class GameListManager implements IDataChangeListener
 
 		public void run()
 		{
+			NotificationListener notifListener = new NotificationListener() {
+				@Override
+				public void entryOperationFinished(final Notification notification, final Operation operation, final List<? extends Serializable> entries) {
+					Entry entry = (Entry) CapiUtil.getSingleEntry(entries);
+				}
+			};
+			
+			Util.getNotificationManager().createNotification(Util.getContainer(ContainerCoordinatorMapper.GAME_LIST), notifListener, Operation.WRITE);
+			
 			try
 			{
 				// create notification item on this object ****************************
@@ -193,10 +211,10 @@ public class GameListManager implements IDataChangeListener
 			playerList = new PlayerList(this);
 			gameList = new GameList(playerList);
 			playerList.addPlayer(myPlayer);
-			strat = new CorsoStrategy(Util.STRATEGY);
 
-			gameListOid = newGameListOID;
-			highScoreOID = newHighScoreOID;
+			ContainerReference gameListContainer = Util.getContainer(ContainerCoordinatorMapper.GAME_LIST);
+			
+			highScoreOID = new HighScoreOID;
 
 			try
 			{
@@ -209,6 +227,7 @@ public class GameListManager implements IDataChangeListener
 				//ex.printStackTrace(System.out);
 
 				//write game list when it could not be read
+				conn.write(gameListContainer, new Entry(gameList));
 				gameListOid.writeShareable(gameList, CorsoConnection.INFINITE_TIMEOUT);
 			}
 

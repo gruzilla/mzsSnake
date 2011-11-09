@@ -8,6 +8,7 @@ import org.mozartspaces.core.ContainerReference;
 import org.mozartspaces.core.DefaultMzsCore;
 import org.mozartspaces.core.MzsCore;
 import org.mozartspaces.core.MzsCoreException;
+import org.mozartspaces.notifications.NotificationManager;
 
 import snake.*;
 
@@ -22,6 +23,7 @@ public class Util
 	private static Capi conn;
 	private static MzsCore core;
 	private static Settings settings;
+	private static NotificationManager notificationManager;
 
 	/**
 	 * Store the settings from the propertyfile into the local variables
@@ -101,6 +103,13 @@ public class Util
 			
 		}
 		return null;
+	}
+
+	public static NotificationManager getNotificationManager() {
+		if (Util.notificationManager == null) {
+			Util.notificationManager = new NotificationManager(Util.core);
+		}
+		return Util.notificationManager;
 	}
 }
 
