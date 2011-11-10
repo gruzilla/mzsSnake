@@ -1,6 +1,9 @@
 package snake;
 
 import javax.swing.*;
+
+import org.mozartspaces.core.Capi;
+
 import java.awt.image.*;
 import java.awt.event.*;
 import java.awt.*;
@@ -320,7 +323,7 @@ public class SnakePanel extends JPanel implements Runnable
 	{
 		setMode(MODE_STARTING);
 		modeQuit = MODE_STARTING;
-		CorsoConnection conn = null;
+		Capi conn = null;
 		try
 		{
 			conn = Util.getConnection();
@@ -383,7 +386,7 @@ public class SnakePanel extends JPanel implements Runnable
 				return;
 			}
 
-			CorsoConnection conn = null;
+			Capi conn = null;
 			try
 			{
 				conn = Util.getConnection();
@@ -410,7 +413,7 @@ public class SnakePanel extends JPanel implements Runnable
 			{
 				if (!game.getPlayer(i).equals(myPlayer))
 				{
-					//System.out.println("F�ge SnakeSprite Hinzu: " + game.getPlayer(i));
+					//System.out.println("Füge SnakeSprite Hinzu: " + game.getPlayer(i));
 					otherSnakeSprites[counter] = new SnakeSprite(imgLoader, conn, game.getPlayer(i), this);
 					counter++;
 				}

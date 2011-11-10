@@ -2,6 +2,9 @@ package snake;
 
 import java.awt.*;
 import java.awt.image.*;
+
+import org.mozartspaces.core.Capi;
+
 import snake.util.*;
 import snake.data.*;
 
@@ -68,7 +71,7 @@ public class CollectableSprite
 	 * @param gameMap the BackGroundManager that is used in the Game
 	 */
 	public CollectableSprite(int pWidth, int pHeight, ImageLoader imgLoader, SnakeSprite snake,
-			SnakePanel snakePanel, CorsoConnection conn, GameListManager gameList,
+			SnakePanel snakePanel, Capi conn, GameListManager gameList,
 			Player myPlayer, BackgroundManager gameMap)
 	{
 		this.imgLoader = imgLoader;
@@ -133,7 +136,7 @@ public class CollectableSprite
 	{
 		if (snake != null)
 		{
-			//Prüfen ob Schlange ein Collectable frisst
+			//Prï¿½fen ob Schlange ein Collectable frisst
 			for (int i = 0; i < data.getPositions().length; i++)
 			{
 				Rectangle rect = new Rectangle(data.getPositions()[i].x, data.getPositions()[i].y, imgWidth,

@@ -14,7 +14,8 @@ public class ContainerCoordinatorMapper {
 	private static HashMap<String, List<Coordinator>> map = new HashMap<String, List<Coordinator>>();
 	
 	static {
-		
+		// define coordinators for
+		// GAME_LIST
 		ArrayList<Coordinator> list = new ArrayList<Coordinator>();
 		list.add(new FifoCoordinator());
 		list.add(new LindaCoordinator());

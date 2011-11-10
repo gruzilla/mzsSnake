@@ -2,6 +2,9 @@ package snake;
 
 import java.awt.*;
 import java.awt.image.*;
+
+import org.mozartspaces.core.Capi;
+
 import snake.util.ImageLoader;
 import snake.data.Player;
 import corso.lang.*;
@@ -35,7 +38,7 @@ public class SnakeSprite
 
   //snake images
   private BufferedImage imgPart = null;
-  private BufferedImage[] imgPartsTurned = new BufferedImage[36]; //rotated images (one every 10°)
+  private BufferedImage[] imgPartsTurned = new BufferedImage[36]; //rotated images (one every 10ï¿½)
   private BufferedImage imgHead = null;
   private BufferedImage imgTail = null;
   private BufferedImage imgSpeedUp = null;
@@ -58,7 +61,7 @@ public class SnakeSprite
    * @param snakePanel SnakePanel where the game is drawn
    * @param collisionMode collision mode for the game (collision with self, others, wall)
    */
-  public SnakeSprite(ImageLoader imgLoader, /*ClipsLoader aClipsLoader, */ CorsoConnection conn,
+  public SnakeSprite(ImageLoader imgLoader, /*ClipsLoader aClipsLoader, */ Capi conn,
                      Player aPlayer,
                      BackgroundManager gameMap, SnakePanel snakePanel, int collisionMode)
   {

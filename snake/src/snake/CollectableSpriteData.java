@@ -1,6 +1,9 @@
 package snake;
 
 import java.util.Vector;
+
+import org.mozartspaces.core.Capi;
+
 import snake.data.*;
 import snake.corso.Util;
 
@@ -130,7 +133,7 @@ public class CollectableSpriteData
 	 * @param myPlayer the own player
 	 * @param aGameMap BackgroundManager for the current game
 	 */
-	public CollectableSpriteData(GameListManager gameList, CorsoConnection conn,
+	public CollectableSpriteData(GameListManager gameList, Capi conn,
 			Player myPlayer, BackgroundManager aGameMap)
 	{
 		gameMap = aGameMap;
