@@ -9,7 +9,8 @@ import org.mozartspaces.capi3.FifoCoordinator;
 import org.mozartspaces.capi3.LindaCoordinator;
 
 public class ContainerCoordinatorMapper {
-	public static String GAME_LIST = "gameList";
+	public static final String HIGH_SCORE = "highScore";
+	public static final String GAME_LIST = "gameList";
 	
 	private static HashMap<String, List<Coordinator>> map = new HashMap<String, List<Coordinator>>();
 	

@@ -1,6 +1,7 @@
 package snake;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -8,6 +9,7 @@ import org.mozartspaces.core.Capi;
 import org.mozartspaces.core.CapiUtil;
 import org.mozartspaces.core.ContainerReference;
 import org.mozartspaces.core.Entry;
+import org.mozartspaces.core.MzsCoreException;
 import org.mozartspaces.notifications.Notification;
 import org.mozartspaces.notifications.NotificationListener;
 import org.mozartspaces.notifications.Operation;
@@ -66,89 +68,31 @@ public class GameListManager implements IDataChangeListener
 		{
 		}
 
-		public void run()
-		{
+		public void run() {
 			NotificationListener notifListener = new NotificationListener() {
 				@Override
 				public void entryOperationFinished(final Notification notification, final Operation operation, final List<? extends Serializable> entries) {
 					Entry entry = (Entry) CapiUtil.getSingleEntry(entries);
+					synchronized (gameList) {
+						gameList = (GameList) entry.getValue();
+					}
+					
+					//report change event to GameListManager
+					dataChanged(new DataChangeEvent(gameList, DataChangeType.game));
 				}
 			};
 			
-			Util.getNotificationManager().createNotification(Util.getContainer(ContainerCoordinatorMapper.GAME_LIST), notifListener, Operation.WRITE);
-			
-			try
-			{
-				// create notification item on this object ****************************
-				CorsoNotificationItem notifItem =
-					new CorsoNotificationItem(gameListOid,
-							0,
-							CorsoNotificationItem.CURRENT_TIMESTAMP);
-
-				// add the notification item to a vector ******************************
-				Vector notifVec = new Vector();
-				notifVec.addElement(notifItem);
-
-				// create notification ************************************************
-				CorsoNotification notification =
-					conn.createNotification(notifVec, strat);
-
-				CorsoData data = conn.createData();
-				// start notification and wait until oid is written *******************
-				while (running)
-				{
-
-					//System.out.println("waiting until oid is written");
-					CorsoNotificationItem fired =
-						notification.start(CorsoConnection.INFINITE_TIMEOUT, data);
-
-					// reading out the value of the written oid *************************
-					if (fired != null && running) //only read when still running
-					{
-						if (fired.varOid() != null && fired.varOid().equals(gameListOid))
-						{ //right object found
-							//try to read multiple times when reading fails
-							int readOK = -5;
-							while (readOK < 0)
-							{
-								try
-								{
-									synchronized (gameList)
-									{
-										fired.varOid().readShareable(gameList, null, CorsoConnection.NO_TIMEOUT);
-									}
-
-									//report change event to GameListManager
-									dataChanged(new DataChangeEvent(gameList, DataChangeType.game));
-
-									if (readOK == -5)
-									{
-										readOK = 2;
-									}
-									else
-									{
-										readOK = 1;
-									}
-								}
-								catch (CorsoException ex)
-								{
-									System.out.println("GameListNotifier: Corso Read-Error occured (" + readOK + "):");
-									ex.printStackTrace(System.out);
-									readOK++;
-								}
-							}
-							if (readOK == 1)
-							{
-								System.out.println("GameListNotifier: Read successful (" + readOK + ")");
-							}
-						}
-					}
-				}
-			}
-			catch (CorsoException ex)
-			{
-				System.out.println("GameListNotifier: Corso Error occured:");
-				ex.printStackTrace(System.out);
+			try {
+				Util.getNotificationManager().createNotification(
+						Util.getContainer(ContainerCoordinatorMapper.GAME_LIST),
+						notifListener,
+						Operation.WRITE);
+			} catch (MzsCoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 
@@ -199,48 +143,35 @@ public class GameListManager implements IDataChangeListener
 	 * Initialize the GameListManager: Create gamelist and playerlist, add the own player
 	 * to the playerlist, read the gamelist from corsospace and start the gamelist notifier
 	 * thread.
-	 * @param conn connection to the corsospace
-	 * @param newGameListOID oid of the gamelist
-	 * @param newHighScoreOID oid of the highscore
+	 * @param conn connection to the space
 	 */
 	public void initialise(Capi conn)
 	{
 		this.conn = conn;
-		try
-		{
 			playerList = new PlayerList(this);
 			gameList = new GameList(playerList);
 			playerList.addPlayer(myPlayer);
 
 			ContainerReference gameListContainer = Util.getContainer(ContainerCoordinatorMapper.GAME_LIST);
 			
-			highScoreOID = new HighScoreOID;
-
-			try
-			{
-				//read game list
-				gameListOid.readShareable(gameList, null, CorsoConnection.NO_TIMEOUT);
-			}
-			catch (CorsoException ex)
-			{
-				System.out.println("Corso Read-Error occured: Game List can't be read, created new.");
-				//ex.printStackTrace(System.out);
-
-				//write game list when it could not be read
-				conn.write(gameListContainer, new Entry(gameList));
-				gameListOid.writeShareable(gameList, CorsoConnection.INFINITE_TIMEOUT);
+			try {
+				ArrayList<Serializable> list = conn.take(gameListContainer);
+				if (list.size() == 1) {
+					gameList = (GameList)list.get(0);
+				} else {
+					//write game list when it could not be read
+					System.out.println("Corso Read-Error occured: Game List can't be read, created new.");
+					conn.write(gameListContainer, new Entry(gameList));
+				}
+			} catch (MzsCoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 
 			//start GameListNotifier thread
 			notifier = new GameListNotifier();
 			Thread notifierThread = new Thread(notifier);
 			notifierThread.start();
-		}
-		catch (CorsoException ex)
-		{
-			System.out.println("Corso Error occured:");
-			ex.printStackTrace(System.out);
-		}
 	}
 
 	/**
@@ -294,22 +225,26 @@ public class GameListManager implements IDataChangeListener
 	 */
 	public void createGame(String name)
 	{
+		
 		synchronized (gameList)
 		{
-			try
-			{
-				LevelData initData = new LevelData();
-				initData.LoadData(levelManager);
+			LevelData initData = new LevelData();
+			initData.LoadData(levelManager);
 
-				currentGame = gameList.addGame(name, myPlayer, initData);
-				isLeader = true;
-				gameListOid.writeShareable(gameList, CorsoConnection.INFINITE_TIMEOUT);
-			}
-			catch (CorsoException ex)
-			{
-				System.out.println("createGame: Corso Error occured:");
-				ex.printStackTrace(System.out);
-			}
+			currentGame = gameList.addGame(name, myPlayer, initData);
+			isLeader = true;
+			writeGameList();
+		}
+	}
+
+	private void writeGameList() {
+		ContainerReference gameListContainer = Util.getContainer(ContainerCoordinatorMapper.GAME_LIST);
+		try {
+			this.conn.write(gameListContainer, new Entry(gameList));
+		} catch (MzsCoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace(System.out);
+			System.out.println("joinGame: MzsError occured:");
 		}
 	}
 
@@ -320,19 +255,12 @@ public class GameListManager implements IDataChangeListener
 	 */
 	public void joinGame(int index)
 	{
+		
 		synchronized (gameList)
 		{
-			try
-			{
-				currentGame = gameList.joinGame(index, myPlayer);
-				isLeader = false;
-				gameListOid.writeShareable(gameList, CorsoConnection.INFINITE_TIMEOUT);
-			}
-			catch (CorsoException ex)
-			{
-				System.out.println("joinGame: Corso Error occured:");
-				ex.printStackTrace(System.out);
-			}
+			currentGame = gameList.joinGame(index, myPlayer);
+			isLeader = false;
+			writeGameList();
 		}
 	}
 
