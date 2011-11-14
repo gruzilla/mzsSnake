@@ -1,7 +1,7 @@
 package snake.data;
 
+import java.io.Serializable;
 import java.util.Vector;
-import corso.lang.*;
 import snake.data.*;
 import snake.SnakeSpriteData;
 
@@ -10,7 +10,7 @@ import snake.SnakeSpriteData;
  * are not directly saved with the game, they are referenced by their oids.
  * @author Thomas Scheller, Markus Karolus
  */
-public class Game implements CorsoShareable
+public class Game implements Serializable
 {
 	public static final int MAXPLAYERS = 4; //up to 4 players
 

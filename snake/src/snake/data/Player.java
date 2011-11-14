@@ -1,14 +1,15 @@
 package snake.data;
 
-import corso.lang.*;
 import snake.corso.Util;
+
+import java.io.Serializable;
 import java.util.Vector;
 
 /**
  * Representation of a player in corsospace.
  * @author Thomas Scheller, Markus Karolus
  */
-public class Player implements CorsoShareable
+public class Player implements Serializable
 {
 	private String name = null;
 	private String skin = null;

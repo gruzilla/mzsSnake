@@ -465,7 +465,7 @@ public class GameListManager implements IDataChangeListener
 	 */
 	public boolean isGameReadyCreated()
 	{
-		//Prüfen ob Spiel und alle Spieler bereit sind (es müssen mindestens 2 Spieler sein)
+		//Prï¿½fen ob Spiel und alle Spieler bereit sind (es mï¿½ssen mindestens 2 Spieler sein)
 		currentGame = getCurrentGame();
 		if (currentGame != null)
 		{
@@ -492,7 +492,7 @@ public class GameListManager implements IDataChangeListener
 	 */
 	public boolean isGameReadyLoaded()
 	{
-		//Prüfen ob Spiel und alle Spieler bereit sind (es müssen mindestens 2 Spieler sein)
+		//Prï¿½fen ob Spiel und alle Spieler bereit sind (es mï¿½ssen mindestens 2 Spieler sein)
 		// currentGame = getCurrentGame();
 		if (currentGame != null)
 		{
@@ -518,7 +518,7 @@ public class GameListManager implements IDataChangeListener
 	 */
 	public boolean isGameJoinable(int index)
 	{
-		//Prüfen ob Spiel beigetreten werden kann (nicht voll und State opened)
+		//Prï¿½fen ob Spiel beigetreten werden kann (nicht voll und State opened)
 		synchronized (gameList)
 		{
 			Game game = (Game) gameList.getVector().elementAt(index);
