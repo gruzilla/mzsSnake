@@ -1,15 +1,19 @@
 package snake.data;
 
+import java.io.Serializable;
 import java.util.Vector;
-import corso.lang.*;
 
 /**
  * The HighScore class represents the highscore in corso space.
  * @author Thomas Scheller, Markus Karolus
  */
-public class HighScore implements CorsoShareable
+public class HighScore implements Serializable
 {
-	private Vector highscores = new Vector<HighScoreData> ();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Vector<HighScoreData> highscores = new Vector<HighScoreData> ();
 	public final int highScoreCount = 10;
 	private final String structName = "snakeHighScore";
 
@@ -36,7 +40,7 @@ public class HighScore implements CorsoShareable
 	 * Read the the object from CorsoSpace.
 	 * @param data CorsoData
 	 * @throws CorsoDataException
-	 */
+	 * /
 	public void read(CorsoData data) throws CorsoDataException
 	{
 		StringBuffer dataName = new StringBuffer("");
@@ -67,7 +71,7 @@ public class HighScore implements CorsoShareable
 	 * Write the object to CorsoSpace.
 	 * @param data CorsoData
 	 * @throws CorsoDataException
-	 */
+	 * /
 	public void write(CorsoData data) throws CorsoDataException
 	{
 		//create struct with name and size
@@ -134,7 +138,7 @@ public class HighScore implements CorsoShareable
 		return highscores.size();
 	}
 
-	public Vector getVector()
+	public Vector<HighScoreData> getVector()
 	{
 		return highscores;
 	}

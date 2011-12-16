@@ -1,8 +1,15 @@
 package snake.data;
 
-import java.util.Vector;
-import corso.lang.*;
-import snake.data.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+
+import org.mozartspaces.core.Capi;
+import org.mozartspaces.core.ContainerReference;
+import org.mozartspaces.core.Entry;
+import org.mozartspaces.core.MzsCoreException;
+
+import snake.corso.ContainerCoordinatorMapper;
+import snake.corso.Util;
 import snake.SnakeSpriteData;
 
 /**
@@ -10,12 +17,16 @@ import snake.SnakeSpriteData;
  * are not directly saved with the game, they are referenced by their oids.
  * @author Thomas Scheller, Markus Karolus
  */
-public class Game implements CorsoShareable
+public class Game implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final int MAXPLAYERS = 4; //up to 4 players
 
-	private Vector players = new Vector<Player> ();
-	private Vector playerOids = new Vector<CorsoVarOid> ();
+	private ArrayList<Player> players = new ArrayList<Player>();
+	//private Vector playerOids = new Vector<CorsoVarOid> ();
 	private int nr = 0;
 	private String name = null;
 	private String levelDir = snake.LevelsManager.DEFAULTLEVELDIR;
@@ -25,14 +36,15 @@ public class Game implements CorsoShareable
 	private int winValue = 10; //Point or time value for determining game end (depenting on type of game)
 	private int collisionType = SnakeSpriteData.COLLISION_WALL | SnakeSpriteData.COLLISION_OTHER |
 	SnakeSpriteData.COLLISION_OWN; //collision behaviour
-	private CorsoVarOid leaderOID = null;
-	private CorsoVarOid levelOID = null;
+	//private CorsoVarOid leaderOID = null;
+	//private CorsoVarOid levelOID = null;
 	private Player leader = null;
-	private CorsoVarOid collectableOID = null;
+	//private CorsoVarOid collectableOID = null;
 	private PlayerList playerList = null;
 
-	private final String structName = "snakeGameDataStruct";
-	private final int structSizeMin = 12;
+	//private final String structName = "snakeGameDataStruct";
+	//private final int structSizeMin = 12;
+	private Capi conn;
 
 	public Game(PlayerList playerList)
 	{
@@ -48,11 +60,17 @@ public class Game implements CorsoShareable
 	 */
 	public Game(int nr, String name, Player leader, PlayerList playerList)
 	{
+		try {
+			this.conn = Util.getConnection();
+		} catch (Exception e) {
+			System.err.println("Could not create connection");
+			e.printStackTrace();
+		}
 		this.nr = nr;
 		this.name = name;
 		this.playerList = playerList;
-		this.collectableOID = snake.corso.Util.createVarOid();
-		this.levelOID = snake.corso.Util.createVarOid();
+		//this.collectableOID = snake.corso.Util.createVarOid();
+		//this.levelOID = snake.corso.Util.createVarOid();
 		joinGame(leader);
 	}
 
@@ -60,7 +78,7 @@ public class Game implements CorsoShareable
 	 * Read the the object from CorsoSpace.
 	 * @param data CorsoData
 	 * @throws CorsoDataException
-	 */
+	 * /
 	public void read(CorsoData data) throws CorsoDataException
 	{
 		StringBuffer dataName = new StringBuffer("");
@@ -83,8 +101,8 @@ public class Game implements CorsoShareable
 		state = GameState.valueOf(data.getString());
 		levelDir = data.getString();
 		levelCheckSum = data.getBinary();
-		levelOID = new CorsoVarOid();
-		data.getShareable(levelOID);
+		//levelOID = new CorsoVarOid();
+		//data.getShareable(levelOID);
 		gameType = GameType.valueOf(data.getString());
 		winValue = data.getInt();
 		collisionType = data.getInt();
@@ -110,19 +128,21 @@ public class Game implements CorsoShareable
 			for (int i = 0; i < newPlayerOids.size(); i++)
 			{
 				Player player = playerList.getPlayer(new CorsoVarOid( (CorsoVarOid) newPlayerOids.elementAt(i)));
-				if (player.getOid().equals(leaderOID))
+				
+				//if (player.getOid().equals(leaderOID))
+				if (player.equals(leader))
 				{
 					leader = player;
 				}
 
-				players.addElement(player);
-				playerOids.addElement(player.getOid());
+				players.add(player);
+				//playerOids.addElement(player.getOid());
 			}
 		}
 		else
 		{
-			playerOids = new Vector<CorsoVarOid> ();
-			players = new Vector<Player> ();
+			//playerOids = new Vector<CorsoVarOid> ();
+			players = new ArrayList<Player>();
 		}
 	}
 
@@ -130,7 +150,7 @@ public class Game implements CorsoShareable
 	 * Write the object to CorsoSpace.
 	 * @param data CorsoData
 	 * @throws CorsoDataException
-	 */
+	 * /
 	public void write(CorsoData data) throws CorsoDataException
 	{
 		data.putStructTag(structName, structSizeMin + (playerOids.size()));
@@ -163,6 +183,7 @@ public class Game implements CorsoShareable
 	{
 		collectableOID = newOID;
 	}
+	*/
 
 	public Player getLeader()
 	{
@@ -171,7 +192,7 @@ public class Game implements CorsoShareable
 
 	public Player getPlayer(int index)
 	{
-		return (Player) players.elementAt(index);
+		return players.get(index);
 	}
 
 	public int getNr()
@@ -211,7 +232,7 @@ public class Game implements CorsoShareable
 
 	public LevelData getLevelData()
 	{
-		LevelData levelData = new LevelData(levelOID);
+		LevelData levelData = new LevelData();
 		return levelData;
 	}
 
@@ -228,16 +249,14 @@ public class Game implements CorsoShareable
 			//System.out.println("setLevelData: Daten in Space speichern");
 			levelDir = newData.getLevelDir();
 			levelCheckSum = newData.getCheckSum();
-			try
-			{
-				levelOID.writeShareable(newData, CorsoConnection.INFINITE_TIMEOUT);
+			ContainerReference container = Util.getContainer(ContainerCoordinatorMapper.LEVEL_DATA);
+			try {
+				this.conn.write(container, new Entry(newData));
+			} catch (MzsCoreException e) {
+				// TODO Auto-generated catch block
+				System.out.println("setLevelData: MzsError occured:");
+				e.printStackTrace(System.out);
 			}
-			catch (CorsoException ex)
-			{
-				System.out.println("setLevelData: Corso Error occured:");
-				ex.printStackTrace(System.out);
-			}
-
 		}
 	}
 
@@ -317,7 +336,8 @@ public class Game implements CorsoShareable
 	 */
 	public int indexOf(Player player)
 	{
-		return playerOids.indexOf(player.getOid());
+		return players.indexOf(player);
+		//return playerOids.indexOf(player.getOid());
 	}
 
 	/**
@@ -327,15 +347,18 @@ public class Game implements CorsoShareable
 	 */
 	public void joinGame(Player player)
 	{
-		//Spieler zu Spiel hinzuf�gen
+		//Spieler zu Spiel hinzufuegen
 		if (getPlayerAnz() < MAXPLAYERS && indexOf(player) == -1)
 		{
-			players.addElement(player);
-			playerOids.addElement(player.getOid());
-			//Spieler zum Anf�hrer machen wenn noch keiner vorhanden
-			if (leaderOID == null)
+			players.add(player);
+			//playerOids.addElement(player.getOid());
+			//Spieler zum Anfuehrer machen wenn noch keiner vorhanden
+			/*if (leaderOID == null)
 			{
 				leaderOID = player.getOid();
+			}*/
+			if (leader == null) {
+				leader = player;
 			}
 		}
 	}
@@ -350,8 +373,8 @@ public class Game implements CorsoShareable
 		int index = indexOf(player);
 		if (index > -1)
 		{
-			players.removeElementAt(index);
-			playerOids.removeElementAt(index);
+			players.remove(index);
+			//playerOids.removeElementAt(index);
 		}
 	}
 
@@ -364,7 +387,7 @@ public class Game implements CorsoShareable
 	{
 		for (int i = 0; i < players.size(); i++)
 		{
-			if ( ( (Player) players.elementAt(i)).isStateNotInit())
+			if ( ( (Player) players.get(i)).isStateNotInit())
 			{
 				return false; //found a player with state notinit
 			}
@@ -382,8 +405,8 @@ public class Game implements CorsoShareable
 	{
 		for (int i = 0; i < players.size(); i++)
 		{
-			if ( ( ( (Player) players.elementAt(i)).isStateInit()) ||
-					( ( (Player) players.elementAt(i)).isStateNotInit()))
+			if ( ( ( (Player) players.get(i)).isStateInit()) ||
+					( ( (Player) players.get(i)).isStateNotInit()))
 			{
 				return false; //found a player with state less than loaded
 			}
@@ -399,9 +422,9 @@ public class Game implements CorsoShareable
 	{
 		if (players.size() > 0)
 		{
-			Player newLeader = (Player) players.elementAt(0);
+			Player newLeader = players.get(0);
 			leader = newLeader;
-			leaderOID = newLeader.getOid();
+			//leaderOID = newLeader.getOid();
 		}
 	}
 
@@ -447,23 +470,23 @@ public class Game implements CorsoShareable
 		{
 		case opened:
 		{
-			return name + " (" + playerOids.size() + "/" + MAXPLAYERS + " open)";
+			return name + " (" + players.size() + "/" + MAXPLAYERS + " open)";
 		}
 		case ready:
 		{
-			return name + " (" + playerOids.size() + "/" + MAXPLAYERS + " started)";
+			return name + " (" + players.size() + "/" + MAXPLAYERS + " started)";
 		}
 		case running:
 		{
-			return name + " (" + playerOids.size() + "/" + MAXPLAYERS + " running)";
+			return name + " (" + players.size() + "/" + MAXPLAYERS + " running)";
 		}
 		case aktiv:
 		{
-			return name + " (" + playerOids.size() + "/" + MAXPLAYERS + " running)";
+			return name + " (" + players.size() + "/" + MAXPLAYERS + " running)";
 		}
 		case ended:
 		{
-			return name + " (" + playerOids.size() + "/" + MAXPLAYERS + " game over)";
+			return name + " (" + players.size() + "/" + MAXPLAYERS + " game over)";
 		}
 		case unknown:
 		{

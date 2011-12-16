@@ -90,6 +90,7 @@ public class Util
 	 * Loads a ContainerReference for a container name. The Container will be created, if it
 	 * is not available
 	 * 
+	 * @see ContainerCoordinatorMapper use the container-coordinator-mapper for the keys of each container
 	 * @param containerName name of the container in space
 	 * @return ContainerReference or null
 	 */

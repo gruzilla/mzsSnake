@@ -11,6 +11,7 @@ import org.mozartspaces.capi3.LindaCoordinator;
 public class ContainerCoordinatorMapper {
 	public static final String HIGH_SCORE = "highScore";
 	public static final String GAME_LIST = "gameList";
+	public static final String LEVEL_DATA = "levelData";
 	
 	private static HashMap<String, List<Coordinator>> map = new HashMap<String, List<Coordinator>>();
 	
@@ -21,6 +22,10 @@ public class ContainerCoordinatorMapper {
 		list.add(new FifoCoordinator());
 		list.add(new LindaCoordinator());
 		map.put(GAME_LIST, list);
+		
+		ArrayList<Coordinator> list2 = new ArrayList<Coordinator>();
+		list2.add(new FifoCoordinator());
+		map.put(LEVEL_DATA, list2);
 	}
 
 	public static List<Coordinator> getCoordinators(String containerName) {

@@ -3,7 +3,6 @@ package snake;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.mozartspaces.core.Capi;
 import org.mozartspaces.core.CapiUtil;
@@ -243,8 +242,8 @@ public class GameListManager implements IDataChangeListener
 			this.conn.write(gameListContainer, new Entry(gameList));
 		} catch (MzsCoreException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace(System.out);
 			System.out.println("joinGame: MzsError occured:");
+			e.printStackTrace(System.out);
 		}
 	}
 
@@ -289,18 +288,8 @@ public class GameListManager implements IDataChangeListener
 		{
 			if (currentGame != null)
 			{
-				try
-				{
-					//Spiel verlassen
-					gameList.leaveGame(currentGame, myPlayer);
-					gameListOid.writeShareable(gameList, CorsoConnection.INFINITE_TIMEOUT);
-					currentGame = null;
-				}
-				catch (CorsoException ex)
-				{
-					System.out.println("leaveGame: Corso Error occured:");
-					ex.printStackTrace(System.out);
-				}
+				gameList.leaveGame(currentGame, myPlayer);
+				writeGameList();
 			}
 		}
 	}
@@ -316,49 +305,37 @@ public class GameListManager implements IDataChangeListener
 	{
 		synchronized (gameList)
 		{
-			try
+			if (currentGame == null)
 			{
-				if (currentGame == null)
-				{
-					System.out.println("Playerstate can't be set because player not in a game!");
-					return;
-				}
-
-				myPlayer.setPlayerState(newState);
-				myPlayer.saveToSpace();
-
-				//gameList.setGamePlayerReady(currentGame, myPlayer, ready);
-				// System.out.println("Set my playerstate: " + newState);
-
-				if (isLeader)
-				{
-					//leader of the game determines game status
-					if (newState == PlayerState.notinit)
-					{
-						//set game opened if leader not initialized
-						gameList.setGameState(currentGame, GameState.opened);
-						gameListOid.writeShareable(gameList, CorsoConnection.INFINITE_TIMEOUT);
-					}
-					else if (newState == PlayerState.init)
-					{
-						//set game ready if player initialized
-						gameList.setGameState(currentGame, GameState.ready);
-						// System.out.println("set gameState ready");
-						gameListOid.writeShareable(gameList, CorsoConnection.INFINITE_TIMEOUT);
-					}
-					else if (newState == PlayerState.loaded)
-					{
-						//set game running if player loaded
-						gameList.setGameState(currentGame, GameState.running);
-						//System.out.println("set gameState running");
-						gameListOid.writeShareable(gameList, CorsoConnection.INFINITE_TIMEOUT);
-					}
-				}
+				System.out.println("Playerstate can't be set because player not in a game!");
+				return;
 			}
-			catch (CorsoException ex)
+
+			myPlayer.setPlayerState(newState);
+			myPlayer.saveToSpace();
+
+			//gameList.setGamePlayerReady(currentGame, myPlayer, ready);
+			// System.out.println("Set my playerstate: " + newState);
+
+			if (isLeader)
 			{
-				System.out.println("setMyPlayerReady: Corso Error occured:");
-				ex.printStackTrace(System.out);
+				//leader of the game determines game status
+				if (newState == PlayerState.notinit)
+				{
+					//set game opened if leader not initialized
+					gameList.setGameState(currentGame, GameState.opened);
+				}
+				else if (newState == PlayerState.init)
+				{
+					//set game ready if player initialized
+					gameList.setGameState(currentGame, GameState.ready);
+				}
+				else if (newState == PlayerState.loaded)
+				{
+					//set game running if player loaded
+					gameList.setGameState(currentGame, GameState.running);
+				}
+				writeGameList();
 			}
 		}
 	}
@@ -371,16 +348,8 @@ public class GameListManager implements IDataChangeListener
 	{
 		synchronized (gameList)
 		{
-			try
-			{
-				gameList.setGameState(currentGame, state);
-				gameListOid.writeShareable(gameList, CorsoConnection.INFINITE_TIMEOUT);
-			}
-			catch (CorsoException ex)
-			{
-				System.out.println("setGameState: Corso Error occured:");
-				ex.printStackTrace(System.out);
-			}
+			gameList.setGameState(currentGame, state);
+			writeGameList();
 		}
 	}
 
@@ -388,21 +357,13 @@ public class GameListManager implements IDataChangeListener
 	 * Set the oid for the collectables for the current game, and save the game
 	 * to corsospace.
 	 * @param newOID CorsoVarOid
-	 */
+	 * /
 	public void setCollectableOID(CorsoVarOid newOID)
 	{
 		synchronized (gameList)
 		{
-			try
-			{
-				gameList.getGame(currentGame).setCollectableOID(newOID);
-				gameListOid.writeShareable(gameList, CorsoConnection.INFINITE_TIMEOUT);
-			}
-			catch (CorsoException ex)
-			{
-				System.out.println("setCollectableOID: Corso Error occured:");
-				ex.printStackTrace(System.out);
-			}
+			gameList.getGame(currentGame).setCollectableOID(newOID);
+			writeGameList();
 		}
 	}
 
@@ -414,16 +375,8 @@ public class GameListManager implements IDataChangeListener
 	{
 		synchronized (gameList)
 		{
-			try
-			{
-				gameList.getGame(currentGame).setLevelData(levelData);
-				gameListOid.writeShareable(gameList, CorsoConnection.INFINITE_TIMEOUT);
-			}
-			catch (CorsoException ex)
-			{
-				System.out.println("setGameLevel: Corso Error occured:");
-				ex.printStackTrace(System.out);
-			}
+			gameList.getGame(currentGame).setLevelData(levelData);
+			writeGameList();
 		}
 	}
 
@@ -440,19 +393,10 @@ public class GameListManager implements IDataChangeListener
 	{
 		synchronized (gameList)
 		{
-			try
-			{
-				gameList.getGame(currentGame).setGameData(gameType, winValue, collisionWall, collisionOwn,
-						collisionOther);
-				gameListOid.writeShareable(gameList, CorsoConnection.INFINITE_TIMEOUT);
-			}
-			catch (CorsoException ex)
-			{
-				System.out.println("setGameData: Corso Error occured:");
-				ex.printStackTrace(System.out);
-			}
+			gameList.getGame(currentGame).setGameData(gameType, winValue, collisionWall, collisionOwn,
+					collisionOther);
+			writeGameList();
 		}
-
 	}
 
 	/**
@@ -465,7 +409,7 @@ public class GameListManager implements IDataChangeListener
 	 */
 	public boolean isGameReadyCreated()
 	{
-		//Prüfen ob Spiel und alle Spieler bereit sind (es müssen mindestens 2 Spieler sein)
+		//Pruefen ob Spiel und alle Spieler bereit sind (es müssen mindestens 2 Spieler sein)
 		currentGame = getCurrentGame();
 		if (currentGame != null)
 		{
@@ -633,30 +577,21 @@ public class GameListManager implements IDataChangeListener
 	 */
 	public HighScore getHighScore()
 	{
-		HighScore highScore = new HighScore();
-
-		try
-		{
-			//read highscore
-			CorsoVarOid tempOID = new CorsoVarOid(highScoreOID);
-			tempOID.readShareable(highScore, null, CorsoConnection.NO_TIMEOUT);
-		}
-		catch (CorsoException ex)
-		{
-			System.out.println(
-			"Corso Read-Error occured: HighScore can't be read, created new.");
-			//ex.printStackTrace(System.out);
-
-			highScore.init();
-			//write highscore if reading not possible
-			try
-			{
-				highScoreOID.writeShareable(highScore, CorsoConnection.INFINITE_TIMEOUT);
+		ContainerReference container = Util.getContainer(ContainerCoordinatorMapper.HIGH_SCORE);
+		ArrayList<Serializable> list;
+		HighScore highScore = null;
+		try {
+			list = conn.read(container);
+			if (list.size() == 0) {
+				highScore = new HighScore();
+				System.out.println(
+						"Corso Read-Error occured: HighScore can't be read, created new.");
+				conn.write(container, new Entry(highScore));
 			}
-			catch (CorsoException err)
-			{
-				System.out.println( "Corso Error occured: HighScore can't be written.");
-			}
+			highScore = (HighScore) list.get(0);
+		} catch (MzsCoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return highScore;
 	}
@@ -667,14 +602,12 @@ public class GameListManager implements IDataChangeListener
 	 */
 	public void writeHighScore(HighScore highScore)
 	{
-		try
-		{
-			highScoreOID.writeShareable(highScore, CorsoConnection.INFINITE_TIMEOUT);
-		}
-		catch (CorsoException ex)
-		{
+		ContainerReference container = Util.getContainer(ContainerCoordinatorMapper.HIGH_SCORE);
+		try {
+			conn.write(container, new Entry(highScore));
+		} catch (MzsCoreException e) {
 			System.out.println( "Corso Error occured: HighScore can't be written.");
-			//ex.printStackTrace(System.out);
+			e.printStackTrace();
 		}
 	}
 }
