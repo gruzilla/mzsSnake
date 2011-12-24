@@ -10,6 +10,8 @@ import org.mozartspaces.core.MzsCoreException;
 
 import snake.corso.ContainerCoordinatorMapper;
 import snake.corso.Util;
+
+import snake.data.*;
 import snake.SnakeSpriteData;
 
 /**
