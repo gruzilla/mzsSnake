@@ -1,9 +1,17 @@
 package snake.data;
 
+import snake.corso.ContainerCoordinatorMapper;
 import snake.corso.Util;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Vector;
+
+import org.mozartspaces.core.MzsCoreException;
+import org.mozartspaces.notifications.Notification;
+import org.mozartspaces.notifications.NotificationListener;
+import org.mozartspaces.notifications.NotificationManager;
+import org.mozartspaces.notifications.Operation;
 
 /**
  * Representation of a player in corsospace.
@@ -11,6 +19,10 @@ import java.util.Vector;
  */
 public class Player implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String name = null;
 	private String skin = null;
 	private int nr = 0;
@@ -18,22 +30,31 @@ public class Player implements Serializable
 	private int points = 0;
 	private PlayerState state = PlayerState.notinit;
 
-	private CorsoVarOid playerOid = null; //to save the oid of itself
+	//private CorsoVarOid playerOid = null; //to save the oid of itself
 
 	private final String structName = "snakePlayerDataStruct";
 	private final int structSizeInit = 10;
 	private final int structSizeNotInit = 6;
 
+	/*
 	private CorsoVarOid snakeHeadOid = null;
 	private CorsoVarOid snakeTailOid = null;
 	private CorsoVarOid snakePosOid = null;
 	private CorsoVarOid snakeStateOid = null;
+	*/
 
 	private PlayerNotifier notifier = null;
 	private IDataChangeListener changeListener = null;
+	private int playerId;
+	private Notification notification;
+	private SnakeState snakeState;
+	private int headPos;
+	private int tailPos;
+	private SnakePos[] parts;
 
 	public Player()
 	{
+		startNotifier();
 	}
 
 	/**
@@ -51,7 +72,7 @@ public class Player implements Serializable
 	 * Default constructor for other players that are loaded from space. The player
 	 * is automatically loaded from space, so a correct oid must be provided.
 	 * @param playerOid oid to load the player from space
-	 */
+	 * /
 	public Player(CorsoVarOid playerOid)
 	{
 		//load player from CorsoSpace
@@ -67,6 +88,24 @@ public class Player implements Serializable
 	 * commited to the player object, a DataChangeEvent is generated if a DataChangeListener
 	 * is set.
 	 */
+	
+	private class PlayerNotifier implements NotificationListener {
+
+		@Override
+		public void entryOperationFinished(Notification notification, Operation operation,
+				List<? extends Serializable> entries) {
+			for (Object o : entries) {
+				if (o instanceof Player) {
+					if (((Player)o).getId() == playerId) {
+						changeListener.dataChanged(new DataChangeEvent((Player)o,DataChangeType.player));
+					}
+				}
+			}
+		}
+		
+	}
+	
+	/*
 	private class PlayerNotifier implements Runnable
 	{
 		private boolean running = true;
@@ -181,7 +220,7 @@ public class Player implements Serializable
 	 * Read the the object from CorsoSpace.
 	 * @param data CorsoData
 	 * @throws CorsoDataException
-	 */
+	 * /
 	public void read(CorsoData data) throws CorsoDataException
 	{
 		StringBuffer dataName = new StringBuffer("");
@@ -224,7 +263,7 @@ public class Player implements Serializable
 	 * Write the object to CorsoSpace.
 	 * @param data CorsoData
 	 * @throws CorsoDataException
-	 */
+	 * /
 	public void write(CorsoData data) throws CorsoDataException
 	{
 		//create struct with name and size
@@ -263,6 +302,7 @@ public class Player implements Serializable
 		this.changeListener = changeListener;
 	}
 
+	/*
 	public CorsoVarOid getSnakeHeadOid()
 	{
 		return snakeHeadOid;
@@ -286,7 +326,7 @@ public class Player implements Serializable
 	/**
 	 * Create all oids needed to save the snake of the player to space (head oid,
 	 * tail oid, pos oid, state oid)
-	 */
+	 * /
 	public void createSnakeOIDs()
 	{
 		snakeHeadOid = Util.createVarOid();
@@ -294,6 +334,7 @@ public class Player implements Serializable
 		snakePosOid = Util.createVarOid();
 		snakeStateOid = Util.createVarOid();
 	}
+	//*/
 
 	public String getName()
 	{
@@ -375,18 +416,18 @@ public class Player implements Serializable
 	/**
 	 * Save player to space. A new CorsoVarOid is created, if the player does not
 	 * have an oid yet.
-	 */
+	 * /
 	public void saveToSpace()
 	{
 		//save player to space
 		//System.out.println("Player \"" + name + "\" saved to space.");
 		try
 		{
-			if (playerOid == null)
+			if (playerId == 0)
 			{
-				playerOid = Util.createVarOid();
+				playerId = 1;
 			}
-			playerOid.writeShareable(this, CorsoConnection.INFINITE_TIMEOUT);
+			
 		}
 		catch (CorsoException ex)
 		{
@@ -397,7 +438,7 @@ public class Player implements Serializable
 
 	/**
 	 * Load player from space.
-	 */
+	 * /
 	public void loadFromSpace()
 	{
 		try
@@ -420,7 +461,7 @@ public class Player implements Serializable
 
 	/**
 	 * Delete player from space and all snake oids belonging to the player.
-	 */
+	 * /
 	public void deleteFromSpace()
 	{
 		try
@@ -468,11 +509,26 @@ public class Player implements Serializable
 	 */
 	public void startNotifier()
 	{
-		if (notifier == null || !notifier.isRunning())
+		if (notification == null)
 		{
-			notifier = new PlayerNotifier(this);
-			Thread notifierThread = new Thread(notifier);
-			notifierThread.start();
+			//notifier = new PlayerNotifier(this);
+			//Thread notifierThread = new Thread(notifier);
+			//notifierThread.start();
+			NotificationManager notifManager;
+			notifier = new PlayerNotifier();
+			try {
+				notifManager = new NotificationManager(Util.getConnection().getCore());
+				notification = notifManager.createNotification(Util.getContainer(ContainerCoordinatorMapper.PLAYER), notifier, Operation.WRITE);
+			} catch (MzsCoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -481,10 +537,16 @@ public class Player implements Serializable
 	 */
 	public void stopNotifier()
 	{
-		if (notifier != null)
+		if (notification != null)
 		{
 			//System.out.println("Stop Player Notify: " + name);
-			notifier.stop();
+			//notifier.stop();
+			try {
+				notification.destroy();
+			} catch (MzsCoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -498,11 +560,64 @@ public class Player implements Serializable
 	{
 		if (obj instanceof Player)
 		{
-			return playerOid.equals(((Player)obj).getOid());
+			return playerId == (((Player)obj).getId());
 		}
 		else
 		{
 			return super.equals(obj);
 		}
+	}
+
+	private int getId() {
+		return playerId;
+	}
+
+	public void setSnakeState(SnakeState snakeState) {
+		this.snakeState = snakeState;
+	}
+
+	public void setHeadPos(int headPos) {
+		this.headPos = headPos;
+	}
+
+	public void setTailPos(int tailPos) {
+		this.tailPos = tailPos;
+	}
+
+	public void setParts(SnakePos[] parts) {
+		this.parts = parts;
+	}
+
+	public int getHeadPos() {
+		return headPos;
+	}
+
+	public int getTailPos() {
+		return tailPos;
+	}
+
+	public SnakePos[] getParts() {
+		return parts;
+	}
+	
+	public void setPart(int i, SnakePos pos) {
+		parts[i] = pos;
+	}
+	
+	public SnakePos getPart(int i) {
+		if (parts.length < i) return null;
+		return parts[i];
+	}
+	
+	public SnakePos getHeadPart() {
+		return parts[headPos];
+	}
+	
+	public SnakePos getTailPart() {
+		return parts[tailPos];
+	}
+
+	public SnakeState getSnakeState() {
+		return snakeState;
 	}
 }

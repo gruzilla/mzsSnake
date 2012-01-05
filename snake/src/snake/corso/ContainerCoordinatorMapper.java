@@ -18,6 +18,7 @@ public class ContainerCoordinatorMapper {
 	
 	// container fuer ein spiel (beinhaltet: player, gamestate etc)
 	public static final String GAME = "game";
+	public static final String PLAYER = "player";
 	
 	private static HashMap<String, List<Coordinator>> map = new HashMap<String, List<Coordinator>>();
 	
@@ -31,6 +32,10 @@ public class ContainerCoordinatorMapper {
 		list = new ArrayList<Coordinator>();
 		list.add(new FifoCoordinator());
 		map.put(LEVEL_DATA, list);
+
+		list = new ArrayList<Coordinator>();
+		list.add(new FifoCoordinator());
+		map.put(PLAYER, list);
 
 		// GAME
 		// each (network) game gets its own container to share playerinfo etc

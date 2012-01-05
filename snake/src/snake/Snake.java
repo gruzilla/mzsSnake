@@ -9,7 +9,9 @@ package snake;
 import javax.swing.*;
 
 import org.mozartspaces.core.Capi;
+import org.mozartspaces.core.ContainerReference;
 import org.mozartspaces.core.DefaultMzsCore;
+import org.mozartspaces.core.Entry;
 import org.mozartspaces.core.MzsCore;
 
 import java.awt.*;
@@ -18,10 +20,13 @@ import snake.corso.*;
 import snake.data.Player;
 import snake.util.Messages;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+
 import snake.util.ImageLoader;
 
 public class Snake extends JFrame implements WindowListener
 {
+	private static final long serialVersionUID = 1L;
 	public static int DEFAULT_FPS = 20;
 	public static final int PWIDTH = 800; // size of panel
 	public static final int PHEIGHT = 600;
@@ -271,7 +276,9 @@ public class Snake extends JFrame implements WindowListener
 			conn = Util.getConnection();
 			snakeLog.flush();
 			snakeLog.writeLogEntry("Successfully connected to 2. corso site");
-			myPlayer.saveToSpace(); //save player to space
+			//myPlayer.saveToSpace(); //save player to space
+			ContainerReference container = Util.getContainer(ContainerCoordinatorMapper.PLAYER);
+			Util.getConnection().write(container, new Entry(myPlayer));
 			gameList.initialise(conn); //load game list
 			return true;
 		}
