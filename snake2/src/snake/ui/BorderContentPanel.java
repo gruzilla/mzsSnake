@@ -31,10 +31,10 @@ public class BorderContentPanel extends JPanel
 
     //load border images
     ImageLoader loader = new ImageLoader();
-    borderCorner1 = loader.loadImage("images/borderCorner.png",false);
-    borderEdge1 = loader.loadImage("images/borderEdge1.png",false);
+    borderCorner1 = loader.loadImage("snake2/images/borderCorner.png",false);
+    borderEdge1 = loader.loadImage("snake2/images/borderEdge1.png",false);
     borderCorner2 = loader.getRotatedImage(borderCorner1,90);
-    borderEdge2 = loader.loadImage("images/borderEdge2.png",false);
+    borderEdge2 = loader.loadImage("snake2/images/borderEdge2.png",false);
     borderCorner3 = loader.getRotatedImage(borderCorner1,180);
     borderEdge3 = loader.getRotatedImage(borderEdge1,180);
     borderCorner4 = loader.getRotatedImage(borderCorner1,270);

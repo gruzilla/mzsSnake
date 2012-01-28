@@ -12,7 +12,7 @@ import snake.data.LevelInfo;
  */
 public class LevelsManager
 {
-  private final String levelPath = "levels\\";
+  private final String levelPath = "snake2/levels" + File.separator;
   private final String backPictureFilename = "back.jpg"; //background picture file
   private final String backDefinitionFilename = "back.gif"; //background obstacles definition file
   private final String thumbnailFilename = "thumb.jpg"; //thumbnail file
@@ -26,6 +26,7 @@ public class LevelsManager
 
   public LevelsManager()
   {
+	  
     //read all subfolders in the levels folder, save all that contain correct leveldata
     File levelFolder = new File(levelPath);
     absolutePath = levelFolder.getAbsolutePath();
@@ -92,7 +93,7 @@ public class LevelsManager
     }
     try
     {
-      File newLevelFolder = new File(absolutePath + "\\" + newLevelName);
+      File newLevelFolder = new File(absolutePath + File.separator + newLevelName);
       newLevelFolder.mkdir();
     }
     catch (Exception err)
@@ -213,7 +214,7 @@ public class LevelsManager
     }
     else
     {
-      return absolutePath + "\\" + levelList[currentLevelIndex].getDirName() + "\\" + backPictureFilename;
+      return absolutePath + File.separator + levelList[currentLevelIndex].getDirName() + File.separator + backPictureFilename;
     }
   }
 
@@ -230,7 +231,7 @@ public class LevelsManager
     }
     else
     {
-      return absolutePath + "\\" + levelList[currentLevelIndex].getDirName() + "\\" + backDefinitionFilename;
+      return absolutePath + File.separator + levelList[currentLevelIndex].getDirName() + File.separator + backDefinitionFilename;
     }
   }
 
@@ -246,7 +247,7 @@ public class LevelsManager
     }
     else
     {
-      return absolutePath + "\\" + levelList[currentLevelIndex].getDirName() + "\\" + thumbnailFilename;
+      return absolutePath + File.separator + levelList[currentLevelIndex].getDirName() + File.separator + thumbnailFilename;
     }
   }
 
@@ -262,7 +263,7 @@ public class LevelsManager
     }
     else
     {
-      return absolutePath + "\\" + levelList[currentLevelIndex].getDirName() + "\\" + startPosPropsFilename;
+      return absolutePath + File.separator + levelList[currentLevelIndex].getDirName() + File.separator + startPosPropsFilename;
     }
   }
 

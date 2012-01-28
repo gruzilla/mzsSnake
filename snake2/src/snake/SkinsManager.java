@@ -14,7 +14,7 @@ import java.io.*;
 public class SkinsManager
 {
 	//filenames and folder for skins
-	private final String skinPath = "skins\\";
+	private final String skinPath = "snake2/skins" + File.separator;
 	private final String snakeHeadFilename = "snakehead.png";
 	private final String snakePartFilename = "snakepart.png";
 	private final String snakeTailFilename = "snaketail.png";
@@ -150,7 +150,7 @@ public class SkinsManager
 		if (currentSkinIndex == -1)
 			return null;
 		else
-			return absolutePath + "\\" + skinList[currentSkinIndex] + "\\" + snakeHeadFilename;
+			return absolutePath + File.separator + skinList[currentSkinIndex] + File.separator + snakeHeadFilename;
 	}
 
 	/**
@@ -162,7 +162,7 @@ public class SkinsManager
 		if (currentSkinIndex == -1)
 			return null;
 		else
-			return absolutePath + "\\" + skinList[currentSkinIndex] + "\\" + snakePartFilename;
+			return absolutePath + File.separator + skinList[currentSkinIndex] + File.separator + snakePartFilename;
 	}
 
 	/**
@@ -174,7 +174,7 @@ public class SkinsManager
 		if (currentSkinIndex == -1)
 			return null;
 		else
-			return absolutePath + "\\" + skinList[currentSkinIndex] + "\\" + snakeTailFilename;
+			return absolutePath + File.separator + skinList[currentSkinIndex] + File.separator + snakeTailFilename;
 	}
 
 	/**
@@ -186,7 +186,7 @@ public class SkinsManager
 		if (currentSkinIndex == -1)
 			return null;
 		else
-			return absolutePath + "\\" + skinList[currentSkinIndex] + "\\" + collectableFilename;
+			return absolutePath + File.separator + skinList[currentSkinIndex] + File.separator + collectableFilename;
 	}
 
 	/**
@@ -198,7 +198,7 @@ public class SkinsManager
 		if (currentSkinIndex == -1)
 			return null;
 		else
-			return absolutePath + "\\" + skinList[currentSkinIndex] + "\\" + speedUpFilename;
+			return absolutePath + File.separator + skinList[currentSkinIndex] + File.separator + speedUpFilename;
 	}
 
 	/**
@@ -210,7 +210,7 @@ public class SkinsManager
 		if (currentSkinIndex == -1)
 			return null;
 		else
-			return absolutePath + "\\" + skinList[currentSkinIndex] + "\\" + doublePointsFilename;
+			return absolutePath + File.separator + skinList[currentSkinIndex] + File.separator + doublePointsFilename;
 	}
 
 	/**
@@ -223,7 +223,7 @@ public class SkinsManager
 		if (currentSkinIndex == -1)
 			return null;
 		else
-			return absolutePath + "\\" + skinList[currentSkinIndex] + "\\" + eatSoundFilename;
+			return absolutePath + File.separator + skinList[currentSkinIndex] + File.separator + eatSoundFilename;
 	}
 
 	/**
@@ -236,7 +236,7 @@ public class SkinsManager
 		if (currentSkinIndex == -1)
 			return null;
 		else
-			return absolutePath + "\\" + skinList[currentSkinIndex] + "\\" + crashSoundFilename;
+			return absolutePath + File.separator + skinList[currentSkinIndex] + File.separator + crashSoundFilename;
 	}
 
 	/**
@@ -249,7 +249,7 @@ public class SkinsManager
 		if (currentSkinIndex == -1)
 			return null;
 		else
-			return absolutePath + "\\" + skinList[currentSkinIndex] + "\\" + dieSoundFilename;
+			return absolutePath + File.separator + skinList[currentSkinIndex] + File.separator + dieSoundFilename;
 	}
 
 

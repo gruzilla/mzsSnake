@@ -1,6 +1,7 @@
 package snake.data;
 
 import java.util.Properties;
+import java.io.File;
 import java.io.FileInputStream;
 
 /**
@@ -31,7 +32,7 @@ public class LevelInfo
    */
   public void loadLevelName(String absolutePath, String startPosPropsFilename)
   {
-    String propFile = absolutePath + "\\" + dirName + "\\" + startPosPropsFilename;
+    String propFile = absolutePath + File.separator + dirName + File.separator + startPosPropsFilename;
     try
     {
       Properties props = new Properties();
