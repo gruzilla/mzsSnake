@@ -61,7 +61,8 @@ public class MPMenuePanel extends JPanel
     this.gameList = gameList;
     this.myPlayer = myPlayer;
     this.levels = levels;
-    gameList.setDataChangeListener(this); //set itself as DataChangeListener of the game list
+//    @TODO data change listener
+//    gameList.setDataChangeListener(this); //set itself as DataChangeListener of the game list
 
     try
     {
@@ -78,11 +79,11 @@ public class MPMenuePanel extends JPanel
    * Overwritten from IDataChangeListener interface. Update form if Data has been changed.
    * @param changeEvent DataChangeEvent
    */
-  public void dataChanged(DataChangeEvent changeEvent)
+/*  public void dataChanged(DataChangeEvent changeEvent)
   {
     updateForm();
   }
-
+/**/
   /**
    * Standard method to initialize all gui components.
    * @throws Exception
@@ -201,7 +202,8 @@ public class MPMenuePanel extends JPanel
    */
   public void btZurueck_actionPerformed(ActionEvent e)
   {
-    gameList.setDataChangeListener(null);
+//	  @TODO datachangelistener
+//    gameList.setDataChangeListener(null);
     snakeMain.closeCorsoConnection();
     snakeMain.openMainMenue();
   }
@@ -226,7 +228,7 @@ public class MPMenuePanel extends JPanel
     if (myPlayer.getPlayerState() != PlayerState.notinit)
     {
       myPlayer.setPlayerState(PlayerState.notinit);
-      myPlayer.saveToSpace();
+//      myPlayer.saveToSpace();
     }
 
     gameList.createGame(gameName);
@@ -256,7 +258,7 @@ public class MPMenuePanel extends JPanel
         if (myPlayer.getPlayerState() != PlayerState.notinit)
         {
           myPlayer.setPlayerState(PlayerState.notinit);
-          myPlayer.saveToSpace();
+//          myPlayer.saveToSpace();
         }
         //join game
         gameList.joinGame(lbGames.getSelectedIndex());
@@ -292,7 +294,7 @@ public class MPMenuePanel extends JPanel
       if (myPlayer.getPlayerState() != PlayerState.notinit)
       {
         myPlayer.setPlayerState(PlayerState.notinit);
-        myPlayer.saveToSpace();
+//        myPlayer.saveToSpace();
       }
 
       GameState gameState = gameList.getList().getGameState(selectedIndex);
