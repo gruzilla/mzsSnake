@@ -184,7 +184,8 @@ public class SnakeSpriteData
 		}
 		for (int i = 0; i < MAXPOINTS; i++) //fill unused points with 0
 		{
-			if (myPlayer.getPart(i) == null) myPlayer.setPart(i, new SnakePos());
+			if (myPlayer.getPart(i) == null)
+				myPlayer.setPart(i, new SnakePos());
 			/*
 			if (parts[i] == null)
 			{
@@ -241,7 +242,7 @@ public class SnakeSpriteData
 	 */
 	private void readInitData()
 	{
-		//Initiale Daten für Schlange aus CorsoSpace lesen
+		//Initiale Daten fï¿½r Schlange aus CorsoSpace lesen
 		/*
 		try
 		{
@@ -366,6 +367,7 @@ public class SnakeSpriteData
 		SnakeStartPoint start = gameMap.getStartPoint(myPlayer.getNr());
 		direction = start.getDegree();
 		myPlayer.setHeadPos(STARTPARTS * POINTDIST);
+		myPlayer.setParts(new SnakePos[MAXPOINTS]);
 		//headPos = STARTPARTS * POINTDIST;
 		myPlayer.setTailPos(0);
 		//tailPos = 0;
@@ -488,13 +490,13 @@ public class SnakeSpriteData
 				{
 					if (getSnakeLength() > snakeLength)
 					{ //own snake is longer and wins
-						//System.out.println("Über Kopf gewonnen");
+						//System.out.println("ï¿½ber Kopf gewonnen");
 						return false;
 					}
 					else
 					{
 						//own snake is shorter and looses
-						//System.out.println("Über Kopf verloren");
+						//System.out.println("ï¿½ber Kopf verloren");
 					}
 				}
 				return true;
@@ -947,7 +949,7 @@ public class SnakeSpriteData
 				{
 					System.out.println("writeData: Corso Error occured:");
 					ex.printStackTrace(System.out);
-					System.exit(0); //Test-Fehlerlösung
+					System.exit(0); //Test-Fehlerlï¿½sung
 					count--;
 				}
 			}
@@ -984,7 +986,7 @@ public class SnakeSpriteData
 					snakeTailOid = new CorsoVarOid(snakeTailOid);
 					tailPos = snakeTailOid.readInt(null, CorsoConnection.NO_TIMEOUT);
 
-					//Alle Positionen bis newHeadPos müssen aktualisiert werden
+					//Alle Positionen bis newHeadPos mï¿½ssen aktualisiert werden
 					while (headPos != newHeadPos)
 					{
 						headPos = (headPos + 1) % MAXPOINTS;
