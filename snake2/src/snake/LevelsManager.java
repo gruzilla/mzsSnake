@@ -31,7 +31,7 @@ public class LevelsManager
     File levelFolder = new File(levelPath);
     absolutePath = levelFolder.getAbsolutePath();
     File[] levelFiles = levelFolder.listFiles();
-    Vector levelDirs = new Vector<String> ();
+    Vector<String> levelDirs = new Vector<String>();
     for (int i = 0; i < levelFiles.length; i++)
     {
       if (levelFiles[i].isDirectory() && levelIsCorrect(levelFiles[i]))

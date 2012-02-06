@@ -301,7 +301,9 @@ public class Snake extends JFrame implements WindowListener
 		{
 			gameList.leaveGame(); //leave game if running
 			gameList.stopNotifier(); //close gameList
-			myPlayer.deleteFromSpace(); //remove player from space
+			ContainerReference container = Util.getContainer(ContainerCoordinatorMapper.PLAYER);
+			//myPlayer.deleteFromSpace(); //remove player from space
+			Util.getConnection().take(container);
 			//conn.disconnect(); //some errors happening here... notifications not fast enough to end before disconnect?? errors are no problem in this case
 			System.out.println("Corso connection closed.");
 		}

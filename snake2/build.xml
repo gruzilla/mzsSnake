@@ -64,11 +64,32 @@
 	features that makes it easy to dynamically construct the classpath you
 	need for each compilation.  -->
 
+	<path id="run.classpath">
+		<fileset dir="lib">
+			<include name="**/*.jar"/>
+		</fileset>
+		<fileset dir="${dist.home}">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+
 	<path id="compile.classpath">
 		<fileset dir="lib">
 			<include name="**/*.jar"/>
 		</fileset>
 	</path>
+
+
+
+<!-- ==================== Run Target ====================================== -->
+
+<!--    starts the game  -->
+
+	<target description="Clean build and dist, then do all" name="run">
+		<java classname="snake.Snake" dir="..">
+			<classpath refid="run.classpath" />
+		</java>
+	</target>
 
 
 

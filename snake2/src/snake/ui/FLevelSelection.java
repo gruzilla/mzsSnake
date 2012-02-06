@@ -19,6 +19,7 @@ import snake.data.LevelData;
  */
 public class FLevelSelection extends JDialog
 {
+	private static final long serialVersionUID = 1L;
 	private LevelsManager levelsManager = null;
 	private GameListManager gameList = null;
 

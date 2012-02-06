@@ -413,7 +413,7 @@ public class SnakePanel extends JPanel implements Runnable
 			{
 				if (!game.getPlayer(i).equals(myPlayer))
 				{
-					//System.out.println("Füge SnakeSprite Hinzu: " + game.getPlayer(i));
+					//System.out.println("Fuege SnakeSprite Hinzu: " + game.getPlayer(i));
 					otherSnakeSprites[counter] = new SnakeSprite(imgLoader, conn, game.getPlayer(i), this);
 					counter++;
 				}

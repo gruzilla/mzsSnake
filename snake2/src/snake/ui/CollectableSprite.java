@@ -135,7 +135,7 @@ public class CollectableSprite
 	{
 		if (snake != null)
 		{
-			//Pr�fen ob Schlange ein Collectable frisst
+			//Pruefen ob Schlange ein Collectable frisst
 			for (int i = 0; i < data.getPositions().length; i++)
 			{
 				Rectangle rect = new Rectangle(data.getPositions()[i].x, data.getPositions()[i].y, imgWidth,

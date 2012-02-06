@@ -460,7 +460,7 @@ public class SnakePanel extends JPanel implements Runnable
 		}
 		setMode(MODE_CLOSE);
 
-		System.out.println("Game over"); // TODO
+		snakeMain.gameOver(finalTime);
 	}
 
 	/**
