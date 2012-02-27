@@ -3,5 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/hrtlib.jar"/>
+	<classpathentry kind="lib" path="lib/mozartspaces-dist-2.1-SNAPSHOT-r10844-all-with-dependencies.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

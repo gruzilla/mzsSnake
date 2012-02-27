@@ -108,11 +108,11 @@ public class MPNewGamePanel extends JPanel //implements IDataChangeListener
 
 		if (!gameList.isViewOnly())
 		{
-			laTitel.setText("Multiplayer Menu - New Game");
+			laTitel.setText("NGMultiplayer Menu - New Game");
 		}
 		else
 		{
-			 laTitel.setText("Multiplayer Menu - Watcher");
+			laTitel.setText("VOMultiplayer Menu - Watcher");
 		}
 		Game currentGame = gameList.getCurrentGame();
 		if (currentGame != null)

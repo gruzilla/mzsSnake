@@ -86,7 +86,9 @@
 <!--    starts the game  -->
 
 	<target description="Clean build and dist, then do all" name="run">
-		<java classname="snake.Snake" dir="..">
+		<java classname="snake.Snake" dir=".." fork="yes"
+            jvm="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/bin/java">
+			<jvmarg value="-Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel" />
 			<classpath refid="run.classpath" />
 		</java>
 	</target>

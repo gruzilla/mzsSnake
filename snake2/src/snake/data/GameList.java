@@ -1,21 +1,52 @@
 package snake.data;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Vector;
+
+import org.mozartspaces.core.MzsCoreException;
+import org.mozartspaces.notifications.Notification;
+import org.mozartspaces.notifications.NotificationListener;
+import org.mozartspaces.notifications.NotificationManager;
+import org.mozartspaces.notifications.Operation;
+
+import snake.mzspaces.ContainerCoordinatorMapper;
+import snake.mzspaces.DataChangeEvent;
+import snake.mzspaces.DataChangeListener;
+import snake.mzspaces.Util;
 
 /**
  * List of all games saved in corsospace.
  * @author Thomas Scheller, Markus Karolus
  */
-public class GameList implements Serializable
+public class GameList implements Serializable, NotificationListener
 {
 	private static final long serialVersionUID = 1L;
 	private Vector<Game> games = new Vector<Game>();
 	private PlayerList playerList = null;
+	private DataChangeListener listener;
+	private Notification notification;
 
-	public GameList(PlayerList playerList)
+	public GameList(DataChangeListener listener, PlayerList playerList)
 	{
+		this.listener = listener;
 		this.playerList = playerList;
+		
+		NotificationManager notifManager = Util.getNotificationManager();
+		try {
+			this.notification = notifManager.createNotification(
+					Util.getContainer(ContainerCoordinatorMapper.GAME_LIST),
+					this,
+					Operation.WRITE
+			);
+		} catch (MzsCoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
@@ -188,5 +219,14 @@ public class GameList implements Serializable
 	public Vector<Game> getVector()
 	{
 		return games;
+	}
+
+	@Override
+	public void entryOperationFinished(Notification arg0, Operation arg1,
+			List<? extends Serializable> arg2) {
+		
+		// TODO: update games-list
+		
+		listener.dataChanged(new DataChangeEvent());
 	}
 }

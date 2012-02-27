@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import snake.data.*;
+import snake.mzspaces.DataChangeListener;
 
 /**
  * GameListManager manages the list of Games in corsospace and a list of all known
@@ -28,6 +29,7 @@ public class GameListManager
 	private boolean viewOnlyAutostart = false;
 	private LevelsManager levelManager = null;
 	private boolean isLeader = false;
+	private DataChangeListener listener;
 
 	/**
 	 * Create a new GameListManager object.
@@ -52,7 +54,7 @@ public class GameListManager
 	public void initialise()
 	{
 			playerList = new PlayerList();
-			gameList = new GameList(playerList);
+			gameList = new GameList(listener, playerList);
 			playerList.addPlayer(myPlayer);
 	}
 
@@ -423,5 +425,10 @@ public class GameListManager
 
 	public void writeHighScore(HighScore highScore) {
 		// TODO Auto-generated method stub
+	}
+
+
+	public void setDataChangeListener(DataChangeListener listener) {
+		this.listener = listener;
 	}
 }

@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 
 import snake.*;
 import snake.data.*;
+import snake.mzspaces.DataChangeEvent;
+import snake.mzspaces.DataChangeListener;
 import snake.util.Messages;
 
 /**
@@ -15,7 +17,7 @@ import snake.util.Messages;
  * of the game list and updates itself if changes occur.
  * @author Thomas Scheller, Markus Karolus
  */
-public class MPMenuePanel extends JPanel
+public class MPMenuePanel extends JPanel implements DataChangeListener
 {
 	private static final long serialVersionUID = 1L;
   private Snake snakeMain = null;
@@ -61,8 +63,7 @@ public class MPMenuePanel extends JPanel
     this.gameList = gameList;
     this.myPlayer = myPlayer;
     this.levels = levels;
-//    @TODO data change listener
-//    gameList.setDataChangeListener(this); //set itself as DataChangeListener of the game list
+    gameList.setDataChangeListener(this); //set itself as DataChangeListener of the game list
 
     try
     {
@@ -79,11 +80,11 @@ public class MPMenuePanel extends JPanel
    * Overwritten from IDataChangeListener interface. Update form if Data has been changed.
    * @param changeEvent DataChangeEvent
    */
-/*  public void dataChanged(DataChangeEvent changeEvent)
+  public void dataChanged(DataChangeEvent changeEvent)
   {
     updateForm();
   }
-/**/
+
   /**
    * Standard method to initialize all gui components.
    * @throws Exception
