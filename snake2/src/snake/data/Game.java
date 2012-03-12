@@ -10,9 +10,6 @@ import java.util.ArrayList;
  */
 public class Game implements Serializable
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	public static final int MAXPLAYERS = 4; //up to 4 players
 
@@ -186,6 +183,10 @@ public class Game implements Serializable
 		}
 	}
 
+	public void setNr(int nr) {
+		this.nr = nr;
+	}
+
 	/**
 	 * Get index of that player in the playerlist of the game.
 	 * @param player Player
@@ -338,5 +339,9 @@ public class Game implements Serializable
 
 		}
 		}
+	}
+
+	public boolean hasNr() {
+		return (nr > 0);
 	}
 }

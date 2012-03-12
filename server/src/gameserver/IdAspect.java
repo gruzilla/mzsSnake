@@ -10,6 +10,8 @@ import org.mozartspaces.core.aspects.AbstractContainerAspect;
 import org.mozartspaces.core.aspects.AspectResult;
 import org.mozartspaces.core.requests.WriteEntriesRequest;
 
+import snake.data.Game;
+
 /**
  * Container aspect, which adds ids to the entries
  *
@@ -22,9 +24,7 @@ public class IdAspect extends AbstractContainerAspect {
 	 * static variables?
 	 * 	sauberer => eine instanz pro needed unique id
 	 */
-	private static AtomicInteger eggID = new AtomicInteger(0);
-	private static AtomicInteger chocoID = new AtomicInteger(0);
-	private static AtomicInteger nestID = new AtomicInteger(0);
+	private static AtomicInteger gameID = new AtomicInteger(0);
 	
 	public IdAspect()	{}
 	
@@ -32,29 +32,15 @@ public class IdAspect extends AbstractContainerAspect {
 	public AspectResult preWrite(WriteEntriesRequest request, Transaction tx,
 			SubTransaction stx, Capi3AspectPort capi3, int executionCount) {
 		
-		/*
-		for(Entry e : request.getEntries())	{
-			if(e.getValue() instanceof Egg)	{
-				Egg mo = (Egg) e.getValue();
-				if(!mo.hasId())	{
-					mo.setId(eggID.incrementAndGet());
-//					System.out.println("set EGG id: " + eggID.get());
-				}
-			} else if(e.getValue() instanceof ChocolateRabbit)	{
-				ChocolateRabbit mo = (ChocolateRabbit) e.getValue();
-				if(!mo.hasId())	{
-					mo.setId(chocoID.incrementAndGet());
-//					System.out.println("set CHOCO id: " + chocoID.get());
-				}
-			} else if(e.getValue() instanceof Nest)	{
-				Nest mo = (Nest) e.getValue();
-				if(!mo.hasId())	{
-					mo.setId(nestID.incrementAndGet());
-//					System.out.println("set NEST id: " + nestID.get());
+		for (Entry e : request.getEntries()) {
+			if (e.getValue() instanceof Game) {
+				Game g = (Game) e.getValue();
+				if (!g.hasNr()) {
+					g.setNr(gameID.incrementAndGet());
+//					System.out.println("set game id: " + eggID.get());
 				}
 			}
 		}
-		*/
 		return AspectResult.OK;
 	}
 	

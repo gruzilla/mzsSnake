@@ -193,6 +193,7 @@ public class SnakeSprite
       if (!effect.hasNoMoveEffect())
       {
         data.updateData(turn);
+        // data.writeData();
       }
       // update speedup effect
       if (speedUp)
