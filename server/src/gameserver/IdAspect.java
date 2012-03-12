@@ -1,4 +1,4 @@
-package snakeserver;
+package gameserver;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -18,6 +18,10 @@ public class IdAspect extends AbstractContainerAspect {
 
 	private static final long serialVersionUID = 2125907508047200299L;
 
+	/***
+	 * static variables?
+	 * 	sauberer => eine instanz pro needed unique id
+	 */
 	private static AtomicInteger eggID = new AtomicInteger(0);
 	private static AtomicInteger chocoID = new AtomicInteger(0);
 	private static AtomicInteger nestID = new AtomicInteger(0);

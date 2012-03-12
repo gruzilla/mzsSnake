@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package snakeserver;
+package gameserver;
 
 import java.net.URI;
 import java.util.ArrayList;
