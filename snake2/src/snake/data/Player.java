@@ -231,11 +231,13 @@ public class Player implements Serializable
 	}
 
 	public void setHeadPos(int headPos) {
+		System.out.println(headPos);
 		this.headPos = headPos;
 	}
 
 	public void setTailPos(int tailPos) {
 		this.tailPos = tailPos;
+		System.out.println("Tail: " + tailPos);
 	}
 
 	public void setParts(SnakePos[] parts) {
