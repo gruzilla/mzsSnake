@@ -71,11 +71,11 @@ public class Snake extends JFrame implements WindowListener
 			settings = new Settings();
 			settings.load();
 			snakeLog.writeLogEntry("Settings loaded ");
-			snakeLog.writeLogEntry("		 local coke site:	" + settings.getCokeSiteLocal());
-			snakeLog.writeLogEntry("		 server coke site: " + settings.getCokeSiteServer());
-			snakeLog.writeLogEntry("		 corso port:			 " + settings.getPort());
-			snakeLog.writeLogEntry("		 corso user:			 " + settings.getUsername());
-			snakeLog.writeLogEntry("		 corso domain:		 " + settings.getDomain());
+			snakeLog.writeLogEntry("		 local site:	" + settings.getCokeSiteLocal());
+			snakeLog.writeLogEntry("		 server site: " + settings.getCokeSiteServer());
+			snakeLog.writeLogEntry("		 port:			 " + settings.getPort());
+//			snakeLog.writeLogEntry("		 corso user:			 " + settings.getUsername());
+			snakeLog.writeLogEntry("		 domain:		 " + settings.getDomain());
 			snakeLog.writeLogEntry("");
 
 		}

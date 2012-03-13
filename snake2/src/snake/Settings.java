@@ -16,9 +16,7 @@ public class Settings
 	private String cokeSiteLocal = "localhost";
 	private String cokeSiteServer = "localhost";
 	private String domain = "localhost";
-	private int port = 5006;
-	private String username = "corsouser";
-	private String password = "corsopass";
+	private int port = 4242;
 
 	private String playerName = "Player"; //name of the player in game
 	private int playTime = 60; //playtime for time-playmode
@@ -48,12 +46,12 @@ public class Settings
 			}
 			props.load(in);
 
-			cokeSiteLocal = props.getProperty("coke_site1");
-			cokeSiteServer = props.getProperty("coke_site2");
-			username = props.getProperty("coke_user");
-			password = props.getProperty("coke_pass");
-			domain = props.getProperty("coke_domain");
-			port = Integer.parseInt(props.getProperty("coke_port"));
+			cokeSiteLocal = props.getProperty("local");
+			cokeSiteServer = props.getProperty("remote");
+			//username = props.getProperty("coke_user");
+			//password = props.getProperty("coke_pass");
+			domain = props.getProperty("domain");
+			port = Integer.parseInt(props.getProperty("port"));
 			playerName = props.getProperty("playername");
 			snakeSkin = props.getProperty("snakeskin");
 
@@ -81,8 +79,8 @@ public class Settings
 			//Properties props = new Properties();
 			props.setProperty("coke_site1",cokeSiteLocal);
 			props.setProperty("coke_site2",cokeSiteServer);
-			props.setProperty("coke_user",username);
-			props.setProperty("coke_pass",password);
+//			props.setProperty("coke_user",username);
+//			props.setProperty("coke_pass",password);
 			props.setProperty("coke_domain",domain);
 			props.setProperty("coke_port",String.valueOf(port));
 			props.setProperty("playername",playerName);
@@ -108,8 +106,8 @@ public class Settings
 		cokeSiteServer = "localhost";
 		domain = "localhost";
 		port = 5006;
-		username = "corsouser";
-		password = "corsopass";
+//		username = "corsouser";
+//		password = "corsopass";
 		playerName = "Player";
 		playTime = 60;
 		playPoints = 20;
@@ -156,25 +154,25 @@ public class Settings
 		return port;
 	}
 
-	public void setUsername(String value)
-	{
-		username = value;
-	}
-
-	public String getUsername()
-	{
-		return username;
-	}
-
-	public void setPassword(String value)
-	{
-		password = value;
-	}
-
-	public String getPassword()
-	{
-		return password;
-	}
+//	public void setUsername(String value)
+//	{
+//		username = value;
+//	}
+//
+//	public String getUsername()
+//	{
+//		return username;
+//	}
+//
+//	public void setPassword(String value)
+//	{
+//		password = value;
+//	}
+//
+//	public String getPassword()
+//	{
+//		return password;
+//	}
 
 	public void setPlayerName(String value)
 	{

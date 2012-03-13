@@ -67,7 +67,7 @@
                 -->
                 <threads>-1</threads>
                 <!-- exclusive port to listen for incoming connections -->
-                <receiverPort>4000</receiverPort>
+                <receiverPort>4242</receiverPort>
                 <!-- the serializer to use, can be a serializer ID or a Apache Commons configuration as below -->
                 <serializer>${serializers.serializer(0)}</serializer>
             </tcpsocket>            
