@@ -11,6 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import snake.data.*;
+import snake.mzspaces.Util;
 import snake.ui.*;
 import snake.util.*;
 import java.awt.image.BufferedImage;
@@ -33,7 +34,6 @@ public class Snake extends JFrame implements WindowListener
 	private GameOverPanel gameOverPanel = null;
 	private HighScorePanel highScorePanel = null;
 
-	private Settings settings = null;
 	private long period = 0;
 	private GameListManager gameList = null;
 	private Player myPlayer = null;
@@ -64,27 +64,6 @@ public class Snake extends JFrame implements WindowListener
 		super("Snake v2.0");
 		this.period = period;
 
-		snakeLog = new SnakeLog();
-		try
-		{
-			//read the properties from the config file
-			settings = new Settings();
-			settings.load();
-			snakeLog.writeLogEntry("Settings loaded ");
-			snakeLog.writeLogEntry("		 local site:	" + settings.getCokeSiteLocal());
-			snakeLog.writeLogEntry("		 server site: " + settings.getCokeSiteServer());
-			snakeLog.writeLogEntry("		 port:			 " + settings.getPort());
-//			snakeLog.writeLogEntry("		 corso user:			 " + settings.getUsername());
-			snakeLog.writeLogEntry("		 domain:		 " + settings.getDomain());
-			snakeLog.writeLogEntry("");
-
-		}
-		catch (Exception ex)
-		{
-			System.out.println("Error occured: " + ex.getMessage());
-			System.exit(1);
-		}
-
 		// load the background image
 		levelManager = new LevelsManager();
 		ImageLoader imgLoader = new ImageLoader();
@@ -114,7 +93,7 @@ public class Snake extends JFrame implements WindowListener
 		calcMaxPanelSize();
 
 		//create player, load game list
-		myPlayer = new Player(settings.getPlayerName(), settings.getSnakeSkin());
+		myPlayer = new Player(Util.getInstance().getSettings().getPlayerName(), Util.getInstance().getSettings().getSnakeSkin());
 		gameList = new GameListManager(this, myPlayer, levelManager);
 
 		//show frame
@@ -165,7 +144,8 @@ public class Snake extends JFrame implements WindowListener
 	{
 		//start singleplayer game
 		getContentPane().removeAll();
-		snakePanel = new SnakePanel(this, period, settings, myPlayer,gameList, levelManager);
+		// TODO: get settings inside panel
+		snakePanel = new SnakePanel(this, period, Util.getInstance().getSettings(), myPlayer,gameList, levelManager);
 		snakePanel.setGameBounds(maxPanelWidth, maxPanelHeight);
 		getContentPane().add(snakePanel);
 		snakePanel.startSingleplayerGame();
@@ -175,18 +155,12 @@ public class Snake extends JFrame implements WindowListener
 		exitAllowed = false;
 	}
 
-	public Settings getSettings()
-	{
-		return settings;
-	}
-
 	/**
 	 * The settings are updated with the new settings and saved to the property file.
 	 * @param settings new settings
 	 */
 	public void updateSettings(Settings settings)
 	{
-		this.settings = settings;
 		settings.save();
 		myPlayer.setName(settings.getPlayerName());
 		myPlayer.setSkin(settings.getSnakeSkin());
@@ -230,7 +204,8 @@ public class Snake extends JFrame implements WindowListener
 		// System.out.println("Initializing MyGameSprites.");
 		if (snakePanel == null)
 		{
-			snakePanel = new SnakePanel(this, period, settings, myPlayer, gameList, levelManager);
+			// TODO: update panel to get settings itself
+			snakePanel = new SnakePanel(this, period, Util.getInstance().getSettings(), myPlayer, gameList, levelManager);
 		}
 		snakePanel.initMyGameSprites();
 		multiStarted = 0;

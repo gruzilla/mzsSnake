@@ -4,6 +4,8 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import snake.mzspaces.Util;
 import snake.util.Messages;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
@@ -19,11 +21,12 @@ import snake.SkinsManager;
 import snake.Settings;
 
 /**
- * Dialog that shows the settings for corso connection, player name and snake skin.
+ * Dialog that shows the settings for corso connection, player name and snake
+ * skin.
+ * 
  * @author Thomas Scheller, Markus Karolus
  */
-public class FSettings extends JDialog
-{
+public class FSettings extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private SkinsManager skinsManager = null;
 	private ImageLoader imgLoader = null;
@@ -51,35 +54,35 @@ public class FSettings extends JDialog
 	JButton btAbbrechen = new JButton();
 	JButton btOK = new JButton();
 	JPanel jPanel1 = new JPanel();
-	Border border1 = BorderFactory.createEtchedBorder(Color.white, new Color(156, 156, 158));
+	Border border1 = BorderFactory.createEtchedBorder(Color.white, new Color(
+			156, 156, 158));
 	Border border2 = new TitledBorder(border1, "Corso Connection:");
 	JPanel jPanel2 = new JPanel();
-	Border border3 = BorderFactory.createEtchedBorder(Color.white, new Color(156, 156, 158));
+	Border border3 = BorderFactory.createEtchedBorder(Color.white, new Color(
+			156, 156, 158));
 	Border border4 = new TitledBorder(border3, "Game Settings:");
 	JPanel jPanel3 = new JPanel();
-	Border border5 = BorderFactory.createEtchedBorder(Color.white, new Color(156, 156, 158));
+	Border border5 = BorderFactory.createEtchedBorder(Color.white, new Color(
+			156, 156, 158));
 	Border border6 = new TitledBorder(border5, "Skin Selection:");
 
-	//JPanel with overwritten paint method that draws a preview of the snake
-	JPanel pSkinPreview = new JPanel()
-	{
-		public void paint(Graphics g)
-		{
-			//draw snake skin preview
-			g.clearRect(0,0,400,400);
-			g.drawRect(0,0,51,131);
+	// JPanel with overwritten paint method that draws a preview of the snake
+	JPanel pSkinPreview = new JPanel() {
+		public void paint(Graphics g) {
+			// draw snake skin preview
+			g.clearRect(0, 0, 400, 400);
+			g.drawRect(0, 0, 51, 131);
 			if (imgCollectable != null)
-				g.drawImage(imgCollectable,14,10,null);
+				g.drawImage(imgCollectable, 14, 10, null);
 			if (imgTail != null)
-				g.drawImage(imgTail,14,104,null);
-			if (imgPart != null)
-			{
+				g.drawImage(imgTail, 14, 104, null);
+			if (imgPart != null) {
 				g.drawImage(imgPart, 14, 88, null);
 				g.drawImage(imgPart, 14, 72, null);
 				g.drawImage(imgPart, 14, 56, null);
 			}
 			if (imgHead != null)
-				g.drawImage(imgHead,14,40,null);
+				g.drawImage(imgHead, 14, 40, null);
 		}
 	};
 
@@ -88,14 +91,14 @@ public class FSettings extends JDialog
 
 	/**
 	 * Create a new FSettings dialog.
-	 * @param snakeMain Snake main class
+	 * 
+	 * @param snakeMain
+	 *            Snake main class
 	 */
-	public FSettings(Snake snakeMain)
-	{
-		super(snakeMain, "Snake Settings", true); //always modal
+	public FSettings(Snake snakeMain) {
+		super(snakeMain, "Snake Settings", true); // always modal
 		this.snakeMain = snakeMain;
-		try
-		{
+		try {
 			setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 			jbInit();
 			pack();
@@ -103,17 +106,17 @@ public class FSettings extends JDialog
 			this.setSize(523, 310);
 			this.setLocationRelativeTo(snakeMain);
 
-			//fill form
-			Settings settings = snakeMain.getSettings();
+			// fill form
+			Settings settings = Util.getInstance().getSettings();
 			tfCorsoSiteLocal.setText(settings.getCokeSiteLocal());
 			tfCorsoSiteServer.setText(settings.getCokeSiteServer());
 			tfPort.setText(String.valueOf(settings.getPort()));
-//			tfUser.setText(settings.getUsername());
-//			tfPassword.setText(settings.getPassword());
+			// tfUser.setText(settings.getUsername());
+			// tfPassword.setText(settings.getPassword());
 			tfDomain.setText(settings.getDomain());
 			tfPlayername.setText(settings.getPlayerName());
 
-			//skins
+			// skins
 			imgLoader = new ImageLoader();
 			skinsManager = new SkinsManager();
 			String[] skins = skinsManager.getSkinList();
@@ -121,21 +124,20 @@ public class FSettings extends JDialog
 			skinsManager.setCurrentSkin(settings.getSnakeSkin());
 			lbSkins.setSelectedIndex(skinsManager.getCurrentSkinIndex());
 			lbSkins_mousePressed(null);
-		}
-		catch (Exception exception)
-		{
+		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
 	}
 
 	/**
 	 * Standard method to initialize all gui components.
+	 * 
 	 * @throws Exception
 	 */
-	private void jbInit() throws Exception
-	{
+	private void jbInit() throws Exception {
 		panel1.setLayout(null);
-		tfCorsoSiteLocal.setFont(new java.awt.Font("Lucida Sans", Font.PLAIN, 12));
+		tfCorsoSiteLocal.setFont(new java.awt.Font("Lucida Sans", Font.PLAIN,
+				12));
 		laCokeSiteLocal.setFont(new java.awt.Font("Arial", Font.PLAIN, 13));
 		laCokeSiteLocal.setText("Corso Site Local:");
 		laCokeSiteLocal.setBounds(new Rectangle(16, 32, 106, 15));
@@ -168,7 +170,8 @@ public class FSettings extends JDialog
 		tfPlayername.setFont(new java.awt.Font("Lucida Sans", Font.PLAIN, 12));
 		tfPlayername.setText("");
 		tfPlayername.setBounds(new Rectangle(124, 24, 116, 20));
-		tfCorsoSiteServer.setFont(new java.awt.Font("Lucida Sans", Font.PLAIN, 12));
+		tfCorsoSiteServer.setFont(new java.awt.Font("Lucida Sans", Font.PLAIN,
+				12));
 		tfCorsoSiteServer.setText("");
 		tfCorsoSiteServer.setBounds(new Rectangle(125, 50, 116, 20));
 		laCokeSiteServer.setFont(new java.awt.Font("Arial", Font.PLAIN, 13));
@@ -184,7 +187,8 @@ public class FSettings extends JDialog
 		btAbbrechen.setBounds(new Rectangle(265, 275, 100, 23));
 		btAbbrechen.setToolTipText("");
 		btAbbrechen.setText("Cancel");
-		btAbbrechen.addActionListener(new FSettings_btAbbrechen_actionAdapter(this));
+		btAbbrechen.addActionListener(new FSettings_btAbbrechen_actionAdapter(
+				this));
 		btOK.setBounds(new Rectangle(164, 275, 100, 23));
 		btOK.setToolTipText("");
 		btOK.setText("OK");
@@ -231,139 +235,133 @@ public class FSettings extends JDialog
 
 	/**
 	 * check all data, save it if valid and close the dialog.
-	 * @param e ActionEvent
+	 * 
+	 * @param e
+	 *            ActionEvent
 	 */
-	public void btOK_actionPerformed(ActionEvent e)
-	{
-		//check data
-		if (tfCorsoSiteLocal.getText().length() == 0 ||
-				tfCorsoSiteServer.getText().length() == 0 ||
-				tfPort.getText().length() == 0 ||
-				tfUser.getText().length() == 0 ||
-				tfPassword.getPassword().length == 0 ||
-				tfDomain.getText().length() == 0)
-		{
-			Messages.errorMessage(this, "Please fill out all Corso settings fields.");
+	public void btOK_actionPerformed(ActionEvent e) {
+		// check data
+		if (tfCorsoSiteLocal.getText().length() == 0
+				|| tfCorsoSiteServer.getText().length() == 0
+				|| tfPort.getText().length() == 0
+				|| tfUser.getText().length() == 0
+				|| tfPassword.getPassword().length == 0
+				|| tfDomain.getText().length() == 0) {
+			Messages.errorMessage(this,
+					"Please fill out all Corso settings fields.");
 			return;
 		}
 		int port = 0;
-		try
-		{
+		try {
 			port = Integer.parseInt(tfPort.getText());
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			Messages.errorMessage(this, "Please define a correct port number.");
 			return;
 		}
-		if (tfPlayername.getText().length() == 0)
-		{
+		if (tfPlayername.getText().length() == 0) {
 			Messages.errorMessage(this, "Please define a player name.");
 			return;
 		}
 
-		//create new settings object
+		// create new settings object
 		Settings settings = new Settings();
 		settings.setCokeSiteLocal(tfCorsoSiteLocal.getText());
 		settings.setCokeSiteServer(tfCorsoSiteServer.getText());
 		settings.setPort(port);
-//		settings.setUsername(tfUser.getText());
-//		settings.setPassword(new String(tfPassword.getPassword()));
+		// settings.setUsername(tfUser.getText());
+		// settings.setPassword(new String(tfPassword.getPassword()));
 		settings.setDomain(tfDomain.getText());
 		settings.setPlayerName(tfPlayername.getText());
 		settings.setSnakeSkin(skinsManager.getCurrentSkinName());
 
-		//save settings, close dialog
+		// save settings, close dialog
 		snakeMain.updateSettings(settings);
 		this.dispose();
 	}
 
 	/**
 	 * Close the dialog.
-	 * @param e ActionEvent
+	 * 
+	 * @param e
+	 *            ActionEvent
 	 */
-	public void btAbbrechen_actionPerformed(ActionEvent e)
-	{
+	public void btAbbrechen_actionPerformed(ActionEvent e) {
 		this.dispose();
 	}
 
 	/**
 	 * Correct the size of the dialog when it is shown for the first time.
-	 * @param e ComponentEvent
+	 * 
+	 * @param e
+	 *            ComponentEvent
 	 */
-	public void this_componentShown(ComponentEvent e)
-	{
+	public void this_componentShown(ComponentEvent e) {
 		java.awt.Insets insets = getInsets();
-		setSize(getWidth() + insets.left + insets.right, getHeight() + insets.top + insets.bottom);
+		setSize(getWidth() + insets.left + insets.right, getHeight()
+				+ insets.top + insets.bottom);
 	}
 
 	/**
 	 * Show skin preview, when a skin is chosen.
-	 * @param e MouseEvent
+	 * 
+	 * @param e
+	 *            MouseEvent
 	 */
-	public void lbSkins_mousePressed(MouseEvent e)
-	{
-		skinsManager.setCurrentSkin((String)lbSkins.getSelectedValue());
-		imgCollectable = imgLoader.loadImage(skinsManager.getCollectablePath(),false);
-		imgHead = imgLoader.loadImage(skinsManager.getSnakeHeadPath(),false);
-		imgPart = imgLoader.loadImage(skinsManager.getSnakePartPath(),false);
-		imgTail = imgLoader.loadImage(skinsManager.getSnakeTailPath(),false);
+	public void lbSkins_mousePressed(MouseEvent e) {
+		skinsManager.setCurrentSkin((String) lbSkins.getSelectedValue());
+		imgCollectable = imgLoader.loadImage(skinsManager.getCollectablePath(),
+				false);
+		imgHead = imgLoader.loadImage(skinsManager.getSnakeHeadPath(), false);
+		imgPart = imgLoader.loadImage(skinsManager.getSnakePartPath(), false);
+		imgTail = imgLoader.loadImage(skinsManager.getSnakeTailPath(), false);
 		pSkinPreview.updateUI();
 	}
 }
 
-class FSettings_lbSkins_mouseAdapter extends MouseAdapter
-{
+class FSettings_lbSkins_mouseAdapter extends MouseAdapter {
 	private FSettings adaptee;
-	FSettings_lbSkins_mouseAdapter(FSettings adaptee)
-	{
+
+	FSettings_lbSkins_mouseAdapter(FSettings adaptee) {
 		this.adaptee = adaptee;
 	}
 
-	public void mousePressed(MouseEvent e)
-	{
+	public void mousePressed(MouseEvent e) {
 		adaptee.lbSkins_mousePressed(e);
 	}
 }
 
-class FSettings_this_componentAdapter extends ComponentAdapter
-{
+class FSettings_this_componentAdapter extends ComponentAdapter {
 	private FSettings adaptee;
-	FSettings_this_componentAdapter(FSettings adaptee)
-	{
+
+	FSettings_this_componentAdapter(FSettings adaptee) {
 		this.adaptee = adaptee;
 	}
 
-	public void componentShown(ComponentEvent e)
-	{
+	public void componentShown(ComponentEvent e) {
 		adaptee.this_componentShown(e);
 	}
 }
 
-class FSettings_btAbbrechen_actionAdapter implements ActionListener
-{
+class FSettings_btAbbrechen_actionAdapter implements ActionListener {
 	private FSettings adaptee;
-	FSettings_btAbbrechen_actionAdapter(FSettings adaptee)
-	{
+
+	FSettings_btAbbrechen_actionAdapter(FSettings adaptee) {
 		this.adaptee = adaptee;
 	}
 
-	public void actionPerformed(ActionEvent e)
-	{
+	public void actionPerformed(ActionEvent e) {
 		adaptee.btAbbrechen_actionPerformed(e);
 	}
 }
 
-class FSettings_btOK_actionAdapter implements ActionListener
-{
+class FSettings_btOK_actionAdapter implements ActionListener {
 	private FSettings adaptee;
-	FSettings_btOK_actionAdapter(FSettings adaptee)
-	{
+
+	FSettings_btOK_actionAdapter(FSettings adaptee) {
 		this.adaptee = adaptee;
 	}
 
-	public void actionPerformed(ActionEvent e)
-	{
+	public void actionPerformed(ActionEvent e) {
 		adaptee.btOK_actionPerformed(e);
 	}
 }
