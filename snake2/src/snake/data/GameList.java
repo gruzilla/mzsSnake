@@ -268,6 +268,7 @@ public class GameList implements Serializable, NotificationListener
 						games.add(game);
 					}				}
 			}
+			
 		case DELETE:
 		case TAKE:
 			// on the other hand, if the game gets removed, we have to remove it too
