@@ -15,6 +15,7 @@ import org.mozartspaces.core.MzsCoreException;
 import org.mozartspaces.core.TransactionReference;
 import org.mozartspaces.core.MzsConstants.Container;
 import org.mozartspaces.core.MzsConstants.RequestTimeout;
+import org.mozartspaces.core.config.Configuration;
 import org.mozartspaces.notifications.NotificationManager;
 
 import snake.*;
@@ -50,21 +51,15 @@ public class Util
 			snakeLog.writeLogEntry("		 domain:		 " + settings.getDomain());
 			snakeLog.writeLogEntry("");
 
+			Configuration config = new Configuration();
+			config.setSpaceUri(settings.getUri());
+			core = DefaultMzsCore.newInstance(config);
 		}
 		catch (Exception ex)
 		{
 			System.out.println("Error occured: " + ex.getMessage());
 			System.exit(1);
 		}
-	}
-
-	/**
-	 * Store the settings from the propertyfile into the local variables
-	 * @param newSettings Settings
-	 */
-	public void init(Settings settings)
-	{
-		core = DefaultMzsCore.newInstance();
 	}
 
 	/**
