@@ -40,7 +40,7 @@ public class Server {
 		log.debug("starting Server...");
 		
 		try {
-			conn = Util.getInstance().getConnection();
+			conn = Util.getInstance(true).getConnection();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

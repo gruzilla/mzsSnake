@@ -29,6 +29,7 @@ import snake.util.SnakeLog;
 public class Util
 {
 	private static Util instance;
+	private static boolean server;
 	private final String spaceName = "snakeSpace"; //starting point name in the space
 	private Capi conn;
 	private MzsCore core;
@@ -51,9 +52,16 @@ public class Util
 			snakeLog.writeLogEntry("		 domain:		 " + settings.getDomain());
 			snakeLog.writeLogEntry("");
 
+			/*
 			Configuration config = new Configuration();
 			config.setSpaceUri(settings.getUri());
-			core = DefaultMzsCore.newInstance(config);
+			if(server) {
+				config.setEmbeddedSpace(true);
+				config.setXpThreadNumber(-1);
+			} else {
+				config.setEmbeddedSpace(false);
+			} */
+			core = DefaultMzsCore.newInstance();
 		}
 		catch (Exception ex)
 		{
@@ -74,13 +82,13 @@ public class Util
 		{
 			try
 			{
-				Snake.snakeLog.writeLogEntry("Trying to connect.. ");
+				snakeLog.writeLogEntry("Trying to connect.. ");
 				conn = new Capi(core);
-				Snake.snakeLog.writeLogEntry("connected");
+				snakeLog.writeLogEntry("connected");
 			}
 			catch (Exception e)
 			{
-				Snake.snakeLog.writeLogEntry("Can't connect to space");
+				snakeLog.writeLogEntry("Can't connect to space");
 				throw new Exception("CorsoUtil: Error connecting to space " +
 						e.getMessage());
 			}
@@ -192,7 +200,7 @@ public class Util
     		getConnection().destroyContainer(getConnection().lookupContainer(containerName, getSpaceUri(), 0, null), null);
     	} catch(Exception s)	{
 			// TODO Auto-generated catch block
-			s.printStackTrace();
+//			s.printStackTrace();
     	} finally {
 	    	try {
 				cref = getConnection().createContainer(containerName, 
@@ -210,8 +218,13 @@ public class Util
 		return cref;
     }
 
-	public static Util getInstance() {
+    public static Util getInstance() {
+    	return Util.getInstance(false);
+    }
+    
+	public static Util getInstance(boolean is_server) {
 		if (instance == null) {
+			server = true;
 			instance = new Util();
 		}
 		return instance;

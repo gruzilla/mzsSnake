@@ -88,7 +88,6 @@
 	<target description="Clean build and dist, then do all" depends="compile" name="run">
 		<java classname="snake.Snake" fork="yes"
             jvm="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/bin/java">
-			<jvmarg value="-Dmozartspaces.configurationFile=${dist.home}/res/mozartspaces.xml" />
 			<jvmarg value="-Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel" />
 			<classpath refid="run.classpath" />
 		</java>

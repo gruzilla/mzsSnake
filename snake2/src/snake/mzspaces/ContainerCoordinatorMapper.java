@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.mozartspaces.capi3.AnyCoordinator;
 import org.mozartspaces.capi3.Coordinator;
 import org.mozartspaces.capi3.FifoCoordinator;
 import org.mozartspaces.capi3.LindaCoordinator;
@@ -25,8 +26,8 @@ public class ContainerCoordinatorMapper {
 	static {
 		// GAME_LIST
 		ArrayList<Coordinator> list = new ArrayList<Coordinator>();
-		list.add(new FifoCoordinator());
-		list.add(new LindaCoordinator());
+		list.add(new AnyCoordinator()); //FifoCoordinator());
+		//list.add(new LindaCoordinator());
 		map.put(GAME_LIST, list);
 		
 		list = new ArrayList<Coordinator>();

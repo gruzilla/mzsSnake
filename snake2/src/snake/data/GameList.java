@@ -5,13 +5,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.mozartspaces.capi3.AnyCoordinator;
 import org.mozartspaces.core.ContainerReference;
 import org.mozartspaces.core.Entry;
 import org.mozartspaces.core.MzsCoreException;
+import org.mozartspaces.core.MzsConstants.RequestTimeout;
 import org.mozartspaces.notifications.Notification;
 import org.mozartspaces.notifications.NotificationListener;
 import org.mozartspaces.notifications.NotificationManager;
 import org.mozartspaces.notifications.Operation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import snake.mzspaces.ContainerCoordinatorMapper;
 import snake.mzspaces.DataChangeEvent;
@@ -30,6 +34,8 @@ public class GameList implements Serializable, NotificationListener
 	private DataChangeListener listener;
 	private Notification notification;
 
+	private Logger log = LoggerFactory.getLogger(GameList.class);
+	
 	public GameList(DataChangeListener listener, PlayerList playerList)
 	{
 		this.listener = listener;
@@ -38,7 +44,10 @@ public class GameList implements Serializable, NotificationListener
 		// read current games and add them to the local vector
 		ContainerReference gamesContainer = Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME_LIST);
 		try {
-			ArrayList<Serializable> spaceGames = Util.getInstance().getConnection().read(gamesContainer);
+			ArrayList<Serializable> spaceGames = Util.getInstance().getConnection().read(gamesContainer, AnyCoordinator.newSelector(), RequestTimeout.TRY_ONCE, null);
+			
+			log.debug("games: " + spaceGames);
+			
 			for (Serializable spaceGame : spaceGames) {
 				if (spaceGame instanceof Game) {
 					games.add((Game) spaceGame);
