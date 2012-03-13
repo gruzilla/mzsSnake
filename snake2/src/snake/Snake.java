@@ -255,21 +255,22 @@ public class Snake extends JFrame implements WindowListener
 	 * Try to open a connection to the corso space.
 	 * @return true if the connection could be opened
 	 */
-	public boolean openCorsoConnection()
+	public boolean openSpaceConnection()
 	{
 		//open corso connection
 		try
 		{
 			snakeLog.flush();
 			snakeLog.writeLogEntry("Successfully connected to 2. corso site");
-			gameList.initialise(); //load game list
+			gameList.initialize(); //load game list
 			return true;
 		}
 		catch (Exception ex)
 		{
-			snakeLog.writeLogEntry("Can't connect to CorsoSpace");
-			System.out.println("Corso Error occured:");
-			Messages.errorMessage(this, "Can't connect to the corsospace.");
+			snakeLog.writeLogEntry("Can't connect to XVSM");
+			System.out.println("XVSM Error occured:");
+			ex.printStackTrace();
+			Messages.errorMessage(this, "Can't connect to XVSM Server.");
 			return false;
 		}
 	}

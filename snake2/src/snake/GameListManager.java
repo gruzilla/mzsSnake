@@ -51,7 +51,7 @@ public class GameListManager
 	 * thread.
 	 * @param conn connection to the space
 	 */
-	public void initialise()
+	public void initialize()
 	{
 			playerList = new PlayerList();
 			gameList = new GameList(listener, playerList);

@@ -71,7 +71,7 @@ public class Util
 	/**
 	 * Disconnect from the "local" corso_coke
 	 */
-	public static void Disconnect()
+	public static void disconnect()
 	{
 		try
 		{
@@ -103,12 +103,16 @@ public class Util
 	 */
 	public static ContainerReference getContainer(String containerName) {
 		try {
-			return CapiUtil.lookupOrCreateContainer(containerName, getSpaceUri(), ContainerCoordinatorMapper.getCoordinators(containerName), null, conn);
+			return CapiUtil.lookupOrCreateContainer(containerName, getSpaceUri(), ContainerCoordinatorMapper.getCoordinators(containerName), null, getConnection());
 		} catch (MzsCoreException e) {
 			
 			e.printStackTrace();
 			System.err.println("Util: Could not load Container (" + containerName + "): " + e.getMessage());
 			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.err.println("Util: Could not connect to XVSM: " + e.getMessage());
 		}
 		return null;
 	}
@@ -171,7 +175,6 @@ public class Util
     			tx);
         System.out.println("Container " + name + " created");
 		return cref;
-    	
     }
 	
 	

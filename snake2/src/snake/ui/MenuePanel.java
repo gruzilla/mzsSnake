@@ -125,7 +125,7 @@ public class MenuePanel extends JPanel
    */
   public void btMultiplayer_actionPerformed(ActionEvent e)
   {
-    if (snakeMain.openCorsoConnection())
+    if (snakeMain.openSpaceConnection())
     {
       snakeMain.openMPMenue();
     }
