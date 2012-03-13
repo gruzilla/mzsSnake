@@ -1,9 +1,12 @@
 package snake.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.mozartspaces.core.ContainerReference;
+import org.mozartspaces.core.Entry;
 import org.mozartspaces.core.MzsCoreException;
 import org.mozartspaces.notifications.Notification;
 import org.mozartspaces.notifications.NotificationListener;
@@ -32,12 +35,32 @@ public class GameList implements Serializable, NotificationListener
 		this.listener = listener;
 		this.playerList = playerList;
 		
+		// read current games and add them to the local vector
+		ContainerReference gamesContainer = Util.getContainer(ContainerCoordinatorMapper.GAME_LIST);
+		try {
+			ArrayList<Serializable> spaceGames = Util.getConnection().read(gamesContainer);
+			for (Serializable spaceGame : spaceGames) {
+				if (spaceGame instanceof Game) {
+					games.add((Game) spaceGame);
+				}
+			}
+		} catch (MzsCoreException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		// create a notification that updates the list whenever a game gets added
 		NotificationManager notifManager = Util.getNotificationManager();
 		try {
 			this.notification = notifManager.createNotification(
-					Util.getContainer(ContainerCoordinatorMapper.GAME_LIST),
+					gamesContainer,
 					this,
-					Operation.WRITE
+					Operation.ALL,
+					null,
+					null
 			);
 		} catch (MzsCoreException e) {
 			// TODO Auto-generated catch block
@@ -75,24 +98,23 @@ public class GameList implements Serializable, NotificationListener
 	 */
 	public Game addGame(String name, Player leader,LevelData initData)
 	{
-		//search first free number
-		int nr = 1;
-		while (true)
-		{
-			for (int i = 0; i < games.size(); i++)
-			{
-				if ( ( (Game) games.elementAt(i)).getNr() == nr)
-				{
-					nr++;
-					continue;
-				}
-			}
-			break;
-		}
-		//create the game
-		Game game = new Game(nr, name, leader, playerList);
+		// create the game, initialize it with nr 0, because our IndexAspect creates teh number
+		Game game = new Game(0, name, leader, playerList);
 		game.setLevelData(initData);
 		games.addElement(game);
+		
+		// however we have to write it to the space
+		ContainerReference gamesContainer = Util.getContainer(ContainerCoordinatorMapper.GAME_LIST);
+		try {
+			Util.getConnection().write(gamesContainer, new Entry(game));
+		} catch (MzsCoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return game;
 	}
 
@@ -222,11 +244,42 @@ public class GameList implements Serializable, NotificationListener
 	}
 
 	@Override
-	public void entryOperationFinished(Notification arg0, Operation arg1,
-			List<? extends Serializable> arg2) {
+	public void entryOperationFinished(Notification notification, Operation operation,
+			List<? extends Serializable> entries) {
 		
-		// TODO: update games-list
-		
+		switch (operation) {
+		case WRITE:
+			// if a game is written to the container add it to the local vector
+			for (Serializable entry : entries) {
+				Serializable obj = ((Entry) entry).getValue();
+				if (obj instanceof Game) {
+					Game game = (Game) obj;
+					boolean found = false;
+					// if we have this game already replace it.
+					for (int i = 0; i < games.size(); i++) {
+						if (games.get(i).getNr() == game.getNr()) {
+							found = true;
+							games.set(i, game);
+							break;
+						}
+					}
+					// if not, we have to add it
+					if (!found) {
+						games.add(game);
+					}				}
+			}
+		case DELETE:
+		case TAKE:
+			// on the other hand, if the game gets removed, we have to remove it too
+			for (Serializable entry : entries) {
+				Serializable obj = ((Entry) entry).getValue();
+				if (obj instanceof Game) {
+					Game game = (Game) obj;
+					games.remove(game);
+				}
+			}
+		}
+
 		listener.dataChanged(new DataChangeEvent());
 	}
 }
