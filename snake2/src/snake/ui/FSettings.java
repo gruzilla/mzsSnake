@@ -113,7 +113,6 @@ public class FSettings extends JDialog {
 			tfPort.setText(String.valueOf(settings.getPort()));
 			// tfUser.setText(settings.getUsername());
 			// tfPassword.setText(settings.getPassword());
-			tfDomain.setText(settings.getDomain());
 			tfPlayername.setText(settings.getPlayerName());
 
 			// skins
@@ -270,7 +269,6 @@ public class FSettings extends JDialog {
 		settings.setPort(port);
 		// settings.setUsername(tfUser.getText());
 		// settings.setPassword(new String(tfPassword.getPassword()));
-		settings.setDomain(tfDomain.getText());
 		settings.setPlayerName(tfPlayername.getText());
 		settings.setSnakeSkin(skinsManager.getCurrentSkinName());
 

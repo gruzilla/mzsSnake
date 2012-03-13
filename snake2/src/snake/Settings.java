@@ -5,6 +5,8 @@ import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
+
 /**
  * Settings for corso connection, player name, snake skin and standard playtime or points.
  * Also methods are provided to save the settings to and load the settings from a properties file.
@@ -13,9 +15,8 @@ import java.net.URISyntaxException;
 public class Settings
 {
 	//corso connection settings
-	private String cokeSiteLocal = "localhost";
-	private String cokeSiteServer = "localhost";
-	private String domain = "localhost";
+	private String local = "localhost";
+	private String remote = "localhost";
 	private int port = 4242;
 
 	private String playerName = "Player"; //name of the player in game
@@ -46,11 +47,8 @@ public class Settings
 			}
 			props.load(in);
 
-			cokeSiteLocal = props.getProperty("local");
-			cokeSiteServer = props.getProperty("remote");
-			//username = props.getProperty("coke_user");
-			//password = props.getProperty("coke_pass");
-			domain = props.getProperty("domain");
+			local = props.getProperty("local");
+			remote = props.getProperty("remote");
 			port = Integer.parseInt(props.getProperty("port"));
 			playerName = props.getProperty("playername");
 			snakeSkin = props.getProperty("snakeskin");
@@ -77,12 +75,11 @@ public class Settings
 
 			FileOutputStream out = new FileOutputStream(filePath);
 			//Properties props = new Properties();
-			props.setProperty("coke_site1",cokeSiteLocal);
-			props.setProperty("coke_site2",cokeSiteServer);
+			props.setProperty("local",local);
+			props.setProperty("remote",remote);
 //			props.setProperty("coke_user",username);
 //			props.setProperty("coke_pass",password);
-			props.setProperty("coke_domain",domain);
-			props.setProperty("coke_port",String.valueOf(port));
+			props.setProperty("port",String.valueOf(port));
 			props.setProperty("playername",playerName);
 			props.setProperty("snakeskin",snakeSkin);
 
@@ -102,9 +99,8 @@ public class Settings
 	 */
 	private void reset()
 	{
-		cokeSiteLocal = "localhost";
-		cokeSiteServer = "localhost";
-		domain = "localhost";
+		local = "localhost";
+		remote = "localhost";
 		port = 5006;
 //		username = "corsouser";
 //		password = "corsopass";
@@ -116,32 +112,22 @@ public class Settings
 
 	public void setCokeSiteLocal(String value)
 	{
-		cokeSiteLocal = value;
+		local = value;
 	}
 
 	public String getCokeSiteLocal()
 	{
-		return cokeSiteLocal;
+		return local;
 	}
 
 	public void setCokeSiteServer(String value)
 	{
-		cokeSiteServer = value;
+		remote = value;
 	}
 
 	public String getCokeSiteServer()
 	{
-		return cokeSiteServer;
-	}
-
-	public void setDomain(String value)
-	{
-		domain = value;
-	}
-
-	public String getDomain()
-	{
-		return domain;
+		return remote;
 	}
 
 	public void setPort(int value)
@@ -149,9 +135,13 @@ public class Settings
 		port = value;
 	}
 
-	public int getPort()
+	public int getPort() {
+		return getPort(false);
+	}
+
+	public int getPort(boolean server)
 	{
-		return port;
+		return server ? 9876 : port;
 	}
 
 //	public void setUsername(String value)
@@ -214,9 +204,9 @@ public class Settings
 		return snakeSkin;
 	}
 
-	public URI getUri() {
+	public URI getUri(boolean server) {
 		try {
-			return new URI("xvsm://"+getDomain()+":"+getPort());
+			return new URI("xvsm://"+(server ? local : remote)+":"+getPort(server));
 		} catch (URISyntaxException e) {
 			try {
 				return new URI("xvsm://localhost:4321");

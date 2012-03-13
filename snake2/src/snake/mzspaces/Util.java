@@ -49,19 +49,15 @@ public class Util
 			snakeLog.writeLogEntry("		 server site: " + settings.getCokeSiteServer());
 			snakeLog.writeLogEntry("		 port:			 " + settings.getPort());
 //			snakeLog.writeLogEntry("		 xvsm user:			 " + settings.getUsername());
-			snakeLog.writeLogEntry("		 domain:		 " + settings.getDomain());
 			snakeLog.writeLogEntry("");
 
-			/*
-			Configuration config = new Configuration();
-			config.setSpaceUri(settings.getUri());
-			if(server) {
-				config.setEmbeddedSpace(true);
-				config.setXpThreadNumber(-1);
+			if (server) {
+				core = DefaultMzsCore.newInstance();
 			} else {
-				config.setEmbeddedSpace(false);
-			} */
-			core = DefaultMzsCore.newInstance();
+				Configuration config = new Configuration();
+				config.setSpaceUri(this.getSettings().getUri(true));
+				core = DefaultMzsCore.newInstance(config);
+			}
 		}
 		catch (Exception ex)
 		{
@@ -117,7 +113,7 @@ public class Util
 
 	
 	public URI getSpaceUri() {
-		return settings.getUri();
+		return settings.getUri(server);
 	}
 
 	
@@ -130,6 +126,7 @@ public class Util
 	 * @return ContainerReference or null
 	 */
 	public ContainerReference getContainer(String containerName) {
+    	System.out.println("getting container "+containerName+" "+settings.getUri(server));
 		try {
 			return CapiUtil.lookupOrCreateContainer(
 					containerName,
@@ -193,6 +190,7 @@ public class Util
 
     
     public ContainerReference forceCreateContainer(String containerName) throws MzsCoreException	{
+    	System.out.println("force-creating container "+containerName+" "+settings.getUri(server));
         ContainerReference cref = null;
     	
     	// make sure container does not exist (destroy if available)
@@ -203,7 +201,8 @@ public class Util
 //			s.printStackTrace();
     	} finally {
 	    	try {
-				cref = getConnection().createContainer(containerName, 
+				cref = getConnection().createContainer(
+						containerName, 
 						getSpaceUri(),
 						Container.UNBOUNDED, 
 						ContainerCoordinatorMapper.getCoordinators(containerName),
@@ -224,7 +223,7 @@ public class Util
     
 	public static Util getInstance(boolean is_server) {
 		if (instance == null) {
-			server = true;
+			server = is_server;
 			instance = new Util();
 		}
 		return instance;
