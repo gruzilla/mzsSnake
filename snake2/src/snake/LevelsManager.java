@@ -12,7 +12,7 @@ import snake.data.LevelInfo;
  */
 public class LevelsManager
 {
-  private final String levelPath = "snake2/levels" + File.separator;
+  private final String levelPath = "levels" + File.separator;
   private final String backPictureFilename = "back.jpg"; //background picture file
   private final String backDefinitionFilename = "back.gif"; //background obstacles definition file
   private final String thumbnailFilename = "thumb.jpg"; //thumbnail file

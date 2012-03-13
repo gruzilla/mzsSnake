@@ -14,7 +14,7 @@ import java.io.*;
 public class SkinsManager
 {
 	//filenames and folder for skins
-	private final String skinPath = "snake2/skins" + File.separator;
+	private final String skinPath = "skins" + File.separator;
 	private final String snakeHeadFilename = "snakehead.png";
 	private final String snakePartFilename = "snakepart.png";
 	private final String snakeTailFilename = "snaketail.png";

@@ -63,6 +63,7 @@ public class Snake extends JFrame implements WindowListener
 	{
 		super("Snake v2.0");
 		this.period = period;
+		snakeLog = new SnakeLog();
 
 		// load the background image
 		levelManager = new LevelsManager();

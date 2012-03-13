@@ -24,7 +24,7 @@ public class Settings
 	private String snakeSkin = "Snake"; //name of the used snake skin
 
 	private Properties props = new Properties();
-	private final String filePath = "snake2/snake.properties"; //name of properties file
+	private final String filePath = "snake.properties"; //name of properties file
 
 	public Settings()
 	{
