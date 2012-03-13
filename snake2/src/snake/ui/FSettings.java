@@ -108,8 +108,8 @@ public class FSettings extends JDialog
 			tfCorsoSiteLocal.setText(settings.getCokeSiteLocal());
 			tfCorsoSiteServer.setText(settings.getCokeSiteServer());
 			tfPort.setText(String.valueOf(settings.getPort()));
-			tfUser.setText(settings.getUsername());
-			tfPassword.setText(settings.getPassword());
+//			tfUser.setText(settings.getUsername());
+//			tfPassword.setText(settings.getPassword());
 			tfDomain.setText(settings.getDomain());
 			tfPlayername.setText(settings.getPlayerName());
 
@@ -267,8 +267,8 @@ public class FSettings extends JDialog
 		settings.setCokeSiteLocal(tfCorsoSiteLocal.getText());
 		settings.setCokeSiteServer(tfCorsoSiteServer.getText());
 		settings.setPort(port);
-		settings.setUsername(tfUser.getText());
-		settings.setPassword(new String(tfPassword.getPassword()));
+//		settings.setUsername(tfUser.getText());
+//		settings.setPassword(new String(tfPassword.getPassword()));
 		settings.setDomain(tfDomain.getText());
 		settings.setPlayerName(tfPlayername.getText());
 		settings.setSnakeSkin(skinsManager.getCurrentSkinName());

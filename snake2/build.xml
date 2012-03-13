@@ -134,7 +134,7 @@
 <!--    The "compile" target transforms source files (from your "src" directory)
 	into object files in the appropriate location in the build directory.  -->
 
-	<target depends="prepare" description="Compile Java sources" name="compile">
+	<target depends="prepare, dist" description="Compile Java sources" name="compile">
 
 	<!-- Compile Java classes as necessary -->
 	<javac debug="${compile.debug}"  deprecation="${compile.deprecation}" destdir="${build.home}" optimize="${compile.optimize}" srcdir="src">
@@ -154,7 +154,7 @@
 	* "compile" so that the entire application will have been assembled
 	* "javadoc" so that the application Javadocs will have been created  -->
 
-	<target depends="compile" description="Create binary distribution" name="dist">
+	<target description="Create binary distribution" name="dist">
 
 		<copy todir="${dist.home}/skins">
 			<fileset dir="skins" />
@@ -200,6 +200,7 @@
 	<target name="prepare">
 		<!-- Create build directory and copy static content -->
 		<mkdir dir="${build.home}"/>
+		<mkdir dir="${dist.home}"/>
 	</target>
 
 </project>
