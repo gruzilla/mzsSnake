@@ -19,6 +19,9 @@ import org.mozartspaces.core.MzsCoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import snake.mzspaces.ContainerCoordinatorMapper;
+import snake.mzspaces.Util;
+
 /**
  * server class
  */
@@ -63,13 +66,12 @@ public class Server {
 			// gamesContainerRef = Util.getOrCreateNamedContainer(core.getConfig().getSpaceUri(), "snake.gamesContainer", capi);
 			
 			gamesContainerRef = Util.forceCreateContainer(
-					"snake.gamescontainer", //use containercoordinatormapper ? 
+					ContainerCoordinatorMapper.GAME_LIST, 
 					core.getConfig().getSpaceUri(), 
 					capi, 
 					Container.UNBOUNDED, 
         			new ArrayList<Coordinator>() {{ 
 						add(new AnyCoordinator());
-						add(new QueryCoordinator());
 					}}, 
 					null, null);
 		} catch (MzsCoreException e) {
