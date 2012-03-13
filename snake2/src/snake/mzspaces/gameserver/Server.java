@@ -4,7 +4,7 @@
  * 
  * All rights reserved.
  */
-package gameserver;
+package snake.mzspaces.gameserver;
 
 import java.util.ArrayList;
 
@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Server {
 
-	private static Logger log = LoggerFactory.getLogger(gameserver.Server.class);
+	private static Logger log = LoggerFactory.getLogger(snake.mzspaces.gameserver.Server.class);
 	
 	/**
 	 * @param args

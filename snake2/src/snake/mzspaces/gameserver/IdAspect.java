@@ -1,4 +1,4 @@
-package gameserver;
+package snake.mzspaces.gameserver;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

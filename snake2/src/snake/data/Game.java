@@ -25,12 +25,10 @@ public class Game implements Serializable
 	private int collisionType = SnakeSpriteData.COLLISION_WALL | SnakeSpriteData.COLLISION_OTHER |
 	SnakeSpriteData.COLLISION_OWN; //collision behaviour
 	private Player leader = null;
-	private PlayerList playerList = null;
 
 
 	public Game(PlayerList playerList)
 	{
-		this.playerList = playerList;
 	}
 
 	/**
@@ -43,7 +41,6 @@ public class Game implements Serializable
 	public Game(int nr, String name, Player leader, PlayerList playerList)
 	{
 		this.name = name;
-		this.playerList = playerList;
 		joinGame(leader);
 	}
 

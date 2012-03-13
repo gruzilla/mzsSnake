@@ -109,8 +109,10 @@
 
 <!--    The "server" target starts a new mozart default space  -->
 	<target name="server" description="starts mozart space">
-		<java classname="org.mozartspaces.core.Server">
-			<classpath refid="compile.classpath"/>
+		<java classname="snake.mzspaces.gameserver.Server" fork="yes"
+            jvm="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/bin/java">
+			<jvmarg value="-Dmozartspaces.configurationFile=${dist.home}/res/mozartspaces.xml" />
+			<classpath refid="run.classpath" />
 		</java>
 	</target>
 

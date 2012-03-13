@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package gameserver;
+package snake.mzspaces.gameserver;
 
 import java.net.URI;
 import java.util.ArrayList;
