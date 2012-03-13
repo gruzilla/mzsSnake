@@ -123,7 +123,12 @@ public class Util
 	 */
 	public ContainerReference getContainer(String containerName) {
 		try {
-			return CapiUtil.lookupOrCreateContainer(containerName, getSpaceUri(), ContainerCoordinatorMapper.getCoordinators(containerName), null, getConnection());
+			return CapiUtil.lookupOrCreateContainer(
+					containerName,
+					getSpaceUri(),
+					ContainerCoordinatorMapper.getCoordinators(containerName),
+					null,
+					getConnection());
 		} catch (MzsCoreException e) {
 			
 			e.printStackTrace();
@@ -179,21 +184,29 @@ public class Util
     }
 
     
-    public ContainerReference forceCreateContainer(String name, final URI space, final Capi capi, int containerSize, List<Coordinator> obligatoryCoords, List<Coordinator> optionalCoords, TransactionReference tx) throws MzsCoreException	{
+    public ContainerReference forceCreateContainer(String containerName) throws MzsCoreException	{
         ContainerReference cref = null;
     	
     	// make sure container does not exist (destroy if available)
     	try	{
-    		capi.destroyContainer(capi.lookupContainer(name, space, 0, null), null);
-    	} catch(MzsCoreException s)	{
+    		getConnection().destroyContainer(getConnection().lookupContainer(containerName, getSpaceUri(), 0, null), null);
+    	} catch(Exception s)	{
+			// TODO Auto-generated catch block
+			s.printStackTrace();
+    	} finally {
+	    	try {
+				cref = getConnection().createContainer(containerName, 
+						getSpaceUri(),
+						Container.UNBOUNDED, 
+						ContainerCoordinatorMapper.getCoordinators(containerName),
+						null,
+						null);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        System.out.println("Container " + containerName + " created");
     	}
-    	cref = capi.createContainer(name, 
-    			space,
-    			containerSize, 
-    			obligatoryCoords,
-    			optionalCoords,
-    			tx);
-        System.out.println("Container " + name + " created");
 		return cref;
     }
 

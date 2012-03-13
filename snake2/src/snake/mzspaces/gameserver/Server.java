@@ -6,15 +6,8 @@
  */
 package snake.mzspaces.gameserver;
 
-import java.util.ArrayList;
 
-import org.mozartspaces.capi3.AnyCoordinator;
-import org.mozartspaces.capi3.Coordinator;
-import org.mozartspaces.capi3.QueryCoordinator;
 import org.mozartspaces.core.Capi;
-import org.mozartspaces.core.ContainerReference;
-import org.mozartspaces.core.DefaultMzsCore;
-import org.mozartspaces.core.MzsConstants.Container;
 import org.mozartspaces.core.MzsCoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,10 +30,7 @@ public class Server {
 	}
 
 
-	private DefaultMzsCore core;
-	private Capi capi;
-	private ContainerReference gamesContainerRef;
-
+	private Capi conn;
 
 	/**
 	 * 
@@ -49,7 +39,12 @@ public class Server {
 		
 		log.debug("starting Server...");
 		
-		this.initXVSMSpace();
+		try {
+			conn = Util.getInstance().getConnection();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.initXVSMContainers();
 		this.initNotificationListeners();
 		log.debug("started server successfully!");
@@ -65,15 +60,7 @@ public class Server {
 			// force creation? (Util.force...)
 			// gamesContainerRef = Util.getOrCreateNamedContainer(core.getConfig().getSpaceUri(), "snake.gamesContainer", capi);
 			
-			gamesContainerRef = Util.getInstance().forceCreateContainer(
-					ContainerCoordinatorMapper.GAME_LIST, 
-					core.getConfig().getSpaceUri(), 
-					capi, 
-					Container.UNBOUNDED, 
-        			new ArrayList<Coordinator>() {{ 
-						add(new AnyCoordinator());
-					}}, 
-					null, null);
+			Util.getInstance().forceCreateContainer(ContainerCoordinatorMapper.GAME_LIST);
 		} catch (MzsCoreException e) {
 			log.debug("error creating containers");
 			// TODO Auto-generated catch block
@@ -87,15 +74,6 @@ public class Server {
 	 */
 	private void initNotificationListeners() {
 		
-	}
-
-	/**
-	 * init the space
-	 */
-	private void initXVSMSpace() {
-		// TODO Auto-generated method stub
-		core = DefaultMzsCore.newInstance();
-		capi = new Capi(core);
 	}
 }
 
