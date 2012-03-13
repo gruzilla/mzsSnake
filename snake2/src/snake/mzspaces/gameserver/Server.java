@@ -65,7 +65,7 @@ public class Server {
 			// force creation? (Util.force...)
 			// gamesContainerRef = Util.getOrCreateNamedContainer(core.getConfig().getSpaceUri(), "snake.gamesContainer", capi);
 			
-			gamesContainerRef = Util.forceCreateContainer(
+			gamesContainerRef = Util.getInstance().forceCreateContainer(
 					ContainerCoordinatorMapper.GAME_LIST, 
 					core.getConfig().getSpaceUri(), 
 					capi, 

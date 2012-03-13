@@ -15,9 +15,11 @@ import org.mozartspaces.core.MzsCoreException;
 import org.mozartspaces.core.TransactionReference;
 import org.mozartspaces.core.MzsConstants.Container;
 import org.mozartspaces.core.MzsConstants.RequestTimeout;
+import org.mozartspaces.core.config.Configuration;
 import org.mozartspaces.notifications.NotificationManager;
 
 import snake.*;
+import snake.util.SnakeLog;
 
 /**
  * Manages the connection to the xvsm space.
@@ -26,20 +28,38 @@ import snake.*;
  */
 public class Util
 {
-	private static final String spaceName = "snakeSpace"; //starting point name in the space
-	private static Capi conn;
-	private static MzsCore core;
-	private static Settings settings;
-	private static NotificationManager notificationManager;
+	private static Util instance;
+	private final String spaceName = "snakeSpace"; //starting point name in the space
+	private Capi conn;
+	private MzsCore core;
+	private Settings settings;
+	private NotificationManager notificationManager;
+	private SnakeLog snakeLog;
 
-	/**
-	 * Store the settings from the propertyfile into the local variables
-	 * @param newSettings Settings
-	 */
-	public static void init(Settings settings)
-	{
-		Util.settings = settings;
-		core = DefaultMzsCore.newInstance();
+	private Util() {
+		try
+		{
+			//read the properties from the config file
+			snakeLog = new SnakeLog();
+			settings = new Settings();
+			settings.load();
+			snakeLog.writeLogEntry("Settings loaded ");
+			snakeLog.writeLogEntry("		 local site:	" + settings.getCokeSiteLocal());
+			snakeLog.writeLogEntry("		 server site: " + settings.getCokeSiteServer());
+			snakeLog.writeLogEntry("		 port:			 " + settings.getPort());
+//			snakeLog.writeLogEntry("		 xvsm user:			 " + settings.getUsername());
+			snakeLog.writeLogEntry("		 domain:		 " + settings.getDomain());
+			snakeLog.writeLogEntry("");
+
+			Configuration config = new Configuration();
+			config.setSpaceUri(settings.getUri());
+			core = DefaultMzsCore.newInstance(config);
+		}
+		catch (Exception ex)
+		{
+			System.out.println("Error occured: " + ex.getMessage());
+			System.exit(1);
+		}
 	}
 
 	/**
@@ -48,7 +68,7 @@ public class Util
 	 *
 	 * @return the connection to our XVSM Server
 	 */
-	public static Capi getConnection() throws Exception
+	public Capi getConnection() throws Exception
 	{
 		if (conn == null)
 		{
@@ -71,7 +91,7 @@ public class Util
 	/**
 	 * Disconnect from the "local" corso_coke
 	 */
-	public static void disconnect()
+	public void disconnect()
 	{
 		try
 		{
@@ -88,8 +108,8 @@ public class Util
 	}
 
 	
-	public static URI getSpaceUri() {
-		return Util.settings.getUri();
+	public URI getSpaceUri() {
+		return settings.getUri();
 	}
 
 	
@@ -101,7 +121,7 @@ public class Util
 	 * @param containerName name of the container in space
 	 * @return ContainerReference or null
 	 */
-	public static ContainerReference getContainer(String containerName) {
+	public ContainerReference getContainer(String containerName) {
 		try {
 			return CapiUtil.lookupOrCreateContainer(containerName, getSpaceUri(), ContainerCoordinatorMapper.getCoordinators(containerName), null, getConnection());
 		} catch (MzsCoreException e) {
@@ -117,11 +137,11 @@ public class Util
 		return null;
 	}
 
-	public static NotificationManager getNotificationManager() {
-		if (Util.notificationManager == null) {
-			Util.notificationManager = new NotificationManager(Util.core);
+	public NotificationManager getNotificationManager() {
+		if (notificationManager == null) {
+			notificationManager = new NotificationManager(core);
 		}
-		return Util.notificationManager;
+		return notificationManager;
 	}
 	
 	
@@ -138,7 +158,7 @@ public class Util
      * @throws MzsCoreException
      *             if getting or creating the container failed
      */
-    public static ContainerReference getOrCreateNamedContainer(final URI space, final String containerName, final Capi capi) throws MzsCoreException {
+    public ContainerReference getOrCreateNamedContainer(final URI space, final String containerName, final Capi capi) throws MzsCoreException {
 
         ContainerReference cref;
         try {
@@ -159,7 +179,7 @@ public class Util
     }
 
     
-    public static ContainerReference forceCreateContainer(String name, final URI space, final Capi capi, int containerSize, List<Coordinator> obligatoryCoords, List<Coordinator> optionalCoords, TransactionReference tx) throws MzsCoreException	{
+    public ContainerReference forceCreateContainer(String name, final URI space, final Capi capi, int containerSize, List<Coordinator> obligatoryCoords, List<Coordinator> optionalCoords, TransactionReference tx) throws MzsCoreException	{
         ContainerReference cref = null;
     	
     	// make sure container does not exist (destroy if available)
@@ -176,7 +196,16 @@ public class Util
         System.out.println("Container " + name + " created");
 		return cref;
     }
-	
-	
+
+	public static Util getInstance() {
+		if (instance == null) {
+			instance = new Util();
+		}
+		return instance;
+	}
+
+	public Settings getSettings() {
+		return settings;
+	}
 }
 

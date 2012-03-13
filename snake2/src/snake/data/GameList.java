@@ -36,9 +36,9 @@ public class GameList implements Serializable, NotificationListener
 		this.playerList = playerList;
 		
 		// read current games and add them to the local vector
-		ContainerReference gamesContainer = Util.getContainer(ContainerCoordinatorMapper.GAME_LIST);
+		ContainerReference gamesContainer = Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME_LIST);
 		try {
-			ArrayList<Serializable> spaceGames = Util.getConnection().read(gamesContainer);
+			ArrayList<Serializable> spaceGames = Util.getInstance().getConnection().read(gamesContainer);
 			for (Serializable spaceGame : spaceGames) {
 				if (spaceGame instanceof Game) {
 					games.add((Game) spaceGame);
@@ -53,7 +53,7 @@ public class GameList implements Serializable, NotificationListener
 		}
 		
 		// create a notification that updates the list whenever a game gets added
-		NotificationManager notifManager = Util.getNotificationManager();
+		NotificationManager notifManager = Util.getInstance().getNotificationManager();
 		try {
 			this.notification = notifManager.createNotification(
 					gamesContainer,
@@ -104,9 +104,9 @@ public class GameList implements Serializable, NotificationListener
 		games.addElement(game);
 		
 		// however we have to write it to the space
-		ContainerReference gamesContainer = Util.getContainer(ContainerCoordinatorMapper.GAME_LIST);
+		ContainerReference gamesContainer = Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME_LIST);
 		try {
-			Util.getConnection().write(gamesContainer, new Entry(game));
+			Util.getInstance().getConnection().write(gamesContainer, new Entry(game));
 		} catch (MzsCoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
