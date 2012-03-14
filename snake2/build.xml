@@ -92,6 +92,16 @@
 			<classpath refid="run.classpath" />
 		</java>
 	</target>
+	
+<!--    starts the game for client2  -->
+
+	<target description="Clean build and dist, then do all" depends="compile" name="run2">
+		<java classname="snake.Snake" fork="yes"
+            jvm="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/bin/java">
+			<jvmarg value="-Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel" />
+			<classpath refid="run.classpath" />
+		</java>
+	</target>
 
 
 

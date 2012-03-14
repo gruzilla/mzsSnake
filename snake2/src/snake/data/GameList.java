@@ -44,7 +44,11 @@ public class GameList implements Serializable, NotificationListener
 		// read current games and add them to the local vector
 		ContainerReference gamesContainer = Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME_LIST);
 		try {
-			ArrayList<Serializable> spaceGames = Util.getInstance().getConnection().read(gamesContainer, AnyCoordinator.newSelector(), RequestTimeout.TRY_ONCE, null);
+			ArrayList<Serializable> spaceGames = Util.getInstance().getConnection().read(
+					gamesContainer, 
+					AnyCoordinator.newSelector(), 
+					RequestTimeout.TRY_ONCE, 
+					null);
 			
 			log.debug("games: " + spaceGames);
 			
@@ -55,7 +59,8 @@ public class GameList implements Serializable, NotificationListener
 			}
 		} catch (MzsCoreException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			// e1.printStackTrace();
+			log.debug("games: NO GAMES FOUND");
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

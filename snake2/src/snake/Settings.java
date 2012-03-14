@@ -17,7 +17,8 @@ public class Settings
 	//corso connection settings
 	private String local = "localhost";
 	private String remote = "localhost";
-	private int port = 4242;
+	private int remote_port = 4242;
+	private int local_port = 8282;
 
 	private String playerName = "Player"; //name of the player in game
 	private int playTime = 60; //playtime for time-playmode
@@ -48,8 +49,9 @@ public class Settings
 			props.load(in);
 
 			local = props.getProperty("local");
+			local_port = Integer.parseInt(props.getProperty("local_port"));
 			remote = props.getProperty("remote");
-			port = Integer.parseInt(props.getProperty("port"));
+			remote_port = Integer.parseInt(props.getProperty("remote_port"));
 			playerName = props.getProperty("playername");
 			snakeSkin = props.getProperty("snakeskin");
 
@@ -76,10 +78,11 @@ public class Settings
 			FileOutputStream out = new FileOutputStream(filePath);
 			//Properties props = new Properties();
 			props.setProperty("local",local);
+			props.setProperty("local_port",String.valueOf(local_port));
 			props.setProperty("remote",remote);
+			props.setProperty("remote_port",String.valueOf(remote_port));
 //			props.setProperty("coke_user",username);
 //			props.setProperty("coke_pass",password);
-			props.setProperty("port",String.valueOf(port));
 			props.setProperty("playername",playerName);
 			props.setProperty("snakeskin",snakeSkin);
 
@@ -100,8 +103,9 @@ public class Settings
 	private void reset()
 	{
 		local = "localhost";
+		local_port = 8282;
 		remote = "localhost";
-		port = 5006;
+		remote_port = 4242;
 //		username = "corsouser";
 //		password = "corsopass";
 		playerName = "Player";
@@ -130,10 +134,6 @@ public class Settings
 		return remote;
 	}
 
-	public void setPort(int value)
-	{
-		port = value;
-	}
 
 	public int getPort() {
 		return getPort(false);
@@ -141,7 +141,7 @@ public class Settings
 
 	public int getPort(boolean server)
 	{
-		return server ? 9876 : port;
+		return !server ? remote_port : local_port;
 	}
 
 //	public void setUsername(String value)
@@ -206,10 +206,10 @@ public class Settings
 
 	public URI getUri(boolean server) {
 		try {
-			return new URI("xvsm://"+(server ? local : remote)+":"+getPort(server));
+			return new URI("xvsm://"+(!server ? remote : local)+":"+getPort(server));
 		} catch (URISyntaxException e) {
 			try {
-				return new URI("xvsm://localhost:4321");
+				return new URI("xvsm://localhost:4242");
 			} catch (URISyntaxException e1) {
 				return null;
 			}

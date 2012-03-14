@@ -18,6 +18,8 @@ import org.mozartspaces.core.MzsConstants.RequestTimeout;
 import org.mozartspaces.core.config.Configuration;
 import org.mozartspaces.notifications.NotificationManager;
 
+import com.esotericsoftware.minlog.Log;
+
 import snake.*;
 import snake.util.SnakeLog;
 
@@ -51,13 +53,17 @@ public class Util
 //			snakeLog.writeLogEntry("		 xvsm user:			 " + settings.getUsername());
 			snakeLog.writeLogEntry("");
 
+			Configuration config = new Configuration();
+			
+			/*
 			if (server) {
+				config.setSpaceUri(this.getSettings().getUri(server));
 				core = DefaultMzsCore.newInstance();
 			} else {
-				Configuration config = new Configuration();
-				config.setSpaceUri(this.getSettings().getUri(true));
+			*/
+				config.setSpaceUri(this.getSettings().getUri(server));
 				core = DefaultMzsCore.newInstance(config);
-			}
+			//}
 		}
 		catch (Exception ex)
 		{

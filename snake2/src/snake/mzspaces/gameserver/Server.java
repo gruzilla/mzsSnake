@@ -40,6 +40,7 @@ public class Server {
 		log.debug("starting Server...");
 		
 		try {
+			// init util to use server vars
 			conn = Util.getInstance(true).getConnection();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

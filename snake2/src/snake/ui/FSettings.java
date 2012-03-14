@@ -266,7 +266,7 @@ public class FSettings extends JDialog {
 		Settings settings = new Settings();
 		settings.setCokeSiteLocal(tfCorsoSiteLocal.getText());
 		settings.setCokeSiteServer(tfCorsoSiteServer.getText());
-		settings.setPort(port);
+//		settings.setPort(port);
 		// settings.setUsername(tfUser.getText());
 		// settings.setPassword(new String(tfPassword.getPassword()));
 		settings.setPlayerName(tfPlayername.getText());
