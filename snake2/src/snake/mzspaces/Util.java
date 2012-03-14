@@ -17,6 +17,8 @@ import org.mozartspaces.core.MzsConstants.Container;
 import org.mozartspaces.core.MzsConstants.RequestTimeout;
 import org.mozartspaces.core.config.Configuration;
 import org.mozartspaces.notifications.NotificationManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.esotericsoftware.minlog.Log;
 
@@ -39,6 +41,9 @@ public class Util
 	private NotificationManager notificationManager;
 	private SnakeLog snakeLog;
 
+	private Logger log = LoggerFactory.getLogger(Util.class);
+	private URI space;
+	
 	private Util() {
 		try
 		{
@@ -47,23 +52,25 @@ public class Util
 			settings = new Settings();
 			settings.load();
 			snakeLog.writeLogEntry("Settings loaded ");
-			snakeLog.writeLogEntry("		 local site:	" + settings.getCokeSiteLocal());
+//			snakeLog.writeLogEntry("		 local site:	" + settings.getCokeSiteLocal());
 			snakeLog.writeLogEntry("		 server site: " + settings.getCokeSiteServer());
 			snakeLog.writeLogEntry("		 port:			 " + settings.getPort());
 //			snakeLog.writeLogEntry("		 xvsm user:			 " + settings.getUsername());
 			snakeLog.writeLogEntry("");
 
-			Configuration config = new Configuration();
-			
-			/*
+			// set space
+			space = this.getSettings().getUri();
 			if (server) {
-				config.setSpaceUri(this.getSettings().getUri(server));
 				core = DefaultMzsCore.newInstance();
 			} else {
-			*/
+				/*
+				Configuration config = new Configuration();
 				config.setSpaceUri(this.getSettings().getUri(server));
-				core = DefaultMzsCore.newInstance(config);
-			//}
+				config.setEmbeddedSpace(true);
+				config.setXpThreadNumber(-1);
+				*/
+				core = DefaultMzsCore.newInstance();
+			}
 		}
 		catch (Exception ex)
 		{
@@ -119,7 +126,7 @@ public class Util
 
 	
 	public URI getSpaceUri() {
-		return settings.getUri(server);
+		return space;
 	}
 
 	
@@ -132,11 +139,11 @@ public class Util
 	 * @return ContainerReference or null
 	 */
 	public ContainerReference getContainer(String containerName) {
-    	System.out.println("getting container "+containerName+" "+settings.getUri(server));
+    	System.out.println("getting container "+containerName+" "+ this.getSpaceUri());
 		try {
 			return CapiUtil.lookupOrCreateContainer(
 					containerName,
-					getSpaceUri(),
+					this.getSpaceUri(),
 					ContainerCoordinatorMapper.getCoordinators(containerName),
 					null,
 					getConnection());
@@ -196,12 +203,12 @@ public class Util
 
     
     public ContainerReference forceCreateContainer(String containerName) throws MzsCoreException	{
-    	System.out.println("force-creating container "+containerName+" "+settings.getUri(server));
+    	System.out.println("force-creating container "+containerName+" "+ this.getSpaceUri()); //settings.getUri(server));
         ContainerReference cref = null;
     	
     	// make sure container does not exist (destroy if available)
     	try	{
-    		getConnection().destroyContainer(getConnection().lookupContainer(containerName, getSpaceUri(), 0, null), null);
+    		getConnection().destroyContainer(getConnection().lookupContainer(containerName, this.getSpaceUri(), 0, null), null);
     	} catch(Exception s)	{
 			// TODO Auto-generated catch block
 //			s.printStackTrace();
@@ -209,7 +216,7 @@ public class Util
 	    	try {
 				cref = getConnection().createContainer(
 						containerName, 
-						getSpaceUri(),
+						this.getSpaceUri(),
 						Container.UNBOUNDED, 
 						ContainerCoordinatorMapper.getCoordinators(containerName),
 						null,

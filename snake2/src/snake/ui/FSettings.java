@@ -108,7 +108,7 @@ public class FSettings extends JDialog {
 
 			// fill form
 			Settings settings = Util.getInstance().getSettings();
-			tfCorsoSiteLocal.setText(settings.getCokeSiteLocal());
+//			tfCorsoSiteLocal.setText(settings.getCokeSiteLocal());
 			tfCorsoSiteServer.setText(settings.getCokeSiteServer());
 			tfPort.setText(String.valueOf(settings.getPort()));
 			// tfUser.setText(settings.getUsername());
@@ -264,7 +264,7 @@ public class FSettings extends JDialog {
 
 		// create new settings object
 		Settings settings = new Settings();
-		settings.setCokeSiteLocal(tfCorsoSiteLocal.getText());
+//		settings.setCokeSiteLocal(tfCorsoSiteLocal.getText());
 		settings.setCokeSiteServer(tfCorsoSiteServer.getText());
 //		settings.setPort(port);
 		// settings.setUsername(tfUser.getText());

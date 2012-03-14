@@ -15,10 +15,8 @@ import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 public class Settings
 {
 	//corso connection settings
-	private String local = "localhost";
-	private String remote = "localhost";
-	private int remote_port = 4242;
-	private int local_port = 8282;
+	private String domain = "localhost";
+	private int port = 4242;
 
 	private String playerName = "Player"; //name of the player in game
 	private int playTime = 60; //playtime for time-playmode
@@ -48,10 +46,10 @@ public class Settings
 			}
 			props.load(in);
 
-			local = props.getProperty("local");
-			local_port = Integer.parseInt(props.getProperty("local_port"));
-			remote = props.getProperty("remote");
-			remote_port = Integer.parseInt(props.getProperty("remote_port"));
+//			local = props.getProperty("local");
+//			local_port = Integer.parseInt(props.getProperty("local_port"));
+			domain = props.getProperty("remote");
+			port = Integer.parseInt(props.getProperty("remote_port"));
 			playerName = props.getProperty("playername");
 			snakeSkin = props.getProperty("snakeskin");
 
@@ -77,10 +75,10 @@ public class Settings
 
 			FileOutputStream out = new FileOutputStream(filePath);
 			//Properties props = new Properties();
-			props.setProperty("local",local);
-			props.setProperty("local_port",String.valueOf(local_port));
-			props.setProperty("remote",remote);
-			props.setProperty("remote_port",String.valueOf(remote_port));
+//			props.setProperty("local",local);
+//			props.setProperty("local_port",String.valueOf(local_port));
+			props.setProperty("remote",domain);
+			props.setProperty("remote_port",String.valueOf(port));
 //			props.setProperty("coke_user",username);
 //			props.setProperty("coke_pass",password);
 			props.setProperty("playername",playerName);
@@ -102,10 +100,10 @@ public class Settings
 	 */
 	private void reset()
 	{
-		local = "localhost";
-		local_port = 8282;
-		remote = "localhost";
-		remote_port = 4242;
+//		local = "localhost";
+//		local_port = 8282;
+		domain = "localhost";
+		port = 4242;
 //		username = "corsouser";
 //		password = "corsopass";
 		playerName = "Player";
@@ -114,6 +112,7 @@ public class Settings
 		snakeSkin = "Snake";
 	}
 
+	/*
 	public void setCokeSiteLocal(String value)
 	{
 		local = value;
@@ -123,26 +122,22 @@ public class Settings
 	{
 		return local;
 	}
-
+*/
 	public void setCokeSiteServer(String value)
 	{
-		remote = value;
+		domain = value;
 	}
 
 	public String getCokeSiteServer()
 	{
-		return remote;
+		return domain;
 	}
 
 
 	public int getPort() {
-		return getPort(false);
+		return port;
 	}
 
-	public int getPort(boolean server)
-	{
-		return !server ? remote_port : local_port;
-	}
 
 //	public void setUsername(String value)
 //	{
@@ -204,9 +199,9 @@ public class Settings
 		return snakeSkin;
 	}
 
-	public URI getUri(boolean server) {
+	public URI getUri() {
 		try {
-			return new URI("xvsm://"+(!server ? remote : local)+":"+getPort(server));
+			return new URI("xvsm://"+ domain +":" + getPort());
 		} catch (URISyntaxException e) {
 			try {
 				return new URI("xvsm://localhost:4242");
