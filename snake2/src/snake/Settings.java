@@ -48,8 +48,8 @@ public class Settings
 
 //			local = props.getProperty("local");
 //			local_port = Integer.parseInt(props.getProperty("local_port"));
-			domain = props.getProperty("remote");
-			port = Integer.parseInt(props.getProperty("remote_port"));
+			domain = props.getProperty("domain");
+			port = Integer.parseInt(props.getProperty("port"));
 			playerName = props.getProperty("playername");
 			snakeSkin = props.getProperty("snakeskin");
 
