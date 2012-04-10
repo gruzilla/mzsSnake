@@ -2,6 +2,8 @@ package snake;
 
 import java.awt.image.*;
 import java.util.Properties;
+import java.util.Random;
+import java.util.UUID;
 import java.io.FileInputStream;
 import java.awt.Point;
 import snake.data.SnakeStartPoint;
@@ -24,7 +26,7 @@ public class BackgroundManager
   private int imageWidth;
   private boolean levelBiggerThanScreen = false;
   private SnakeStartPoint[] startpunkte = null;
-  //private java.util.Random rand; //previously used to get random positions for the snakes (now chosen by playerNr)
+  private java.util.Random rand = new Random(); //previously used to get random positions for the snakes (now chosen by playerNr), now again random, because player nr is now an uuid
 
   private int collectableCount = 6;
   private int collectableSpecialCount = 2;
@@ -83,10 +85,10 @@ public class BackgroundManager
    * @param playerNr number of the player in the game
    * @return startpoint for the snake
    */
-  public SnakeStartPoint getStartPoint(int playerNr)
+  public SnakeStartPoint getStartPoint(UUID playerNr)
   {
-    //int pos = rand.nextInt(startpunkte.length);
-    int pos = playerNr % startpunkte.length;
+    int pos = rand.nextInt(startpunkte.length);
+    //int pos = playerNr % startpunkte.length;
     return startpunkte[pos];
   }
 

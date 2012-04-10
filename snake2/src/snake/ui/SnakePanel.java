@@ -347,7 +347,7 @@ public class SnakePanel extends JPanel implements Runnable
 		if (!gameList.isViewOnly())
 		{
 			// create own game sprites
-			myPlayer.setNr(game.indexOf(myPlayer));
+			myPlayer.setPlayerNr(game.indexOf(myPlayer));
 
 			snakeSprite = new SnakeSprite(imgLoader, myPlayer, gameMap, this,
 					game.getCollisionType());
@@ -434,7 +434,7 @@ public class SnakePanel extends JPanel implements Runnable
 	{
 		// create game sprites
 		Player player = new Player(settings.getPlayerName(), settings.getSnakeSkin());
-		player.setNr(1);
+		player.setPlayerNr(1);
 		snakeSprite = new SnakeSprite(imgLoader, player, gameMap, this,
 				SnakeSpriteData.COLLISION_OWN | SnakeSpriteData.COLLISION_WALL);
 		collectables = new CollectableSprite(pWidth, pHeight, imgLoader, snakeSprite, this,

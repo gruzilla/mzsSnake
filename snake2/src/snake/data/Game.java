@@ -2,6 +2,7 @@ package snake.data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * The Game class represents one game and its settings in corso space. The players
@@ -15,7 +16,7 @@ public class Game implements Serializable
 
 	private ArrayList<Player> players = new ArrayList<Player>();
 	//private Vector playerOids = new Vector<CorsoVarOid> ();
-	private int nr = 0;
+	private UUID nr = UUID.randomUUID();
 	private String name = null;
 	private String levelDir = snake.LevelsManager.DEFAULTLEVELDIR;
 	private byte[] levelCheckSum;
@@ -54,7 +55,7 @@ public class Game implements Serializable
 		return players.get(index);
 	}
 
-	public int getNr()
+	public UUID getNr()
 	{
 		return nr;
 	}
@@ -180,9 +181,11 @@ public class Game implements Serializable
 		}
 	}
 
-	public void setNr(int nr) {
+	/*
+	public void setNr(UUID nr) { // former int
 		this.nr = nr;
 	}
+	*/
 
 	/**
 	 * Get index of that player in the playerlist of the game.
@@ -275,7 +278,7 @@ public class Game implements Serializable
 	{
 		if (obj instanceof Game)
 		{
-			return (this.getNr() == ( (Game) obj).getNr());
+			return (this.getNr().equals(( (Game) obj).getNr()));
 		}
 		else
 		{
@@ -339,6 +342,6 @@ public class Game implements Serializable
 	}
 
 	public boolean hasNr() {
-		return (nr > 0);
+		return (nr != null);
 	}
 }

@@ -10,6 +10,8 @@ import snake.GameListManager;
 import snake.LevelsManager;
 import snake.Snake;
 import snake.data.*;
+import snake.mzspaces.DataChangeEvent;
+import snake.mzspaces.DataChangeListener;
 import snake.util.Messages;
 import snake.util.ImageLoader;
 import javax.swing.event.ChangeEvent;
@@ -21,7 +23,7 @@ import javax.swing.event.ChangeListener;
  * Only the leader of the game is allowed to change the settings.
  * @author Thomas Scheller, Markus Karolus
  */
-public class MPNewGamePanel extends JPanel //implements IDataChangeListener
+public class MPNewGamePanel extends JPanel implements DataChangeListener
 {
 	private static final long serialVersionUID = 1L;
 	private Snake snakeMain = null;
@@ -95,7 +97,7 @@ public class MPNewGamePanel extends JPanel //implements IDataChangeListener
 		this.myPlayer = myPlayer;
 		this.levels = aLevelManager;
 
-//		gameList.setDataChangeListener(this); //set itself as DataChangeListener for the game list
+		gameList.setDataChangeListener(this); //set itself as DataChangeListener for the game list
 
 		try
 		{
@@ -126,11 +128,11 @@ public class MPNewGamePanel extends JPanel //implements IDataChangeListener
 	 * form is updated depending on the type of change.
 	 * @param changeEvent DataChangeEvent
 	 */
-/*	public void dataChanged(DataChangeEvent changeEvent)
+	public void dataChanged(DataChangeEvent changeEvent)
 	{
-		updateForm(changeEvent.getType());
+		//updateForm(changeEvent.getType());
 	}
-/**/
+
 	/**
 	 * Standard method to initialize all gui components.
 	 * @throws Exception
@@ -308,7 +310,7 @@ public class MPNewGamePanel extends JPanel //implements IDataChangeListener
 	 */
 	public void updateForm()
 	{
-//		updateForm(DataChangeType.undefined);
+		updateForm(DataChangeType.undefined);
 	}
 
 	/**
@@ -316,7 +318,7 @@ public class MPNewGamePanel extends JPanel //implements IDataChangeListener
 	 * player data is updated.
 	 * @param type type of change from the DataChangeEvent
 	 */
-/*	private void updateForm(DataChangeType type)
+	private void updateForm(DataChangeType type)
 	{
 		if (type == DataChangeType.game || type == DataChangeType.undefined)
 		{
@@ -435,7 +437,7 @@ public class MPNewGamePanel extends JPanel //implements IDataChangeListener
 		//update player information
 		refreshPlayers(currentGame);
 	}
-*/
+
 	/**
 	 * Update the player information.
 	 * @param gameData the current game, if null the game is read from the gamelist
@@ -543,7 +545,7 @@ public class MPNewGamePanel extends JPanel //implements IDataChangeListener
 		else
 		{
 			//leave game
-//			gameList.setDataChangeListener(null);
+			gameList.setDataChangeListener(null);
 			gameList.leaveGame();
 
 			//open multiplayer menu

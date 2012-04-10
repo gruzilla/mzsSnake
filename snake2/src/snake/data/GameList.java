@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.mozartspaces.capi3.AnyCoordinator;
+import org.mozartspaces.capi3.FifoCoordinator;
 import org.mozartspaces.core.ContainerReference;
 import org.mozartspaces.core.Entry;
 import org.mozartspaces.core.MzsCoreException;
@@ -44,13 +45,15 @@ public class GameList implements Serializable, NotificationListener
 		// read current games and add them to the local vector
 		ContainerReference gamesContainer = Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME_LIST);
 		try {
+			log.debug("trying to read games!");
 			ArrayList<Serializable> spaceGames = Util.getInstance().getConnection().read(
 					gamesContainer, 
-					AnyCoordinator.newSelector(), 
+					//AnyCoordinator.newSelector(),
+					FifoCoordinator.newSelector(),
 					RequestTimeout.TRY_ONCE, 
 					null);
 			
-			log.debug("games: " + spaceGames);
+			log.debug("games: " + spaceGames.size());
 			
 			for (Serializable spaceGame : spaceGames) {
 				if (spaceGame instanceof Game) {
@@ -58,9 +61,12 @@ public class GameList implements Serializable, NotificationListener
 				}
 			}
 		} catch (MzsCoreException e1) {
-			// TODO Auto-generated catch block
-			// e1.printStackTrace();
-			log.debug("games: NO GAMES FOUND");
+			// this exception is ok, normally it should be:
+			// The Count(1) of Selector 'AnyCoordinator' was not met. (0 Entries available)
+			if (e1.getMessage().indexOf("0 Entries available") < 0) {
+				// but if its not this exception, we do NOT like it.
+				log.debug("ERROR reading games!\n"+e1.getMessage());
+			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -70,18 +76,24 @@ public class GameList implements Serializable, NotificationListener
 		NotificationManager notifManager = Util.getInstance().getNotificationManager();
 		try {
 			this.notification = notifManager.createNotification(
-					gamesContainer,
+					Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME_LIST),
 					this,
-					Operation.ALL,
-					null,
-					null
+					Operation.WRITE, Operation.DELETE, Operation.TAKE
 			);
 		} catch (MzsCoreException e) {
 			// TODO Auto-generated catch block
+			log.error("ERROR: could not create notification (mzsexception)");
 			e.printStackTrace();
 		} catch (InterruptedException e) {
+			log.error("ERROR: could not create notification (interrupted)");
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			if (notification == null) {
+				log.error("ERROR: could not create notification (null after creation)");
+			} else {
+				log.debug("NOTFICATION successfully created");
+			}
 		}
 
 	}
@@ -140,7 +152,7 @@ public class GameList implements Serializable, NotificationListener
 	{
 		for (int i = 0; i < games.size(); i++)
 		{
-			if ( ( (Game) games.elementAt(i)).getNr() == game.getNr())
+			if ( ( (Game) games.elementAt(i)).getNr().equals(game.getNr()))
 			{
 				games.removeElementAt(i);
 			}
@@ -260,18 +272,26 @@ public class GameList implements Serializable, NotificationListener
 	@Override
 	public void entryOperationFinished(Notification notification, Operation operation,
 			List<? extends Serializable> entries) {
-		
+
+		// log.debug("NOTIFICATION: received a "+operation+" notification with "+entries.size()+" entries");
+
+		boolean changed = false;
+
 		switch (operation) {
 		case WRITE:
 			// if a game is written to the container add it to the local vector
+			if (entries != null)
 			for (Serializable entry : entries) {
+				// log.debug("entry has type "+entry.getClass());
 				Serializable obj = ((Entry) entry).getValue();
+				// log.debug("value of entry has type "+obj.getClass());
 				if (obj instanceof Game) {
 					Game game = (Game) obj;
 					boolean found = false;
 					// if we have this game already replace it.
+					// log.debug("trying to find game with nr "+game.getNr());
 					for (int i = 0; i < games.size(); i++) {
-						if (games.get(i).getNr() == game.getNr()) {
+						if (games.get(i).getNr().equals(game.getNr())) {
 							found = true;
 							games.set(i, game);
 							break;
@@ -279,23 +299,32 @@ public class GameList implements Serializable, NotificationListener
 					}
 					// if not, we have to add it
 					if (!found) {
+						// log.debug("game not found, adding it: "+games.size());
 						games.add(game);
-					}				}
+						// log.debug("game list size after add: "+games.size());
+						changed = true;
+					}
+				}
 			}
-			
+			break;
+
 		case DELETE:
 		case TAKE:
 			// on the other hand, if the game gets removed, we have to remove it too
+			if (entries != null)
 			for (Serializable entry : entries) {
 				Serializable obj = ((Entry) entry).getValue();
 				if (obj instanceof Game) {
 					Game game = (Game) obj;
 					games.remove(game);
+					changed = true;
 				}
 			}
+			break;
 		}
 
-		if (listener != null) {
+		if (changed && listener != null) {
+			//log.debug("informing listener about changed data: "+games.size());
 			listener.dataChanged(new DataChangeEvent());
 		}
 	}

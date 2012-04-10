@@ -35,15 +35,12 @@ public class Settings
 	 */
 	public void load()
 	{
+		FileInputStream in = null;
 		try
 		{
 			props = new Properties();
 			//InputStream in = ClassLoader.getSystemResourceAsStream(filePath);
-			FileInputStream in = new FileInputStream(filePath);
-			if (in == null)
-			{
-				throw new Exception("Cannot find config file: snake.properties");
-			}
+			in = new FileInputStream(filePath);
 			props.load(in);
 
 //			local = props.getProperty("local");
@@ -57,6 +54,10 @@ public class Settings
 		}
 		catch (Exception ex)
 		{
+			if (in == null)
+			{
+				System.out.println("Cannot find config file: snake.properties");
+			}
 			System.out.println(
 					"Error occured: settings can't be loaded! set to default settings.");
 			ex.printStackTrace(System.out);

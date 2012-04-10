@@ -39,7 +39,6 @@ public class Util
 	private MzsCore core;
 	private Settings settings;
 	private NotificationManager notificationManager;
-	private SnakeLog snakeLog;
 
 	private Logger log = LoggerFactory.getLogger(Util.class);
 	private URI space;
@@ -48,15 +47,15 @@ public class Util
 		try
 		{
 			//read the properties from the config file
-			snakeLog = new SnakeLog();
 			settings = new Settings();
 			settings.load();
-			snakeLog.writeLogEntry("Settings loaded ");
-//			snakeLog.writeLogEntry("		 local site:	" + settings.getCokeSiteLocal());
-			snakeLog.writeLogEntry("		 server site: " + settings.getCokeSiteServer());
-			snakeLog.writeLogEntry("		 port:			 " + settings.getPort());
-//			snakeLog.writeLogEntry("		 xvsm user:			 " + settings.getUsername());
-			snakeLog.writeLogEntry("");
+			log.debug("Settings loaded ");
+//			log.debug("		local site:	" + settings.getCokeSiteLocal());
+			log.debug("		server site:	" + settings.getCokeSiteServer());
+			log.debug("		port:			" + settings.getPort());
+			log.debug("		playername:		" + settings.getPlayerName());
+//			log.debug("		xvsm user:		" + settings.getUsername());
+			log.debug("");
 
 			// set space
 			space = this.getSettings().getUri();
@@ -91,13 +90,13 @@ public class Util
 		{
 			try
 			{
-				snakeLog.writeLogEntry("Trying to connect.. ");
+				log.debug("Trying to connect.. ");
 				conn = new Capi(core);
-				snakeLog.writeLogEntry("connected");
+				log.debug("connected");
 			}
 			catch (Exception e)
 			{
-				snakeLog.writeLogEntry("Can't connect to space");
+				log.debug("Can't connect to space");
 				throw new Exception("CorsoUtil: Error connecting to space " +
 						e.getMessage());
 			}
@@ -114,7 +113,7 @@ public class Util
 		{
 			if (conn != null)
 			{
-				Snake.snakeLog.writeLogEntry("Disconnected from Local Space");
+				log.debug("Disconnected from Local Space");
 			}
 		}
 		catch (Exception e)
@@ -244,6 +243,25 @@ public class Util
 
 	public Settings getSettings() {
 		return settings;
+	}
+
+	public TransactionReference createTransaction() {
+		return createTransaction(2000);
+	}
+
+	public TransactionReference createTransaction(int timeoutInMilliseconds) {
+		try {
+			return getConnection().createTransaction(timeoutInMilliseconds, getSpaceUri());
+		} catch (MzsCoreException e) {
+			// TODO Auto-generated catch block
+			log.error("Could not create transaction (mzexception)");
+			e.printStackTrace();
+		} catch (Exception e) {
+			log.error("Could not create transaction (java exception)");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
 

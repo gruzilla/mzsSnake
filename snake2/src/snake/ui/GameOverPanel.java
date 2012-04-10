@@ -4,6 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.UUID;
 
 import snake.Snake;
 import snake.GameListManager;
@@ -242,7 +243,7 @@ public class GameOverPanel extends JPanel
 		{
 			//if multiplayer mode, show points of all players
 			int maxPoints = 0;
-			int winnerNr = -1;
+			UUID winnerNr = null;
 			float highScoreData = (float) playTime / 60.0f;
 			float highScorePoints = 0.0f;
 			HighScore highScore = gameList.getHighScore();
@@ -274,7 +275,7 @@ public class GameOverPanel extends JPanel
 					winnerNr = player.getNr();
 				}
 			}
-			if (winnerNr == myPlayer.getNr())
+			if (winnerNr.equals(myPlayer.getNr()))
 			{
 				//special text if player is winner
 				laTitel.setText("WINNER");

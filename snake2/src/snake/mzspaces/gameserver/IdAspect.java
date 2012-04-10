@@ -32,6 +32,7 @@ public class IdAspect extends AbstractContainerAspect {
 	public AspectResult preWrite(WriteEntriesRequest request, Transaction tx,
 			SubTransaction stx, Capi3AspectPort capi3, int executionCount) {
 		
+		/*
 		for (Entry e : request.getEntries()) {
 			if (e.getValue() instanceof Game) {
 				Game g = (Game) e.getValue();
@@ -41,6 +42,7 @@ public class IdAspect extends AbstractContainerAspect {
 				}
 			}
 		}
+		*/
 		return AspectResult.OK;
 	}
 	

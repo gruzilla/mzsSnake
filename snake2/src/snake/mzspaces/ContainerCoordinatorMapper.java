@@ -26,7 +26,8 @@ public class ContainerCoordinatorMapper {
 	static {
 		// GAME_LIST
 		ArrayList<Coordinator> list = new ArrayList<Coordinator>();
-		list.add(new AnyCoordinator()); //FifoCoordinator());
+		// list.add(new AnyCoordinator());
+		list.add(new FifoCoordinator());
 		//list.add(new LindaCoordinator());
 		map.put(GAME_LIST, list);
 		

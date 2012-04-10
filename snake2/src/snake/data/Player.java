@@ -1,6 +1,16 @@
 package snake.data;
 
 import java.io.Serializable;
+import java.util.UUID;
+
+import org.mozartspaces.core.ContainerReference;
+import org.mozartspaces.core.Entry;
+import org.mozartspaces.core.MzsCoreException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import snake.mzspaces.ContainerCoordinatorMapper;
+import snake.mzspaces.Util;
 
 /**
  * Representation of a player in corsospace.
@@ -11,7 +21,7 @@ public class Player implements Serializable
 	private static final long serialVersionUID = 1L;
 	private String name = null;
 	private String skin = null;
-	private int nr = 0;
+	private UUID nr = UUID.randomUUID();
 	private boolean ready = false;
 	private int points = 0;
 	private PlayerState state = PlayerState.notinit;
@@ -20,6 +30,8 @@ public class Player implements Serializable
 	private int headPos;
 	private int tailPos;
 	private SnakePos[] parts;
+	private Logger log = LoggerFactory.getLogger(GameList.class);
+	private int playerNumber;
 
 	public Player()
 	{
@@ -51,7 +63,7 @@ public class Player implements Serializable
 		return skin;
 	}
 
-	public int getNr()
+	public UUID getNr()
 	{
 		return nr;
 	}
@@ -84,11 +96,6 @@ public class Player implements Serializable
 	public void setSkin(String value)
 	{
 		skin = value;
-	}
-
-	public void setNr(int value)
-	{
-		nr = value;
 	}
 
 	public void setPlayerState(PlayerState newState)
@@ -275,5 +282,26 @@ public class Player implements Serializable
 
 	public SnakeState getSnakeState() {
 		return snakeState;
+	}
+
+	public void saveToSpace() {
+		ContainerReference container = Util.getInstance().getContainer(ContainerCoordinatorMapper.PLAYER);
+		try {
+			Util.getInstance().getConnection().write(container, new Entry(this));
+		} catch (MzsCoreException e) {
+			log.error("Could not save the player in the container (mzsexception)");
+			e.printStackTrace();
+		} catch (Exception e) {
+			log.error("Could not save the player in the container (java exception)");
+			e.printStackTrace();
+		}
+	}
+
+	public void setPlayerNr(int indexOf) {
+		playerNumber = indexOf;
+	}
+	
+	public int getPlayerNr() {
+		return playerNumber;
 	}
 }
