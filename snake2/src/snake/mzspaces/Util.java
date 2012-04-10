@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import com.esotericsoftware.minlog.Log;
 
 import snake.*;
+import snake.data.Game;
 import snake.util.SnakeLog;
 
 /**
@@ -144,6 +145,34 @@ public class Util
 					containerName,
 					this.getSpaceUri(),
 					ContainerCoordinatorMapper.getCoordinators(containerName),
+					null,
+					getConnection());
+		} catch (MzsCoreException e) {
+			
+			e.printStackTrace();
+			System.err.println("Util: Could not load Container (" + containerName + "): " + e.getMessage());
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.err.println("Util: Could not connect to XVSM: " + e.getMessage());
+		}
+		return null;
+	}
+	
+	/**
+	 * creates/returns a container for a certain game. in every game-container, the players and their current position is held 
+	 * @param game
+	 * @return
+	 */
+	public ContainerReference getGameContainer(Game game) {
+		System.out.println("getting game container "+game.getNr()+" on "+this.getSpaceUri());
+		String containerName = "game-"+game.getNr();
+		try {
+			return CapiUtil.lookupOrCreateContainer(
+					containerName,
+					this.getSpaceUri(),
+					ContainerCoordinatorMapper.getCoordinators(ContainerCoordinatorMapper.GAME),
 					null,
 					getConnection());
 		} catch (MzsCoreException e) {

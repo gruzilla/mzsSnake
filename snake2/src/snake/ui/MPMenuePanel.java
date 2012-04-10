@@ -267,7 +267,7 @@ public class MPMenuePanel extends JPanel implements DataChangeListener
 				if (myPlayer.getPlayerState() != PlayerState.notinit)
 				{
 					myPlayer.setPlayerState(PlayerState.notinit);
-//					myPlayer.saveToSpace();
+					myPlayer.saveToSpace();
 				}
 				//join game
 				gameList.joinGame(lbGames.getSelectedIndex());
@@ -303,7 +303,7 @@ public class MPMenuePanel extends JPanel implements DataChangeListener
 			if (myPlayer.getPlayerState() != PlayerState.notinit)
 			{
 				myPlayer.setPlayerState(PlayerState.notinit);
-//				myPlayer.saveToSpace();
+				myPlayer.saveToSpace();
 			}
 
 			GameState gameState = gameList.getList().getGameState(selectedIndex);

@@ -32,10 +32,7 @@ public class Player implements Serializable
 	private SnakePos[] parts;
 	private Logger log = LoggerFactory.getLogger(GameList.class);
 	private int playerNumber;
-
-	public Player()
-	{
-	}
+	private Game currentGame;
 
 	/**
 	 * Default constructor for a newly created player.
@@ -285,7 +282,14 @@ public class Player implements Serializable
 	}
 
 	public void saveToSpace() {
-		ContainerReference container = Util.getInstance().getContainer(ContainerCoordinatorMapper.PLAYER);
+		
+		ContainerReference container;
+		if (currentGame == null) { // should never happen!
+			log.error("current game is null!");
+			container = Util.getInstance().getContainer(ContainerCoordinatorMapper.PLAYER);
+		} else {
+			container = Util.getInstance().getGameContainer(currentGame);
+		}
 		try {
 			Util.getInstance().getConnection().write(container, new Entry(this));
 		} catch (MzsCoreException e) {
@@ -303,5 +307,13 @@ public class Player implements Serializable
 	
 	public int getPlayerNr() {
 		return playerNumber;
+	}
+
+	public Game getCurrentGame() {
+		return currentGame;
+	}
+
+	public void setCurrentGame(Game currentGame) {
+		this.currentGame = currentGame;
 	}
 }

@@ -12,6 +12,7 @@ import snake.Snake;
 import snake.data.*;
 import snake.mzspaces.DataChangeEvent;
 import snake.mzspaces.DataChangeListener;
+import snake.mzspaces.DataChangeType;
 import snake.util.Messages;
 import snake.util.ImageLoader;
 import javax.swing.event.ChangeEvent;
@@ -130,7 +131,7 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 	 */
 	public void dataChanged(DataChangeEvent changeEvent)
 	{
-		//updateForm(changeEvent.getType());
+		updateForm(changeEvent.getType());
 	}
 
 	/**

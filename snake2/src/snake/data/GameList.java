@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import org.mozartspaces.capi3.AnyCoordinator;
 import org.mozartspaces.capi3.FifoCoordinator;
 import org.mozartspaces.core.ContainerReference;
 import org.mozartspaces.core.Entry;
@@ -21,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import snake.mzspaces.ContainerCoordinatorMapper;
 import snake.mzspaces.DataChangeEvent;
 import snake.mzspaces.DataChangeListener;
+import snake.mzspaces.DataChangeType;
 import snake.mzspaces.Util;
 
 /**
@@ -325,7 +325,7 @@ public class GameList implements Serializable, NotificationListener
 
 		if (changed && listener != null) {
 			//log.debug("informing listener about changed data: "+games.size());
-			listener.dataChanged(new DataChangeEvent());
+			listener.dataChanged(new DataChangeEvent(this, DataChangeType.game));
 		}
 	}
 

@@ -116,6 +116,7 @@ public class GameListManager
 			initData.LoadData(levelManager);
 
 			currentGame = gameList.addGame(name, myPlayer, initData);
+			myPlayer.setCurrentGame(currentGame);
 			isLeader = true;
 		}
 	}
@@ -131,6 +132,7 @@ public class GameListManager
 		synchronized (gameList)
 		{
 			currentGame = gameList.joinGame(index, myPlayer);
+			myPlayer.setCurrentGame(currentGame);
 			isLeader = false;
 		}
 	}
@@ -146,6 +148,7 @@ public class GameListManager
 		synchronized (gameList)
 		{
 			currentGame = gameList.getGameViewOnly(index);
+			myPlayer.setCurrentGame(currentGame);
 			isLeader = false;
 		}
 	}
@@ -183,9 +186,6 @@ public class GameListManager
 			}
 
 			myPlayer.setPlayerState(newState);
-
-			//gameList.setGamePlayerReady(currentGame, myPlayer, ready);
-			// System.out.println("Set my playerstate: " + newState);
 
 			if (isLeader)
 			{
@@ -261,8 +261,8 @@ public class GameListManager
 	 */
 	public boolean isGameReadyCreated()
 	{
-		//Pruefen ob Spiel und alle Spieler bereit sind (es müssen mindestens 2 Spieler sein)
-		currentGame = getCurrentGame();
+		// Pruefen ob Spiel und alle Spieler bereit sind (es muessen mindestens 2 Spieler sein)
+		// currentGame = getCurrentGame();
 		if (currentGame != null)
 		{
 			if (currentGame.getPlayerAnz() > 1)
@@ -288,7 +288,7 @@ public class GameListManager
 	 */
 	public boolean isGameReadyLoaded()
 	{
-		//Prï¿½fen ob Spiel und alle Spieler bereit sind (es mï¿½ssen mindestens 2 Spieler sein)
+		// Pruefen ob Spiel und alle Spieler bereit sind (es muessen mindestens 2 Spieler sein)
 		// currentGame = getCurrentGame();
 		if (currentGame != null)
 		{
