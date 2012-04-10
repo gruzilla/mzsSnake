@@ -430,5 +430,6 @@ public class GameListManager
 
 	public void setDataChangeListener(DataChangeListener listener) {
 		this.listener = listener;
+		gameList.setDataChangeListener(listener);
 	}
 }

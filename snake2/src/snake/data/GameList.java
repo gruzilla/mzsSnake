@@ -295,6 +295,12 @@ public class GameList implements Serializable, NotificationListener
 			}
 		}
 
-		listener.dataChanged(new DataChangeEvent());
+		if (listener != null) {
+			listener.dataChanged(new DataChangeEvent());
+		}
+	}
+
+	public void setDataChangeListener(DataChangeListener listener2) {
+		listener = listener2;
 	}
 }
