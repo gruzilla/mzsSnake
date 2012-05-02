@@ -25,7 +25,6 @@ public class Player implements Serializable
 	private boolean ready = false;
 	private int points = 0;
 	private PlayerState state = PlayerState.notinit;
-	private int playerId;
 	private SnakeState snakeState;
 	private int headPos;
 	private int tailPos;
@@ -218,16 +217,12 @@ public class Player implements Serializable
 	{
 		if (obj instanceof Player)
 		{
-			return playerId == (((Player)obj).getId());
+			return nr.equals(((Player)obj).getNr());
 		}
 		else
 		{
 			return super.equals(obj);
 		}
-	}
-
-	private int getId() {
-		return playerId;
 	}
 
 	public void setSnakeState(SnakeState snakeState) {

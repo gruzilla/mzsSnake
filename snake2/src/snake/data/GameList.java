@@ -45,7 +45,7 @@ public class GameList implements Serializable, NotificationListener
 		// read current games and add them to the local vector
 		ContainerReference gamesContainer = Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME_LIST);
 		try {
-			log.debug("trying to read games!");
+			//log.debug("trying to read games!");
 			ArrayList<Serializable> spaceGames = Util.getInstance().getConnection().read(
 					gamesContainer, 
 					//AnyCoordinator.newSelector(),
@@ -53,10 +53,11 @@ public class GameList implements Serializable, NotificationListener
 					RequestTimeout.TRY_ONCE, 
 					null);
 			
-			log.debug("games: " + spaceGames.size());
+			//log.debug("games: " + spaceGames.size());
 			
 			for (Serializable spaceGame : spaceGames) {
 				if (spaceGame instanceof Game) {
+					//log.debug("player of game "+((Game)spaceGame).getNr()+" "+((Game)spaceGame).getPlayerAnz());
 					games.add((Game) spaceGame);
 				}
 			}
@@ -169,8 +170,25 @@ public class GameList implements Serializable, NotificationListener
 	{
 		if (games.size() > index)
 		{
-			((Game)games.elementAt(index)).joinGame(player);
-			return (Game)games.elementAt(index);
+			Game game = (Game)games.elementAt(index);
+			log.debug("currently has: "+game.getPlayerAnz());
+			game.joinGame(player);
+			log.debug("after join has: "+game.getPlayerAnz());
+
+			// however we have to write it to the space
+			// log.debug("\n\nwriting game to space again\n\n");
+			ContainerReference gamesContainer = Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME_LIST);
+			try {
+				Util.getInstance().getConnection().write(gamesContainer, new Entry(game));
+			} catch (MzsCoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			return game;
 		}
 		return null;
 	}
@@ -273,7 +291,7 @@ public class GameList implements Serializable, NotificationListener
 	public void entryOperationFinished(Notification notification, Operation operation,
 			List<? extends Serializable> entries) {
 
-		// log.debug("NOTIFICATION: received a "+operation+" notification with "+entries.size()+" entries");
+		log.debug("\n\nNOTIFICATION: received a "+operation+" notification with "+entries.size()+" entries\ncurrent gamesize:"+games.size()+"\n\n");
 
 		boolean changed = false;
 
@@ -291,9 +309,12 @@ public class GameList implements Serializable, NotificationListener
 					// if we have this game already replace it.
 					// log.debug("trying to find game with nr "+game.getNr());
 					for (int i = 0; i < games.size(); i++) {
+						//log.debug("comparing "+games.get(i).getNr()+" against "+game.getNr());
 						if (games.get(i).getNr().equals(game.getNr())) {
 							found = true;
 							games.set(i, game);
+							log.debug("\n\nwe have "+game.getPlayerAnz()+" player\n\n");
+							changed = true;
 							break;
 						}
 					}
@@ -301,6 +322,7 @@ public class GameList implements Serializable, NotificationListener
 					if (!found) {
 						// log.debug("game not found, adding it: "+games.size());
 						games.add(game);
+						log.debug("\n\nADD we have "+game.getPlayerAnz()+" player\n\n");
 						// log.debug("game list size after add: "+games.size());
 						changed = true;
 					}

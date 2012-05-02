@@ -18,6 +18,9 @@ import snake.util.ImageLoader;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Panel that shows all settings for a multiplayer game. The MPNewGamePanel listens
  * to changes from the game list, and updates itself if changes in the game occur.
@@ -67,6 +70,8 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 	JTextField tfSpielPunkte = new JTextField();
 	JTextField tfSpielZeit = new JTextField();
 	JLabel laGameName = new JLabel();
+
+	private Logger log = LoggerFactory.getLogger(MPNewGamePanel.class);
 
 	/**
 	 * Default constructor, just to remove errors with JBuilder.
@@ -131,6 +136,7 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 	 */
 	public void dataChanged(DataChangeEvent changeEvent)
 	{
+		//log.debug("\n\nreceived change event, updating form\n\n");
 		updateForm(changeEvent.getType());
 	}
 
@@ -495,6 +501,7 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 	 */
 	private void updatePlayerInfo(Game game, int index, JTextField tfPlayer, JLabel laPlayerReady)
 	{
+		log.debug("\n\n MP players: "+game.getPlayerAnz()+" currentindex: "+index+"\n\n");
 		if (game.getPlayerAnz() > index)
 		{
 			Player activePlayer = game.getPlayer(index);

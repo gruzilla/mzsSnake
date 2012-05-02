@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The Game class represents one game and its settings in corso space. The players
  * are not directly saved with the game, they are referenced by their oids.
@@ -27,6 +30,7 @@ public class Game implements Serializable
 	SnakeSpriteData.COLLISION_OWN; //collision behaviour
 	private Player leader = null;
 
+	private Logger log = LoggerFactory.getLogger(Game.class);
 
 	public Game(PlayerList playerList)
 	{
@@ -206,6 +210,7 @@ public class Game implements Serializable
 	public void joinGame(Player player)
 	{
 		//Spieler zu Spiel hinzufuegen
+		log.debug("current anz: "+getPlayerAnz()+" index of player is "+indexOf(player)+" and max is "+MAXPLAYERS);
 		if (getPlayerAnz() < MAXPLAYERS && indexOf(player) == -1)
 		{
 			players.add(player);
