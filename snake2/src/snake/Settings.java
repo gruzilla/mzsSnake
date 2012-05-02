@@ -15,7 +15,7 @@ import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 public class Settings
 {
 	//corso connection settings
-	private String domain = "localhost";
+	private String server = "localhost";
 	private int port = 4242;
 
 	private String playerName = "Player"; //name of the player in game
@@ -25,6 +25,8 @@ public class Settings
 
 	private Properties props = new Properties();
 	private final String filePath = "snake.properties"; //name of properties file
+	private String connectionUsername;
+	private String connectionPassword;
 
 	public Settings()
 	{
@@ -45,7 +47,7 @@ public class Settings
 
 //			local = props.getProperty("local");
 //			local_port = Integer.parseInt(props.getProperty("local_port"));
-			domain = props.getProperty("domain");
+			server = props.getProperty("server");
 			port = Integer.parseInt(props.getProperty("port"));
 			playerName = props.getProperty("playername");
 			snakeSkin = props.getProperty("snakeskin");
@@ -78,8 +80,8 @@ public class Settings
 			//Properties props = new Properties();
 //			props.setProperty("local",local);
 //			props.setProperty("local_port",String.valueOf(local_port));
-			props.setProperty("remote",domain);
-			props.setProperty("remote_port",String.valueOf(port));
+			props.setProperty("server",server);
+			props.setProperty("port",String.valueOf(port));
 //			props.setProperty("coke_user",username);
 //			props.setProperty("coke_pass",password);
 			props.setProperty("playername",playerName);
@@ -103,10 +105,12 @@ public class Settings
 	{
 //		local = "localhost";
 //		local_port = 8282;
-		domain = "localhost";
+		server = "localhost";
 		port = 4242;
 //		username = "corsouser";
 //		password = "corsopass";
+		connectionUsername = "";
+		connectionPassword = "";
 		playerName = "Player";
 		playTime = 60;
 		playPoints = 20;
@@ -124,14 +128,14 @@ public class Settings
 		return local;
 	}
 */
-	public void setCokeSiteServer(String value)
+	public void setServer(String value)
 	{
-		domain = value;
+		server = value;
 	}
 
 	public String getCokeSiteServer()
 	{
-		return domain;
+		return server;
 	}
 
 
@@ -140,25 +144,25 @@ public class Settings
 	}
 
 
-//	public void setUsername(String value)
-//	{
-//		username = value;
-//	}
-//
-//	public String getUsername()
-//	{
-//		return username;
-//	}
-//
-//	public void setPassword(String value)
-//	{
-//		password = value;
-//	}
-//
-//	public String getPassword()
-//	{
-//		return password;
-//	}
+	public void setUsername(String value)
+	{
+		connectionUsername = value;
+	}
+
+	public String getUsername()
+	{
+		return connectionUsername;
+	}
+
+	public void setPassword(String value)
+	{
+		connectionPassword = value;
+	}
+
+	public String getPassword()
+	{
+		return connectionPassword;
+	}
 
 	public void setPlayerName(String value)
 	{
@@ -202,7 +206,7 @@ public class Settings
 
 	public URI getUri() {
 		try {
-			return new URI("xvsm://"+ domain +":" + getPort());
+			return new URI("xvsm://"+ server +":" + getPort());
 		} catch (URISyntaxException e) {
 			try {
 				return new URI("xvsm://localhost:4242");

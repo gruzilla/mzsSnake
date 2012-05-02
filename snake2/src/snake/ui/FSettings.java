@@ -37,8 +37,8 @@ public class FSettings extends JDialog {
 	private Snake snakeMain = null;
 
 	JPanel panel1 = new JPanel();
-	JTextField tfCorsoSiteLocal = new javax.swing.JTextField();
-	JLabel laCokeSiteLocal = new javax.swing.JLabel();
+	//JTextField tfXVSMSiteLocal = new javax.swing.JTextField();
+	//JLabel laCokeSiteLocal = new javax.swing.JLabel();
 	JTextField tfPort = new javax.swing.JTextField();
 	JLabel laPort = new javax.swing.JLabel();
 	JPasswordField tfPassword = new javax.swing.JPasswordField();
@@ -47,16 +47,16 @@ public class FSettings extends JDialog {
 	JLabel laPassword = new javax.swing.JLabel();
 	JLabel laPlayername = new javax.swing.JLabel();
 	JTextField tfPlayername = new javax.swing.JTextField();
-	JTextField tfCorsoSiteServer = new javax.swing.JTextField();
+	JTextField tfXVSMServer = new javax.swing.JTextField();
 	JLabel laCokeSiteServer = new javax.swing.JLabel();
-	JTextField tfDomain = new javax.swing.JTextField();
-	JLabel laDomain = new javax.swing.JLabel();
+	//JTextField tfDomain = new javax.swing.JTextField();
+	//JLabel laDomain = new javax.swing.JLabel();
 	JButton btAbbrechen = new JButton();
 	JButton btOK = new JButton();
 	JPanel jPanel1 = new JPanel();
 	Border border1 = BorderFactory.createEtchedBorder(Color.white, new Color(
 			156, 156, 158));
-	Border border2 = new TitledBorder(border1, "Corso Connection:");
+	Border border2 = new TitledBorder(border1, "XVSM Connection:");
 	JPanel jPanel2 = new JPanel();
 	Border border3 = BorderFactory.createEtchedBorder(Color.white, new Color(
 			156, 156, 158));
@@ -108,8 +108,8 @@ public class FSettings extends JDialog {
 
 			// fill form
 			Settings settings = Util.getInstance().getSettings();
-//			tfCorsoSiteLocal.setText(settings.getCokeSiteLocal());
-			tfCorsoSiteServer.setText(settings.getCokeSiteServer());
+//			tfXVSMSiteLocal.setText(settings.getCokeSiteLocal());
+			tfXVSMServer.setText(settings.getCokeSiteServer());
 			tfPort.setText(String.valueOf(settings.getPort()));
 			// tfUser.setText(settings.getUsername());
 			// tfPassword.setText(settings.getPassword());
@@ -135,11 +135,13 @@ public class FSettings extends JDialog {
 	 */
 	private void jbInit() throws Exception {
 		panel1.setLayout(null);
-		tfCorsoSiteLocal.setFont(new java.awt.Font("Lucida Sans", Font.PLAIN,
+/*
+		tfXVSMSiteLocal.setFont(new java.awt.Font("Lucida Sans", Font.PLAIN,
 				12));
 		laCokeSiteLocal.setFont(new java.awt.Font("Arial", Font.PLAIN, 13));
-		laCokeSiteLocal.setText("Corso Site Local:");
+		laCokeSiteLocal.setText("XVSM Site Local:");
 		laCokeSiteLocal.setBounds(new Rectangle(16, 32, 106, 15));
+*/
 		tfPort.setFont(new java.awt.Font("Lucida Sans", Font.PLAIN, 12));
 		tfPort.setPreferredSize(new Dimension(110, 21));
 		tfPort.setText("");
@@ -169,19 +171,19 @@ public class FSettings extends JDialog {
 		tfPlayername.setFont(new java.awt.Font("Lucida Sans", Font.PLAIN, 12));
 		tfPlayername.setText("");
 		tfPlayername.setBounds(new Rectangle(124, 24, 116, 20));
-		tfCorsoSiteServer.setFont(new java.awt.Font("Lucida Sans", Font.PLAIN,
+		tfXVSMServer.setFont(new java.awt.Font("Lucida Sans", Font.PLAIN,
 				12));
-		tfCorsoSiteServer.setText("");
-		tfCorsoSiteServer.setBounds(new Rectangle(125, 50, 116, 20));
+		tfXVSMServer.setText("");
+		tfXVSMServer.setBounds(new Rectangle(125, 50, 116, 20));
 		laCokeSiteServer.setFont(new java.awt.Font("Arial", Font.PLAIN, 13));
-		laCokeSiteServer.setText("Corso Site Server:");
+		laCokeSiteServer.setText("XVSM Site Server:");
 		laCokeSiteServer.setBounds(new Rectangle(16, 54, 106, 15));
-		tfDomain.setFont(new java.awt.Font("Lucida Sans", Font.PLAIN, 12));
+/*		tfDomain.setFont(new java.awt.Font("Lucida Sans", Font.PLAIN, 12));
 		tfDomain.setBounds(new Rectangle(125, 138, 116, 20));
 		laDomain.setFont(new java.awt.Font("Arial", Font.PLAIN, 13));
 		laDomain.setText("Domain:");
 		laDomain.setBounds(new Rectangle(16, 141, 106, 15));
-		this.setTitle("Snake Settings");
+*/		this.setTitle("Snake Settings");
 		this.addComponentListener(new FSettings_this_componentAdapter(this));
 		btAbbrechen.setBounds(new Rectangle(265, 275, 100, 23));
 		btAbbrechen.setToolTipText("");
@@ -205,17 +207,17 @@ public class FSettings extends JDialog {
 		pSkinPreview.setBounds(new Rectangle(174, 21, 52, 132));
 		jScrollPane1.setBounds(new Rectangle(10, 22, 153, 132));
 		lbSkins.addMouseListener(new FSettings_lbSkins_mouseAdapter(this));
-		jPanel1.add(laCokeSiteLocal);
-		jPanel1.add(tfCorsoSiteLocal);
+//		jPanel1.add(laCokeSiteLocal);
+//		jPanel1.add(tfXVSMSiteLocal);
 		jPanel1.add(laPort);
-		jPanel1.add(laDomain);
+//		jPanel1.add(laDomain);
 		jPanel1.add(laUser);
 		jPanel1.add(laPassword);
 		jPanel1.add(tfPassword);
 		jPanel1.add(laCokeSiteServer);
-		jPanel1.add(tfCorsoSiteServer);
+		jPanel1.add(tfXVSMServer);
 		jPanel1.add(tfPort);
-		jPanel1.add(tfDomain);
+//		jPanel1.add(tfDomain);
 		jPanel1.add(tfUser);
 		panel1.add(btAbbrechen);
 		panel1.add(btOK);
@@ -228,8 +230,8 @@ public class FSettings extends JDialog {
 		jPanel2.add(laPlayername);
 		panel1.add(jPanel1);
 		this.getContentPane().add(panel1, java.awt.BorderLayout.CENTER);
-		tfCorsoSiteLocal.setText("");
-		tfCorsoSiteLocal.setBounds(new Rectangle(125, 28, 116, 20));
+//		tfXVSMSiteLocal.setText("");
+//		tfXVSMSiteLocal.setBounds(new Rectangle(125, 28, 116, 20));
 	}
 
 	/**
@@ -240,19 +242,21 @@ public class FSettings extends JDialog {
 	 */
 	public void btOK_actionPerformed(ActionEvent e) {
 		// check data
-		if (tfCorsoSiteLocal.getText().length() == 0
-				|| tfCorsoSiteServer.getText().length() == 0
-				|| tfPort.getText().length() == 0
-				|| tfUser.getText().length() == 0
-				|| tfPassword.getPassword().length == 0
-				|| tfDomain.getText().length() == 0) {
+		if (
+				// tfXVSMSiteLocal.getText().length() == 0 ||
+				tfXVSMServer.getText().trim().length() == 0
+				|| tfPort.getText().trim().length() == 0
+		//		|| tfUser.getText().length() == 0			// optional
+		//		|| tfPassword.getPassword().length == 0		// optional
+		//		|| tfDomain.getText().length() == 0			// optional
+		) {
 			Messages.errorMessage(this,
-					"Please fill out all Corso settings fields.");
+					"Please fill out the server and port fields.");
 			return;
 		}
 		int port = 0;
 		try {
-			port = Integer.parseInt(tfPort.getText());
+			port = Integer.parseInt(tfPort.getText().trim());
 		} catch (Exception ex) {
 			Messages.errorMessage(this, "Please define a correct port number.");
 			return;
@@ -264,11 +268,11 @@ public class FSettings extends JDialog {
 
 		// create new settings object
 		Settings settings = new Settings();
-//		settings.setCokeSiteLocal(tfCorsoSiteLocal.getText());
-		settings.setCokeSiteServer(tfCorsoSiteServer.getText());
+//		settings.setCokeSiteLocal(tfXVSMSiteLocal.getText());
+		settings.setServer(tfXVSMServer.getText());
 //		settings.setPort(port);
-		// settings.setUsername(tfUser.getText());
-		// settings.setPassword(new String(tfPassword.getPassword()));
+		settings.setUsername(tfUser.getText());
+		settings.setPassword(new String(tfPassword.getPassword()));
 		settings.setPlayerName(tfPlayername.getText());
 		settings.setSnakeSkin(skinsManager.getCurrentSkinName());
 
