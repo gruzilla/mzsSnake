@@ -501,7 +501,7 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 	 */
 	private void updatePlayerInfo(Game game, int index, JTextField tfPlayer, JLabel laPlayerReady)
 	{
-		log.debug("\n\n MP players: "+game.getPlayerAnz()+" currentindex: "+index+"\n\n");
+		// log.debug("\n\n MP players: "+game.getPlayerAnz()+" currentindex: "+index+"\n\n");
 		if (game.getPlayerAnz() > index)
 		{
 			Player activePlayer = game.getPlayer(index);

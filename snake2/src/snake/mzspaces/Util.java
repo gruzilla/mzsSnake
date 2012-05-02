@@ -6,10 +6,12 @@ import java.util.List;
 
 import org.mozartspaces.capi3.Coordinator;
 import org.mozartspaces.capi3.FifoCoordinator;
+import org.mozartspaces.capi3.Selector;
 import org.mozartspaces.core.Capi;
 import org.mozartspaces.core.CapiUtil;
 import org.mozartspaces.core.ContainerReference;
 import org.mozartspaces.core.DefaultMzsCore;
+import org.mozartspaces.core.MzsConstants;
 import org.mozartspaces.core.MzsCore;
 import org.mozartspaces.core.MzsCoreException;
 import org.mozartspaces.core.TransactionReference;
@@ -275,7 +277,18 @@ public class Util
 	}
 
 	public TransactionReference createTransaction() {
-		return createTransaction(2000);
+		try {
+			return getConnection().createTransaction(RequestTimeout.INFINITE, getSpaceUri());
+		} catch (MzsCoreException e) {
+			// TODO Auto-generated catch block
+			log.error("Could not create transaction (mzexception)");
+			e.printStackTrace();
+		} catch (Exception e) {
+			log.error("Could not create transaction (java exception)");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public TransactionReference createTransaction(int timeoutInMilliseconds) {
@@ -291,6 +304,25 @@ public class Util
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public void delete(ContainerReference container, ArrayList<Selector> selectors) {
+		delete(container, selectors, null);
+	}
+
+	public void delete(ContainerReference container, ArrayList<Selector> selectors,
+			TransactionReference tx) {
+		try {
+			conn.delete(container, selectors, MzsConstants.RequestTimeout.ZERO, tx);
+		} catch (MzsCoreException e) {
+			// TODO Auto-generated catch block
+			log.error("Could not delete from container "+container.getId()+" (mzexception)");
+			e.printStackTrace();
+		} catch (Exception e) {
+			log.error("Could not delete from container "+container.getId()+" (java exception)");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
 

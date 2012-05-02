@@ -6,10 +6,14 @@ import java.util.List;
 import java.util.Vector;
 
 import org.mozartspaces.capi3.FifoCoordinator;
+import org.mozartspaces.capi3.KeyCoordinator;
+import org.mozartspaces.capi3.Selector;
 import org.mozartspaces.core.ContainerReference;
 import org.mozartspaces.core.Entry;
+import org.mozartspaces.core.MzsConstants;
 import org.mozartspaces.core.MzsCoreException;
 import org.mozartspaces.core.MzsConstants.RequestTimeout;
+import org.mozartspaces.core.TransactionReference;
 import org.mozartspaces.notifications.Notification;
 import org.mozartspaces.notifications.NotificationListener;
 import org.mozartspaces.notifications.NotificationManager;
@@ -130,10 +134,32 @@ public class GameList implements Serializable, NotificationListener
 		game.setLevelData(initData);
 		games.addElement(game);
 		
-		// however we have to write it to the space
+		// however we have to write it to the space. but first we have to delete this very game:
+		writeGameToSpace(game);
+		
+		return game;
+	}
+
+	private void writeGameToSpace(Game game) {
+		TransactionReference tx = Util.getInstance().createTransaction();
 		ContainerReference gamesContainer = Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME_LIST);
 		try {
-			Util.getInstance().getConnection().write(gamesContainer, new Entry(game));
+			ArrayList<Selector> selectors = new ArrayList<Selector>();
+			selectors.add(KeyCoordinator.newSelector(
+					String.valueOf(game.getNr()),
+					MzsConstants.Selecting.COUNT_ALL)
+			);
+
+			Util.getInstance().delete(gamesContainer, selectors, tx);
+
+			Util.getInstance().getConnection().write(
+					gamesContainer,
+					MzsConstants.RequestTimeout.ZERO,
+					tx,
+					new Entry(game, KeyCoordinator.newCoordinationData(String.valueOf(game.getNr())))
+			);
+
+			Util.getInstance().getConnection().commitTransaction(tx);
 		} catch (MzsCoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -141,8 +167,6 @@ public class GameList implements Serializable, NotificationListener
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return game;
 	}
 
 	/**
@@ -171,22 +195,13 @@ public class GameList implements Serializable, NotificationListener
 		if (games.size() > index)
 		{
 			Game game = (Game)games.elementAt(index);
-			log.debug("currently has: "+game.getPlayerAnz());
+			//log.debug("currently has: "+game.getPlayerAnz());
 			game.joinGame(player);
-			log.debug("after join has: "+game.getPlayerAnz());
+			//log.debug("after join has: "+game.getPlayerAnz());
 
 			// however we have to write it to the space
 			// log.debug("\n\nwriting game to space again\n\n");
-			ContainerReference gamesContainer = Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME_LIST);
-			try {
-				Util.getInstance().getConnection().write(gamesContainer, new Entry(game));
-			} catch (MzsCoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			writeGameToSpace(game);
 
 			return game;
 		}
@@ -313,7 +328,7 @@ public class GameList implements Serializable, NotificationListener
 						if (games.get(i).getNr().equals(game.getNr())) {
 							found = true;
 							games.set(i, game);
-							log.debug("\n\nwe have "+game.getPlayerAnz()+" player\n\n");
+							//log.debug("\n\nwe have "+game.getPlayerAnz()+" player\n\n");
 							changed = true;
 							break;
 						}
@@ -322,7 +337,7 @@ public class GameList implements Serializable, NotificationListener
 					if (!found) {
 						// log.debug("game not found, adding it: "+games.size());
 						games.add(game);
-						log.debug("\n\nADD we have "+game.getPlayerAnz()+" player\n\n");
+						//log.debug("\n\nADD we have "+game.getPlayerAnz()+" player\n\n");
 						// log.debug("game list size after add: "+games.size());
 						changed = true;
 					}
@@ -330,18 +345,29 @@ public class GameList implements Serializable, NotificationListener
 			}
 			break;
 
-		case DELETE:
 		case TAKE:
 			// on the other hand, if the game gets removed, we have to remove it too
 			if (entries != null)
 			for (Serializable entry : entries) {
-				Serializable obj = ((Entry) entry).getValue();
-				if (obj instanceof Game) {
-					Game game = (Game) obj;
+				Game game = null;
+				if (entry instanceof Game) {
+					game = (Game)entry;
+				}
+				if (entry instanceof Entry) { 
+					Serializable obj = ((Entry) entry).getValue();
+					if (obj instanceof Game) {
+						game = (Game) obj;
+					}
+				}
+				if (game != null) {
 					games.remove(game);
 					changed = true;
 				}
 			}
+			break;
+
+		case DELETE:
+			// nothing on delete. we only delete to update.
 			break;
 		}
 
