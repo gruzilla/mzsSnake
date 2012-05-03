@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.mozartspaces.capi3.FifoCoordinator;
+import org.mozartspaces.capi3.FifoCoordinator.FifoSelector;
 import org.mozartspaces.capi3.KeyCoordinator;
 import org.mozartspaces.capi3.Selector;
 import org.mozartspaces.core.ContainerReference;
@@ -34,7 +35,7 @@ import snake.mzspaces.Util;
 public class GameList implements Serializable, NotificationListener
 {
 	private static final long serialVersionUID = 1L;
-	private Vector<Game> games = new Vector<Game>();
+	private Vector<Game> games;
 	private PlayerList playerList = null;
 	private DataChangeListener listener;
 	private Notification notification;
@@ -43,6 +44,7 @@ public class GameList implements Serializable, NotificationListener
 	
 	public GameList(DataChangeListener listener, PlayerList playerList)
 	{
+		this.games = new Vector<Game>();
 		this.listener = listener;
 		this.playerList = playerList;
 		
@@ -53,11 +55,11 @@ public class GameList implements Serializable, NotificationListener
 			ArrayList<Serializable> spaceGames = Util.getInstance().getConnection().read(
 					gamesContainer, 
 					//AnyCoordinator.newSelector(),
-					FifoCoordinator.newSelector(),
-					RequestTimeout.TRY_ONCE, 
+					FifoCoordinator.newSelector(FifoSelector.COUNT_ALL),
+					0,
 					null);
 			
-			//log.debug("games: " + spaceGames.size());
+			log.debug("WTF games: " + spaceGames.size());
 			
 			for (Serializable spaceGame : spaceGames) {
 				if (spaceGame instanceof Game) {
@@ -83,7 +85,7 @@ public class GameList implements Serializable, NotificationListener
 			this.notification = notifManager.createNotification(
 					Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME_LIST),
 					this,
-					Operation.WRITE, Operation.DELETE, Operation.TAKE
+					Operation.WRITE, Operation.DELETE
 			);
 		} catch (MzsCoreException e) {
 			// TODO Auto-generated catch block
@@ -150,7 +152,12 @@ public class GameList implements Serializable, NotificationListener
 					MzsConstants.Selecting.COUNT_ALL)
 			);
 
-			Util.getInstance().delete(gamesContainer, selectors, tx);
+			// take it to force no ui update
+			Util.getInstance().getConnection().take(
+					gamesContainer,
+					selectors,
+					MzsConstants.RequestTimeout.ZERO, 
+					tx);
 
 			Util.getInstance().getConnection().write(
 					gamesContainer,
@@ -159,6 +166,28 @@ public class GameList implements Serializable, NotificationListener
 					new Entry(game, KeyCoordinator.newCoordinationData(String.valueOf(game.getNr())))
 			);
 
+			Util.getInstance().getConnection().commitTransaction(tx);
+		} catch (MzsCoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void deleteGameFromSpace(Game game) {
+		TransactionReference tx = Util.getInstance().createTransaction();
+		ContainerReference gamesContainer = Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME_LIST);
+		
+		try {
+			ArrayList<Selector> selectors = new ArrayList<Selector>();
+			selectors.add(KeyCoordinator.newSelector(
+					String.valueOf(game.getNr()),
+					MzsConstants.Selecting.COUNT_ALL)
+			);
+	
+			Util.getInstance().delete(gamesContainer, selectors, tx);
 			Util.getInstance().getConnection().commitTransaction(tx);
 		} catch (MzsCoreException e) {
 			// TODO Auto-generated catch block
@@ -180,6 +209,7 @@ public class GameList implements Serializable, NotificationListener
 			if ( ( (Game) games.elementAt(i)).getNr().equals(game.getNr()))
 			{
 				games.removeElementAt(i);
+				deleteGameFromSpace(game);
 			}
 		}
 	}
@@ -240,10 +270,12 @@ public class GameList implements Serializable, NotificationListener
 				//delete game if no more players
 				removeGame(game);
 			}
-			else if (game.getLeader().equals(player))
-			{
-				//determine new leader, if leader has left the game
-				game.updateLeader();
+			else {
+				if (game.getLeader().equals(player))	{
+					//determine new leader, if leader has left the game
+					game.updateLeader();
+				}
+				writeGameToSpace(game);
 			}
 		}
 	}
@@ -345,7 +377,14 @@ public class GameList implements Serializable, NotificationListener
 			}
 			break;
 
+		/* we do not listen to take any more 
 		case TAKE:
+			// nothing on take. we only take to update.
+			log.debug("\n\n\n GAME TAKEN -> do nothing");
+			break;
+		*/
+		case DELETE:
+			log.debug("\n\n\n GAME DELETED -> delete it from local game list");
 			// on the other hand, if the game gets removed, we have to remove it too
 			if (entries != null)
 			for (Serializable entry : entries) {
@@ -365,12 +404,9 @@ public class GameList implements Serializable, NotificationListener
 				}
 			}
 			break;
-
-		case DELETE:
-			// nothing on delete. we only delete to update.
-			break;
 		}
 
+		// trigger data changed event
 		if (changed && listener != null) {
 			//log.debug("informing listener about changed data: "+games.size());
 			listener.dataChanged(new DataChangeEvent(this, DataChangeType.game));

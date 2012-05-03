@@ -239,6 +239,7 @@ public class Game implements Serializable
 			players.remove(index);
 			//playerOids.removeElementAt(index);
 		}
+		log.debug("\n\n\ncurrent anz: "+getPlayerAnz()+" index of player is "+indexOf(player)+" and max is "+MAXPLAYERS);
 	}
 
 	/**
