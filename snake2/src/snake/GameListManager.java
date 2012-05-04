@@ -28,7 +28,6 @@ public class GameListManager
 	private boolean viewOnly = false;
 	private boolean viewOnlyAutostart = false;
 	private LevelsManager levelManager = null;
-	private boolean isLeader = false;
 	private DataChangeListener listener;
 
 	/**
@@ -54,7 +53,7 @@ public class GameListManager
 	public void initialize()
 	{
 			playerList = new PlayerList();
-			gameList = new GameList(listener, playerList);
+			gameList = new GameList(listener, playerList, this);
 			playerList.addPlayer(myPlayer);
 	}
 
@@ -117,7 +116,6 @@ public class GameListManager
 
 			currentGame = gameList.addGame(name, myPlayer, initData);
 			myPlayer.setCurrentGame(currentGame);
-			isLeader = true;
 		}
 	}
 
@@ -133,7 +131,6 @@ public class GameListManager
 		{
 			currentGame = gameList.joinGame(index, myPlayer);
 			myPlayer.setCurrentGame(currentGame);
-			isLeader = false;
 		}
 	}
 
@@ -149,7 +146,6 @@ public class GameListManager
 		{
 			currentGame = gameList.getGameViewOnly(index);
 			myPlayer.setCurrentGame(currentGame);
-			isLeader = false;
 		}
 	}
 
@@ -187,7 +183,7 @@ public class GameListManager
 
 			myPlayer.setPlayerState(newState);
 
-			if (isLeader)
+			if (myPlayerIsLeader())
 			{
 				//leader of the game determines game status
 				if (newState == PlayerState.notinit)
@@ -314,7 +310,7 @@ public class GameListManager
 	 */
 	public boolean isGameJoinable(int index)
 	{
-		//Pr�fen ob Spiel beigetreten werden kann (nicht voll und State opened)
+		//Pruefen ob Spiel beigetreten werden kann (nicht voll und State opened)
 		synchronized (gameList)
 		{
 			Game game = (Game) gameList.getVector().elementAt(index);
@@ -328,7 +324,7 @@ public class GameListManager
 	 */
 	public boolean myPlayerIsLeader()
 	{
-		return isLeader;
+		return currentGame.getLeader().equals(myPlayer);
 	}
 
 	/**
@@ -354,6 +350,9 @@ public class GameListManager
 			return gameList.getGame(currentGame);
 		}
 	}
+	public void setCurrentGame(Game game) {
+		currentGame = game;
+	}
 
 	/**
 	 * Check if the current game is ready (everything loaded). Start the game if it is ready.
@@ -363,9 +362,6 @@ public class GameListManager
 		currentGame = gameList.getGame(currentGame);
 		if (currentGame != null)
 		{
-			//check if own player is leader
-			isLeader = myPlayer.equals(currentGame.getLeader());
-
 			GameState state = currentGame.getState();
 			//start game if game state is active
 			if (state == GameState.aktiv)
@@ -417,7 +413,6 @@ public class GameListManager
 	 */
 	public HighScore getHighScore()
 	{
-		ArrayList<Serializable> list;
 		HighScore highScore = new HighScore();
 		return highScore;
 	}

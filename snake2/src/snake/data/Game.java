@@ -7,6 +7,9 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import snake.mzspaces.ContainerCoordinatorMapper;
+import snake.mzspaces.Util;
+
 /**
  * The Game class represents one game and its settings in corso space. The players
  * are not directly saved with the game, they are referenced by their oids.
@@ -183,6 +186,9 @@ public class Game implements Serializable
 		{
 			collisionType |= SnakeSpriteData.COLLISION_OTHER;
 		}
+
+		// send changed game to space
+		Util.getInstance().update(ContainerCoordinatorMapper.GAME_LIST, this, String.valueOf(getNr()));
 	}
 
 	/*
