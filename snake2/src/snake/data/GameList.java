@@ -7,14 +7,9 @@ import java.util.Vector;
 
 import org.mozartspaces.capi3.FifoCoordinator;
 import org.mozartspaces.capi3.FifoCoordinator.FifoSelector;
-import org.mozartspaces.capi3.KeyCoordinator;
-import org.mozartspaces.capi3.Selector;
 import org.mozartspaces.core.ContainerReference;
 import org.mozartspaces.core.Entry;
-import org.mozartspaces.core.MzsConstants;
 import org.mozartspaces.core.MzsCoreException;
-import org.mozartspaces.core.MzsConstants.RequestTimeout;
-import org.mozartspaces.core.TransactionReference;
 import org.mozartspaces.notifications.Notification;
 import org.mozartspaces.notifications.NotificationListener;
 import org.mozartspaces.notifications.NotificationManager;
@@ -137,65 +132,13 @@ public class GameList implements Serializable, NotificationListener
 		games.addElement(game);
 		
 		// however we have to write it to the space. but first we have to delete this very game:
-		writeGameToSpace(game);
+		Util.getInstance().update(
+				ContainerCoordinatorMapper.GAME_LIST,
+				game,
+				String.valueOf(game.getNr())
+		);
 		
 		return game;
-	}
-
-	private void writeGameToSpace(Game game) {
-		TransactionReference tx = Util.getInstance().createTransaction();
-		ContainerReference gamesContainer = Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME_LIST);
-		try {
-			ArrayList<Selector> selectors = new ArrayList<Selector>();
-			selectors.add(KeyCoordinator.newSelector(
-					String.valueOf(game.getNr()),
-					MzsConstants.Selecting.COUNT_ALL)
-			);
-
-			// take it to force no ui update
-			Util.getInstance().getConnection().take(
-					gamesContainer,
-					selectors,
-					MzsConstants.RequestTimeout.ZERO, 
-					tx);
-
-			Util.getInstance().getConnection().write(
-					gamesContainer,
-					MzsConstants.RequestTimeout.ZERO,
-					tx,
-					new Entry(game, KeyCoordinator.newCoordinationData(String.valueOf(game.getNr())))
-			);
-
-			Util.getInstance().getConnection().commitTransaction(tx);
-		} catch (MzsCoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	private void deleteGameFromSpace(Game game) {
-		TransactionReference tx = Util.getInstance().createTransaction();
-		ContainerReference gamesContainer = Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME_LIST);
-		
-		try {
-			ArrayList<Selector> selectors = new ArrayList<Selector>();
-			selectors.add(KeyCoordinator.newSelector(
-					String.valueOf(game.getNr()),
-					MzsConstants.Selecting.COUNT_ALL)
-			);
-	
-			Util.getInstance().delete(gamesContainer, selectors, tx);
-			Util.getInstance().getConnection().commitTransaction(tx);
-		} catch (MzsCoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -209,7 +152,7 @@ public class GameList implements Serializable, NotificationListener
 			if ( ( (Game) games.elementAt(i)).getNr().equals(game.getNr()))
 			{
 				games.removeElementAt(i);
-				deleteGameFromSpace(game);
+				Util.getInstance().delete(ContainerCoordinatorMapper.GAME_LIST, String.valueOf(game.getNr()));
 			}
 		}
 	}
@@ -231,7 +174,11 @@ public class GameList implements Serializable, NotificationListener
 
 			// however we have to write it to the space
 			// log.debug("\n\nwriting game to space again\n\n");
-			writeGameToSpace(game);
+			Util.getInstance().update(
+					ContainerCoordinatorMapper.GAME_LIST,
+					game,
+					String.valueOf(game.getNr())
+			);
 
 			return game;
 		}
@@ -275,7 +222,11 @@ public class GameList implements Serializable, NotificationListener
 					//determine new leader, if leader has left the game
 					game.updateLeader();
 				}
-				writeGameToSpace(game);
+				Util.getInstance().update(
+						ContainerCoordinatorMapper.GAME_LIST,
+						game,
+						String.valueOf(game.getNr())
+				);
 			}
 		}
 	}

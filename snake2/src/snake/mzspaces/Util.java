@@ -1,16 +1,23 @@
 package snake.mzspaces;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import org.mozartspaces.capi3.Coordinator;
+import org.mozartspaces.capi3.CountNotMetException;
 import org.mozartspaces.capi3.FifoCoordinator;
+import org.mozartspaces.capi3.KeyCoordinator;
+import org.mozartspaces.capi3.KeyCoordinator.KeyData;
+import org.mozartspaces.capi3.KeyCoordinator.KeySelector;
 import org.mozartspaces.capi3.Selector;
 import org.mozartspaces.core.Capi;
 import org.mozartspaces.core.CapiUtil;
 import org.mozartspaces.core.ContainerReference;
 import org.mozartspaces.core.DefaultMzsCore;
+import org.mozartspaces.core.Entry;
 import org.mozartspaces.core.MzsConstants;
 import org.mozartspaces.core.MzsCore;
 import org.mozartspaces.core.MzsCoreException;
@@ -306,12 +313,42 @@ public class Util
 		return null;
 	}
 	
-	public void delete(ContainerReference container, ArrayList<Selector> selectors) {
-		delete(container, selectors, null);
+	/**
+	 * deletes an object from the given container identified by its key
+	 * 
+	 * @param containerName the containers name found in the {@link ContainerCoordinatorMapper}
+	 * @param key the key that is used in KeyCoordinator.newSelector
+	 */
+	public void delete(String containerName, String key) {
+		ArrayList<Selector> selectors = new ArrayList<Selector>();
+		selectors.add(KeyCoordinator.newSelector(
+				key,
+				MzsConstants.Selecting.COUNT_ALL)
+		);
+		delete(containerName, selectors, null);
 	}
 
-	public void delete(ContainerReference container, ArrayList<Selector> selectors,
+	/**
+	 * use this delete-method if you have a list of selectors,
+	 * BUT normally you'd use the delete-method that uses a key
+	 *
+	 * @param containerName the containers name found in the {@link ContainerCoordinatorMapper} 
+	 * @param selectors a list of selectors that identify the element that should be deleted
+	 */
+	public void delete(String containerName, ArrayList<Selector> selectors) {
+		delete(containerName, selectors, null);
+	}
+
+	/**
+	 * @see Util.delete only with transaction
+	 *
+	 * @param containerName the containers name found in the {@link ContainerCoordinatorMapper}
+	 * @param selectors a list of selectors that identify the element that should be deleted
+	 * @param tx transaction
+	 */
+	public void delete(String containerName, ArrayList<Selector> selectors,
 			TransactionReference tx) {
+		ContainerReference container = getContainer(containerName);
 		try {
 			conn.delete(container, selectors, MzsConstants.RequestTimeout.ZERO, tx);
 		} catch (MzsCoreException e) {
@@ -322,6 +359,85 @@ public class Util
 			log.error("Could not delete from container "+container.getId()+" (java exception)");
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * updates an object in the given container using a key coordinator
+	 *
+	 * @param containerName the containers name found in the {@link ContainerCoordinatorMapper}
+	 * @param data the data that should be updated
+	 * @param key a key identifying the object in the container
+	 */
+	public void update(String containerName, Serializable data, String key) {
+		update(
+			containerName,
+			data,
+			KeyCoordinator.newSelector(key),
+			KeyCoordinator.newCoordinationData(key)
+		);
+	}
+
+	/**
+	 * updates an object in the given container using the provided selector to take and key to write it.
+	 * that all happens in a new transaction.
+	 * BUT normally you'd use the update-method that uses a key
+	 *
+	 * @param containerName the containers name found in the {@link ContainerCoordinatorMapper}
+	 * @param data the data that should be updated
+	 * @param selector selector used for take
+	 * @param key keydata used to write
+	 */
+	public void update(String containerName, Serializable data, KeySelector selector, KeyData key) {
+		ContainerReference container = getContainer(containerName);
+		TransactionReference tx = createTransaction();
+		try {
+			ArrayList<Selector> selectors = new ArrayList<Selector>();
+			selectors.add(selector);
+
+			// take it to force no ui update
+			try {
+			Util.getInstance().getConnection().take(
+					container,
+					selectors,
+					MzsConstants.RequestTimeout.ZERO, 
+					tx);
+			} catch (CountNotMetException e) {
+				// ignore
+			}
+			
+			Util.getInstance().getConnection().write(
+					container,
+					MzsConstants.RequestTimeout.ZERO,
+					tx,
+					new Entry(data, key)
+			);
+
+			Util.getInstance().getConnection().commitTransaction(tx);
+		} catch (MzsCoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				Util.getInstance().getConnection().rollbackTransaction(tx);
+			} catch (MzsCoreException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				Util.getInstance().getConnection().rollbackTransaction(tx);
+			} catch (MzsCoreException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 	}
 }
