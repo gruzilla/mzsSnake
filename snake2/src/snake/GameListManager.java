@@ -229,7 +229,7 @@ public class GameListManager
 	{
 		synchronized (gameList)
 		{
-			gameList.getGame(currentGame).setLevelData(levelData);
+			gameList.setGameLevel(gameList.getGame(currentGame), levelData);
 		}
 	}
 
@@ -246,7 +246,7 @@ public class GameListManager
 	{
 		synchronized (gameList)
 		{
-			gameList.getGame(currentGame).setGameData(gameType, winValue, collisionWall, collisionOwn,
+			gameList.setGameData(gameList.getGame(currentGame), gameType, winValue, collisionWall, collisionOwn,
 					collisionOther);
 		}
 	}

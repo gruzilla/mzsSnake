@@ -281,6 +281,32 @@ public class GameList implements Serializable, NotificationListener
 	}
 
 	/**
+	 * set the game data
+	 * @param game
+	 * @param gameType
+	 * @param winValue
+	 * @param collisionWall
+	 * @param collisionOwn
+	 * @param collisionOther
+	 */
+	public void setGameData(Game game, GameType gameType, int winValue,
+			boolean collisionWall, boolean collisionOwn, boolean collisionOther) {
+		
+		// set gamedata on game object
+		game.setGameData(gameType, winValue, collisionWall, collisionOwn,
+				collisionOther);
+		
+		// write game to space
+		writeGameToSpace(game);
+	}
+	
+	public void setGameLevel(Game game, LevelData levelData) {
+		game.setLevelData(levelData);
+		
+		writeGameToSpace(game);
+	}
+	
+	/**
 	 * Change the state of the game.
 	 * @param game Game
 	 * @param state GameState
@@ -309,6 +335,7 @@ public class GameList implements Serializable, NotificationListener
 			return GameState.unknown;
 	}
 
+	
 	/**
 	 * Get the game (with equal number), if it is in the game list.
 	 * @param game game that is searched in the game list
@@ -416,4 +443,5 @@ public class GameList implements Serializable, NotificationListener
 	public void setDataChangeListener(DataChangeListener listener2) {
 		listener = listener2;
 	}
+
 }
