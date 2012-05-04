@@ -124,7 +124,7 @@ public class FLevelSelection extends JDialog
 	{
 		if (lbLevels.getSelectedIndex() > -1)
 		{
-			//levelsManager.setCurrentLevel((String)lbLevels.getSelectedValue());
+			levelsManager.setCurrentLevel((String)lbLevels.getSelectedValue());
 			LevelData levelData = new LevelData();
 			levelData.LoadData(levelsManager);
 			gameList.setGameLevel(levelData);

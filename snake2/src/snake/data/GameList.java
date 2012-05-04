@@ -249,11 +249,20 @@ public class GameList implements Serializable, NotificationListener
 	 */
 	public void setGameState(Game game, GameState state)
 	{
-			int index = games.indexOf(game);
-			if (index > -1)
-			{
-				((Game)games.elementAt(index)).setState(state);
-			}
+		//log.debug("settig game state");
+		int index = games.indexOf(game);
+		if (index > -1)
+		{
+			game = (Game)games.elementAt(index);
+			game.setState(state);
+			Util.getInstance().update(
+					ContainerCoordinatorMapper.GAME_LIST,
+					game,
+					String.valueOf(game.getNr())
+			);
+			//log.debug("data changed");
+			listener.dataChanged(new DataChangeEvent(this, DataChangeType.game));
+		}
 	}
 
 	/**

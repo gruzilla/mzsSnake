@@ -5,7 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import snake.data.*;
+import snake.mzspaces.ContainerCoordinatorMapper;
+import snake.mzspaces.DataChangeEvent;
 import snake.mzspaces.DataChangeListener;
+import snake.mzspaces.DataChangeType;
+import snake.mzspaces.Util;
 
 /**
  * GameListManager manages the list of Games in corsospace and a list of all known
@@ -225,7 +229,14 @@ public class GameListManager
 	{
 		synchronized (gameList)
 		{
-			gameList.getGame(currentGame).setLevelData(levelData);
+			Game game = gameList.getGame(currentGame);
+			game.setLevelData(levelData);
+			listener.dataChanged(new DataChangeEvent(this, DataChangeType.game));
+			Util.getInstance().update(
+					ContainerCoordinatorMapper.GAME_LIST,
+					game,
+					String.valueOf(game.getNr())
+			);
 		}
 	}
 
