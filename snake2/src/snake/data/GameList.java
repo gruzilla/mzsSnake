@@ -17,6 +17,7 @@ import org.mozartspaces.notifications.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import snake.GameListManager;
 import snake.mzspaces.ContainerCoordinatorMapper;
 import snake.mzspaces.DataChangeEvent;
 import snake.mzspaces.DataChangeListener;
@@ -36,9 +37,19 @@ public class GameList implements Serializable, NotificationListener
 	private Notification notification;
 
 	private Logger log = LoggerFactory.getLogger(GameList.class);
+	private GameListManager manager;
 	
-	public GameList(DataChangeListener listener, PlayerList playerList)
+	/**
+	 * create a new game list.
+	 * the manager has to be passed so that we can inform him about the new current game, if a player leaves
+	 *
+	 * @param listener
+	 * @param playerList
+	 * @param mgnr
+	 */
+	public GameList(DataChangeListener listener, PlayerList playerList, GameListManager mgnr)
 	{
+		this.manager = mgnr;
 		this.games = new Vector<Game>();
 		this.listener = listener;
 		this.playerList = playerList;
@@ -310,7 +321,12 @@ public class GameList implements Serializable, NotificationListener
 						//log.debug("comparing "+games.get(i).getNr()+" against "+game.getNr());
 						if (games.get(i).getNr().equals(game.getNr())) {
 							found = true;
+							
+							if (manager.getCurrentGame().getNr().equals(game.getNr())) {
+								manager.setCurrentGame(game);
+							}
 							games.set(i, game);
+							
 							//log.debug("\n\nwe have "+game.getPlayerAnz()+" player\n\n");
 							changed = true;
 							break;
