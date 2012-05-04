@@ -152,12 +152,24 @@ public class LevelsManager
 	/**
 	 * Set the level with the given name as the current level. Choose default level,
 	 * if no level with this name is available.
-	 * @param levelname name of the level
+	 * @param name name of the level
 	 */
-	public void setCurrentLevel(String levelname)
+	public void setCurrentLevel(String name) {
+		setCurrentLevel(name, true);
+	}
+	
+	/**
+	 * Set the level with the given name as the current level. Choose default level,
+	 * if no level with this name is available.
+	 * @param name name of the level
+	 */
+	public void setCurrentLevel(String name, Boolean isDirName)
 	{
-		String dirname = getLevelDir(levelname);
-		int index = getLevelIndex(dirname);
+		if(!isDirName) {
+			name = getLevelDir(name);
+			
+		}
+		int index = getLevelIndex(name);
 		if (index > -1)
 		{
 			setCurrentLevel(index);
@@ -165,7 +177,7 @@ public class LevelsManager
 		else
 		{
 			//level not found, choose default level
-			System.out.println("LevelManager: Level \"" + levelname +
+			System.out.println("LevelManager: Level \"" + name +
 			"\" can't be found. Using Default Level.");
 			currentLevelIndex = getLevelIndex(DEFAULTLEVELDIR);
 		}

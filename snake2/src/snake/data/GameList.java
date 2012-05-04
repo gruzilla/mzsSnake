@@ -65,7 +65,7 @@ public class GameList implements Serializable, NotificationListener
 					0,
 					null);
 			
-			log.debug("WTF games: " + spaceGames.size());
+			log.debug("games: " + spaceGames.size());
 			
 			for (Serializable spaceGame : spaceGames) {
 				if (spaceGame instanceof Game) {
@@ -259,13 +259,21 @@ public class GameList implements Serializable, NotificationListener
 				collisionOther);
 		
 		// write game to space
-		writeGameToSpace(game);
+		Util.getInstance().update(
+				ContainerCoordinatorMapper.GAME_LIST,
+				game,
+				String.valueOf(game.getNr())
+		);
 	}
 	
 	public void setGameLevel(Game game, LevelData levelData) {
 		game.setLevelData(levelData);
 		
-		writeGameToSpace(game);
+		Util.getInstance().update(
+				ContainerCoordinatorMapper.GAME_LIST,
+				game,
+				String.valueOf(game.getNr())
+		);
 	}
 	
 	/**
@@ -354,7 +362,7 @@ public class GameList implements Serializable, NotificationListener
 							}
 							games.set(i, game);
 							
-							//log.debug("\n\nwe have "+game.getPlayerAnz()+" player\n\n");
+							log.debug("\n\n level: "+game.getLevelDir() +"\n\n");
 							changed = true;
 							break;
 						}

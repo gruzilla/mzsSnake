@@ -132,8 +132,8 @@ public class FLevelSelection extends JDialog
 		log.debug("\n\n LEVEL: " + (String)lbLevels.getSelectedValue());
 		if (lbLevels.getSelectedIndex() > -1)
 		{
-			log.debug("\n\n LEVEL: " + (String)lbLevels.getSelectedValue());
-			levelsManager.setCurrentLevel((String)lbLevels.getSelectedValue());
+			//log.debug("\n\n LEVEL: " + (String)lbLevels.getSelectedValue());
+			levelsManager.setCurrentLevel((String)lbLevels.getSelectedValue(), false);
 			LevelData levelData = new LevelData();
 			levelData.LoadData(levelsManager);
 			gameList.setGameLevel(levelData);
