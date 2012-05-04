@@ -157,17 +157,6 @@ public class Snake extends JFrame implements WindowListener
 	}
 
 	/**
-	 * The settings are updated with the new settings and saved to the property file.
-	 * @param settings new settings
-	 */
-	public void updateSettings(Settings settings)
-	{
-		settings.save();
-		myPlayer.setName(settings.getPlayerName());
-		myPlayer.setSkin(settings.getSnakeSkin());
-	}
-
-	/**
 	 * Start the game in multiplayer mode.
 	 */
 	public void startMultiplayerGame()
@@ -193,6 +182,17 @@ public class Snake extends JFrame implements WindowListener
 				//System.out.println("Game already started.");
 			}
 		}
+	}
+
+	/**
+	 * The settings are updated with the new settings and saved to the property file.
+	 * @param settings new settings
+	 */
+	public void updateSettings(Settings settings)
+	{
+		settings.save();
+		myPlayer.setName(settings.getPlayerName());
+		myPlayer.setSkin(settings.getSnakeSkin());
 	}
 
 	/**

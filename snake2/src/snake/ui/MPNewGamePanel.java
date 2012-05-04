@@ -582,6 +582,7 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 		if (gameList.getCurrentGame().getPlayerAnz() > 1)
 		{
 			snakeMain.initMyGameSprites();
+			snakeMain.startMultiplayerGame();
 			updateForm();
 		}
 	}
