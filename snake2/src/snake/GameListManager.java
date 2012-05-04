@@ -229,14 +229,7 @@ public class GameListManager
 	{
 		synchronized (gameList)
 		{
-			Game game = gameList.getGame(currentGame);
-			game.setLevelData(levelData);
-			listener.dataChanged(new DataChangeEvent(this, DataChangeType.game));
-			Util.getInstance().update(
-					ContainerCoordinatorMapper.GAME_LIST,
-					game,
-					String.valueOf(game.getNr())
-			);
+			gameList.setGameLevel(gameList.getGame(currentGame), levelData);
 		}
 	}
 
@@ -253,7 +246,7 @@ public class GameListManager
 	{
 		synchronized (gameList)
 		{
-			gameList.getGame(currentGame).setGameData(gameType, winValue, collisionWall, collisionOwn,
+			gameList.setGameData(gameList.getGame(currentGame), gameType, winValue, collisionWall, collisionOwn,
 					collisionOther);
 		}
 	}

@@ -11,6 +11,11 @@ import snake.util.ImageLoader;
 import java.awt.image.BufferedImage;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import snake.data.GameList;
 import snake.data.LevelData;
 
 /**
@@ -30,6 +35,8 @@ public class FLevelSelection extends JDialog
 	JList lbLevels = new JList();
 	JLabel laPreview = new JLabel();
 
+	private Logger log = LoggerFactory.getLogger(FLevelSelection.class);
+	
 	/**
 	 * Create a new FLevelSelection Dialog.
 	 * @param owner Owner of the Dialog
@@ -122,9 +129,11 @@ public class FLevelSelection extends JDialog
 	 */
 	public void btWaehlen_actionPerformed(ActionEvent e)
 	{
+		log.debug("\n\n LEVEL: " + (String)lbLevels.getSelectedValue());
 		if (lbLevels.getSelectedIndex() > -1)
 		{
-			levelsManager.setCurrentLevel((String)lbLevels.getSelectedValue());
+			//log.debug("\n\n LEVEL: " + (String)lbLevels.getSelectedValue());
+			levelsManager.setCurrentLevel((String)lbLevels.getSelectedValue(), false);
 			LevelData levelData = new LevelData();
 			levelData.LoadData(levelsManager);
 			gameList.setGameLevel(levelData);

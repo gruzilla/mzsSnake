@@ -65,7 +65,7 @@ public class GameList implements Serializable, NotificationListener
 					0,
 					null);
 			
-			log.debug("WTF games: " + spaceGames.size());
+			log.debug("games: " + spaceGames.size());
 			
 			for (Serializable spaceGame : spaceGames) {
 				if (spaceGame instanceof Game) {
@@ -243,6 +243,40 @@ public class GameList implements Serializable, NotificationListener
 	}
 
 	/**
+	 * set the game data
+	 * @param game
+	 * @param gameType
+	 * @param winValue
+	 * @param collisionWall
+	 * @param collisionOwn
+	 * @param collisionOther
+	 */
+	public void setGameData(Game game, GameType gameType, int winValue,
+			boolean collisionWall, boolean collisionOwn, boolean collisionOther) {
+		
+		// set gamedata on game object
+		game.setGameData(gameType, winValue, collisionWall, collisionOwn,
+				collisionOther);
+		
+		// write game to space
+		Util.getInstance().update(
+				ContainerCoordinatorMapper.GAME_LIST,
+				game,
+				String.valueOf(game.getNr())
+		);
+	}
+	
+	public void setGameLevel(Game game, LevelData levelData) {
+		game.setLevelData(levelData);
+		
+		Util.getInstance().update(
+				ContainerCoordinatorMapper.GAME_LIST,
+				game,
+				String.valueOf(game.getNr())
+		);
+	}
+	
+	/**
 	 * Change the state of the game.
 	 * @param game Game
 	 * @param state GameState
@@ -280,6 +314,7 @@ public class GameList implements Serializable, NotificationListener
 			return GameState.unknown;
 	}
 
+	
 	/**
 	 * Get the game (with equal number), if it is in the game list.
 	 * @param game game that is searched in the game list
@@ -336,7 +371,7 @@ public class GameList implements Serializable, NotificationListener
 							}
 							games.set(i, game);
 							
-							//log.debug("\n\nwe have "+game.getPlayerAnz()+" player\n\n");
+							log.debug("\n\n level: "+game.getLevelDir() +"\n\n");
 							changed = true;
 							break;
 						}
@@ -392,4 +427,5 @@ public class GameList implements Serializable, NotificationListener
 	public void setDataChangeListener(DataChangeListener listener2) {
 		listener = listener2;
 	}
+
 }

@@ -113,10 +113,10 @@ public class Game implements Serializable
 		if (!java.util.Arrays.equals(newData.getCheckSum(), levelCheckSum) ||
 				!newData.getLevelDir().equals(levelDir))
 		{
-			//System.out.println("setLevelData: Daten in Space speichern");
 			levelDir = newData.getLevelDir();
 			levelCheckSum = newData.getCheckSum();
 		}
+		System.out.println("setLevelData: Daten in Space speichern " + levelDir + " " + levelCheckSum);
 	}
 
 	public void setLevelDir(String value)
