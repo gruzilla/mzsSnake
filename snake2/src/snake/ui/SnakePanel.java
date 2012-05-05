@@ -56,7 +56,6 @@ public class SnakePanel extends JPanel implements Runnable
 
 	private Snake snakeMain;
 	private Settings settings = null;
-	private Player myPlayer = null;
 	private LevelsManager levelManager = null;
 	private ImageLoader imgLoader;
 
@@ -84,7 +83,7 @@ public class SnakePanel extends JPanel implements Runnable
 
 	private String lastBackGroundImagePath = null;
 	private Game game;
-	private GameListManager gameList;
+	private GameListManager gameListManager;
 
 	/**
 	 * Create a new SnakePanel. Create a BackgroundManager that calculates obstacles and
@@ -93,21 +92,20 @@ public class SnakePanel extends JPanel implements Runnable
 	 * @param snakeMain Snake main class
 	 * @param period duration of one frame in nanosecs
 	 * @param settings settings of the game
-	 * @param gameList manager for the list of games
+	 * @param gameListManager manager for the list of games
 	 * @param myPlayer the own player
 	 * @param aLevelManager LevelsManager with the current level
 	 */
-	public SnakePanel(Snake snakeMain, long period, Settings settings, Player myPlayer, GameListManager gameList, LevelsManager aLevelManager)
+	public SnakePanel(Snake snakeMain, long period, Settings settings, GameListManager gameListManager, LevelsManager aLevelManager)
 	{
 		this.snakeMain = snakeMain;
 		this.period = period;
 		this.settings = settings;
-		this.myPlayer = myPlayer;
 		this.levelManager = aLevelManager;
-		this.gameList = gameList;
-		
+		this.gameListManager = gameListManager;
+
 		PlayerList playerList = new PlayerList();
-		playerList.addPlayer(myPlayer);
+		playerList.addPlayer(snakeMain.getMyPlayer());
 		this.game = new Game(playerList);
 
 		setDoubleBuffered(false);
@@ -195,7 +193,7 @@ public class SnakePanel extends JPanel implements Runnable
 			}
 			case KeyEvent.VK_1:
 			{
-				if (gameList.isViewOnly())
+				if (gameListManager.isViewOnly())
 				{
 					viewOnlySnakeIX = 0;
 				}
@@ -203,7 +201,7 @@ public class SnakePanel extends JPanel implements Runnable
 			}
 			case KeyEvent.VK_2:
 			{
-				if (gameList.isViewOnly())
+				if (gameListManager.isViewOnly())
 				{
 					viewOnlySnakeIX = 1;
 				}
@@ -211,7 +209,7 @@ public class SnakePanel extends JPanel implements Runnable
 			}
 			case KeyEvent.VK_3:
 			{
-				if (gameList.isViewOnly())
+				if (gameListManager.isViewOnly())
 				{
 					viewOnlySnakeIX = 2;
 				}
@@ -219,7 +217,7 @@ public class SnakePanel extends JPanel implements Runnable
 			}
 			case KeyEvent.VK_4:
 			{
-				if (gameList.isViewOnly())
+				if (gameListManager.isViewOnly())
 				{
 					viewOnlySnakeIX = 3;
 				}
@@ -344,12 +342,12 @@ public class SnakePanel extends JPanel implements Runnable
 			System.out.println("Error occured: Can't load gamegraphics");
 		}
 
-		if (!gameList.isViewOnly())
+		if (!gameListManager.isViewOnly())
 		{
 			// create own game sprites
-			myPlayer.setPlayerNr(game.indexOf(myPlayer));
+			snakeMain.getMyPlayer().setPlayerNr(game.indexOf(snakeMain.getMyPlayer()));
 
-			snakeSprite = new SnakeSprite(imgLoader, myPlayer, gameMap, this,
+			snakeSprite = new SnakeSprite(imgLoader, snakeMain.getMyPlayer(), gameMap, this,
 					game.getCollisionType());
 		}
 		else
@@ -357,10 +355,10 @@ public class SnakePanel extends JPanel implements Runnable
 			snakeSprite = null;
 		}
 		collectables = new CollectableSprite(pWidth, pHeight, imgLoader, snakeSprite, this,
-				gameList, myPlayer, gameMap);
+				gameListManager, snakeMain.getMyPlayer(), gameMap);
 		//set player init
-		myPlayer.setPoints(0);
-		gameList.setMyPlayerReady(PlayerState.init);
+		snakeMain.getMyPlayer().setPoints(0);
+		gameListManager.setMyPlayerReady(PlayerState.init);
 	}
 
 	/**
@@ -370,17 +368,17 @@ public class SnakePanel extends JPanel implements Runnable
 	 */
 	public void initOtherGameSprites()
 	{
-		synchronized (gameList)
+		synchronized (gameListManager)
 		{
-			if (myPlayer.getPlayerState() != PlayerState.init)
+			if (snakeMain.getMyPlayer().getPlayerState() != PlayerState.init)
 			{
 				System.out.println("initOtherGameSprites: playerstate not init");
 				return;
 			}
 
 			//create game sprites for other players
-			Game game = gameList.getCurrentGame();
-			if (!gameList.isViewOnly())
+			Game game = gameListManager.getCurrentGame();
+			if (!gameListManager.isViewOnly())
 			{
 				otherSnakeSprites = new SnakeSprite[game.getPlayerAnz() - 1];
 			}
@@ -392,7 +390,7 @@ public class SnakePanel extends JPanel implements Runnable
 			//System.out.println("InitOtherSnakeSprites: PlayerAnzahl=" + game.getPlayerAnz());
 			for (int i = 0; i < game.getPlayerAnz(); i++)
 			{
-				if (!game.getPlayer(i).equals(myPlayer))
+				if (!game.getPlayer(i).equals(snakeMain.getMyPlayer()))
 				{
 					//System.out.println("Fuege SnakeSprite Hinzu: " + game.getPlayer(i));
 					otherSnakeSprites[counter] = new SnakeSprite(imgLoader, game.getPlayer(i), this);
@@ -404,7 +402,7 @@ public class SnakePanel extends JPanel implements Runnable
 				snakeSprite.setOtherPlayers(otherSnakeSprites);
 			}
 			//set player loaded
-			gameList.setMyPlayerReady(PlayerState.loaded);
+			gameListManager.setMyPlayerReady(PlayerState.loaded);
 			//System.out.println("initOtherGameSprites stoped");
 		}
 	}
@@ -415,7 +413,7 @@ public class SnakePanel extends JPanel implements Runnable
 	 */
 	public void startGame()
 	{
-		gameList.setMyPlayerReady(PlayerState.starting);
+		gameListManager.setMyPlayerReady(PlayerState.starting);
 
 		multiplayer = true;
 		//hide menue
@@ -438,7 +436,7 @@ public class SnakePanel extends JPanel implements Runnable
 		snakeSprite = new SnakeSprite(imgLoader, player, gameMap, this,
 				SnakeSpriteData.COLLISION_OWN | SnakeSpriteData.COLLISION_WALL);
 		collectables = new CollectableSprite(pWidth, pHeight, imgLoader, snakeSprite, this,
-				gameList, myPlayer, gameMap);
+				gameListManager, snakeMain.getMyPlayer(), gameMap);
 		multiplayer = false;
 		//hide menue
 		setMode(MODE_RUNNING);
@@ -506,7 +504,7 @@ public class SnakePanel extends JPanel implements Runnable
 		com.vladium.utils.timing.ITimer specialTimer = com.vladium.utils.timing.TimerFactory.newTimer();
 		specialTimer.start();
 
-		java.util.Date date = new java.util.Date();
+		//  java.util.Date date = new java.util.Date();
 		//  System.out.println("start at: " + date.toString());
 		//  System.out.println("SnakePanel Loop started");
 		while (working_mode != MODE_CLOSE)
@@ -591,7 +589,7 @@ public class SnakePanel extends JPanel implements Runnable
 				}
 				collectables.updateSprite();
 
-				if (!gameList.isViewOnly())
+				if (!gameListManager.isViewOnly())
 				{
 					correctionPos = gameMap.calcCorrectionPos(snakeSprite.getHeadPos());
 				}

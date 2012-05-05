@@ -15,7 +15,6 @@ import snake.mzspaces.Util;
 import snake.ui.*;
 import snake.util.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
 public class Snake extends JFrame implements WindowListener
 {
@@ -35,7 +34,7 @@ public class Snake extends JFrame implements WindowListener
 	private HighScorePanel highScorePanel = null;
 
 	private long period = 0;
-	private GameListManager gameList = null;
+	private GameListManager gameListManager = null;
 	private Player myPlayer = null;
 	private LevelsManager levelManager = null;
 	private BufferedImage bgImage = null;
@@ -95,7 +94,7 @@ public class Snake extends JFrame implements WindowListener
 
 		//create player, load game list
 		myPlayer = new Player(Util.getInstance().getSettings().getPlayerName(), Util.getInstance().getSettings().getSnakeSkin());
-		gameList = new GameListManager(this, myPlayer, levelManager);
+		gameListManager = new GameListManager(this, levelManager);
 
 		//show frame
 		this.setVisible(true);
@@ -146,7 +145,7 @@ public class Snake extends JFrame implements WindowListener
 		//start singleplayer game
 		getContentPane().removeAll();
 		// TODO: get settings inside panel
-		snakePanel = new SnakePanel(this, period, Util.getInstance().getSettings(), myPlayer,gameList, levelManager);
+		snakePanel = new SnakePanel(this, period, Util.getInstance().getSettings(), gameListManager, levelManager);
 		snakePanel.setGameBounds(maxPanelWidth, maxPanelHeight);
 		getContentPane().add(snakePanel);
 		snakePanel.startSingleplayerGame();
@@ -206,7 +205,7 @@ public class Snake extends JFrame implements WindowListener
 		if (snakePanel == null)
 		{
 			// TODO: update panel to get settings itself
-			snakePanel = new SnakePanel(this, period, Util.getInstance().getSettings(), myPlayer, gameList, levelManager);
+			snakePanel = new SnakePanel(this, period, Util.getInstance().getSettings(), gameListManager, levelManager);
 		}
 		snakePanel.initMyGameSprites();
 		multiStarted = 0;
@@ -218,7 +217,7 @@ public class Snake extends JFrame implements WindowListener
 	 */
 	public void initOtherGameSprites()
 	{
-		if (snakePanel == null && gameList.isViewOnly())
+		if (snakePanel == null && gameListManager.isViewOnly())
 		{
 			//load some variables now when in viewing mode
 			myPlayer.setPlayerState(snake.data.PlayerState.init);
@@ -238,7 +237,7 @@ public class Snake extends JFrame implements WindowListener
 		{
 			snakeLog.flush();
 			snakeLog.writeLogEntry("Successfully connected to 2. corso site");
-			gameList.initialize(); //load game list
+			gameListManager.initialize(); //load game list
 			return true;
 		}
 		catch (Exception ex)
@@ -259,7 +258,7 @@ public class Snake extends JFrame implements WindowListener
 		//close corso connection
 		try
 		{
-			gameList.leaveGame(); //leave game if running
+			gameListManager.leaveGame(); //leave game if running
 			System.out.println("Corso connection closed.");
 		}
 		catch (Exception ex)
@@ -288,7 +287,7 @@ public class Snake extends JFrame implements WindowListener
 	public void openMPMenue()
 	{
 		getContentPane().removeAll();
-		mpMenuePanel = new MPMenuePanel(this, gameList, myPlayer, levelManager);
+		mpMenuePanel = new MPMenuePanel(this, gameListManager, levelManager);
 		mpMenuePanel.setBounds( (maxPanelWidth - PWIDTH) / 2, (maxPanelHeight - PHEIGHT) / 2, PWIDTH, PHEIGHT);
 		getContentPane().add(mpMenuePanel);
 		mpMenuePanel.updateForm();
@@ -303,7 +302,7 @@ public class Snake extends JFrame implements WindowListener
 	public void openMPNewGameMenue()
 	{
 		getContentPane().removeAll();
-		mpNewGamePanel = new MPNewGamePanel(this, gameList, myPlayer, levelManager);
+		mpNewGamePanel = new MPNewGamePanel(this, gameListManager, levelManager);
 		mpNewGamePanel.setBounds( (maxPanelWidth - PWIDTH) / 2, (maxPanelHeight - PHEIGHT) / 2, PWIDTH, PHEIGHT);
 		getContentPane().add(mpNewGamePanel);
 		mpNewGamePanel.updateForm();
@@ -318,7 +317,7 @@ public class Snake extends JFrame implements WindowListener
 	public void openFHighScore()
 	{
 		getContentPane().removeAll();
-		highScorePanel = new HighScorePanel(this, gameList);
+		highScorePanel = new HighScorePanel(this, gameListManager);
 		highScorePanel.setBounds( (maxPanelWidth - PWIDTH) / 2, (maxPanelHeight - PHEIGHT) / 2, PWIDTH, PHEIGHT);
 		getContentPane().add(highScorePanel);
 		highScorePanel.updateForm();
@@ -334,7 +333,7 @@ public class Snake extends JFrame implements WindowListener
 	{
 		System.out.println("GAME OVER");
 		getContentPane().removeAll();
-		gameOverPanel = new GameOverPanel(this, gameList, myPlayer, playTime, multiplayer);
+		gameOverPanel = new GameOverPanel(this, gameListManager, playTime, multiplayer);
 		gameOverPanel.setBounds( (maxPanelWidth - PWIDTH) / 2, (maxPanelHeight - PHEIGHT) / 2, PWIDTH, PHEIGHT);
 		getContentPane().add(gameOverPanel);
 		this.getContentPane().doLayout();
@@ -398,6 +397,14 @@ public class Snake extends JFrame implements WindowListener
 		{
 			panel.setBounds( (maxPanelWidth - PWIDTH) / 2, (maxPanelHeight - PHEIGHT) / 2, PWIDTH, PHEIGHT);
 		}
+	}
+
+	public Player getMyPlayer() {
+		return myPlayer;
+	}
+
+	public void setMyPlayer(Player myPlayer) {
+		this.myPlayer = myPlayer;
 	}
 }
 

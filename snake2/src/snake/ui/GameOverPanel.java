@@ -20,7 +20,6 @@ public class GameOverPanel extends JPanel
 	private static final long serialVersionUID = 1L;
 	private Snake snakeMain = null;
 	private GameListManager gameList = null;
-	private Player myPlayer = null;
 	private int playTime = 0;
 	private boolean multiplayer = false;
 
@@ -71,12 +70,11 @@ public class GameOverPanel extends JPanel
 	 * @param playTime playtime of the ended game
 	 * @param multiplayer true if the game was in multiplayer mode
 	 */
-	public GameOverPanel(Snake snakeMain, GameListManager gameList, Player myPlayer, int playTime,
+	public GameOverPanel(Snake snakeMain, GameListManager gameList, int playTime,
 			boolean multiplayer)
 	{
 		this.snakeMain = snakeMain;
 		this.gameList = gameList;
-		this.myPlayer = myPlayer;
 		this.playTime = playTime;
 		this.multiplayer = multiplayer;
 		try
@@ -275,12 +273,12 @@ public class GameOverPanel extends JPanel
 					winnerNr = player.getNr();
 				}
 			}
-			if (winnerNr.equals(myPlayer.getNr()))
+			if (winnerNr.equals(snakeMain.getMyPlayer().getNr()))
 			{
 				//special text if player is winner
 				laTitel.setText("WINNER");
 			}
-			if (gameList.getCurrentGame().getLeader().equals(myPlayer))
+			if (gameList.getCurrentGame().getLeader().equals(snakeMain.getMyPlayer()))
 			{
 				//leader writes the highscore list to corsospace
 				gameList.writeHighScore(highScore);

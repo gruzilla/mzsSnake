@@ -276,27 +276,32 @@ public class GameList implements Serializable, NotificationListener
 		);
 	}
 	
-	/**
-	 * Change the state of the game.
-	 * @param game Game
-	 * @param state GameState
-	 */
-	public void setGameState(Game game, GameState state)
-	{
+	public void setGameState(Game game, GameState state, boolean update) {
 		//log.debug("settig game state");
 		int index = games.indexOf(game);
 		if (index > -1)
 		{
 			game = (Game)games.elementAt(index);
 			game.setState(state);
-			Util.getInstance().update(
-					ContainerCoordinatorMapper.GAME_LIST,
-					game,
-					String.valueOf(game.getNr())
-			);
-			//log.debug("data changed");
+			if (update) {
+				Util.getInstance().update(
+						ContainerCoordinatorMapper.GAME_LIST,
+						game,
+						String.valueOf(game.getNr())
+						);
+				//log.debug("data changed");
+			}
 			listener.dataChanged(new DataChangeEvent(this, DataChangeType.game));
 		}
+	}
+	
+	/**
+	 * Change the state of the game.
+	 * @param game Game
+	 * @param state GameState
+	 */
+	public void setGameState(Game game, GameState state) {
+		setGameState(game, state, true);
 	}
 
 	/**
@@ -368,6 +373,7 @@ public class GameList implements Serializable, NotificationListener
 							
 							if (manager.getCurrentGame().getNr().equals(game.getNr())) {
 								manager.setCurrentGame(game);
+								// find player and set new myplayer
 							}
 							games.set(i, game);
 							

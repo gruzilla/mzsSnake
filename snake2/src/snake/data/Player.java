@@ -28,7 +28,7 @@ public class Player implements Serializable
 	private SnakeState snakeState;
 	private int headPos;
 	private int tailPos;
-	private SnakePos[] parts;
+	private SnakePos[] parts = new SnakePos[100];
 	private Logger log = LoggerFactory.getLogger(GameList.class);
 	private int playerNumber;
 	private Game currentGame;
@@ -96,6 +96,7 @@ public class Player implements Serializable
 
 	public void setPlayerState(PlayerState newState)
 	{
+		log.debug("\n\nSETTING PLAYER STATE TO "+newState+"\n\n");
 		state = newState;
 	}
 
@@ -276,6 +277,7 @@ public class Player implements Serializable
 		return snakeState;
 	}
 
+	/*
 	public void saveToSpace() {
 		
 		ContainerReference container;
@@ -295,6 +297,7 @@ public class Player implements Serializable
 			e.printStackTrace();
 		}
 	}
+	*/
 
 	public void setPlayerNr(int indexOf) {
 		playerNumber = indexOf;

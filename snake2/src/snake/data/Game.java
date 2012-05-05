@@ -255,6 +255,12 @@ public class Game implements Serializable
 	 */
 	public boolean allPlayersReadyCreated()
 	{
+		for (Player player : players) {
+			if ( player.isStateNotInit() ) {
+				return false; //found a player with state notinit
+			}
+		}
+
 		return true;
 	}
 
@@ -263,8 +269,13 @@ public class Game implements Serializable
 	 * so the game can be startet.
 	 * @return true if all players are at state loaded
 	 */
-	public boolean allPlayersReadyLoaded()
-	{
+	public boolean allPlayersReadyLoaded() {
+		for (Player player : players) {
+			if ( player.isStateInit() || player.isStateNotInit() ) {
+				return false; //found a player with state less than loaded
+			}
+		}
+
 		return true;
 	}
 

@@ -1,14 +1,11 @@
 package snake;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import snake.data.*;
 import snake.mzspaces.ContainerCoordinatorMapper;
-import snake.mzspaces.DataChangeEvent;
 import snake.mzspaces.DataChangeListener;
-import snake.mzspaces.DataChangeType;
 import snake.mzspaces.Util;
 
 /**
@@ -24,7 +21,6 @@ import snake.mzspaces.Util;
 public class GameListManager
 {
 	private GameList gameList = null;
-	private Player myPlayer = null;
 	private PlayerList playerList = null;
 	private Snake snakeMain = null; //needed to report back when game can be startet
 
@@ -34,16 +30,17 @@ public class GameListManager
 	private LevelsManager levelManager = null;
 	private DataChangeListener listener;
 
+	private Logger log = LoggerFactory.getLogger(GameListManager.class);
+
 	/**
 	 * Create a new GameListManager object.
 	 * @param snakeMain Snake main class
 	 * @param myPlayer the own player
 	 * @param aLevelManager the levelmanager with infos about all available levels
 	 */
-	public GameListManager(Snake snakeMain, Player myPlayer, LevelsManager aLevelManager)
+	public GameListManager(Snake snakeMain, LevelsManager aLevelManager)
 	{
 		this.snakeMain = snakeMain;
-		this.myPlayer = myPlayer;
 		this.levelManager = aLevelManager;
 	}
 
@@ -58,7 +55,7 @@ public class GameListManager
 	{
 			playerList = new PlayerList();
 			gameList = new GameList(listener, playerList, this);
-			playerList.addPlayer(myPlayer);
+			playerList.addPlayer(snakeMain.getMyPlayer());
 	}
 
 	/**
@@ -118,8 +115,8 @@ public class GameListManager
 			LevelData initData = new LevelData();
 			initData.LoadData(levelManager);
 
-			currentGame = gameList.addGame(name, myPlayer, initData);
-			myPlayer.setCurrentGame(currentGame);
+			currentGame = gameList.addGame(name, snakeMain.getMyPlayer(), initData);
+			snakeMain.getMyPlayer().setCurrentGame(currentGame);
 		}
 	}
 
@@ -133,8 +130,8 @@ public class GameListManager
 		
 		synchronized (gameList)
 		{
-			currentGame = gameList.joinGame(index, myPlayer);
-			myPlayer.setCurrentGame(currentGame);
+			currentGame = gameList.joinGame(index, snakeMain.getMyPlayer());
+			snakeMain.getMyPlayer().setCurrentGame(currentGame);
 		}
 	}
 
@@ -149,7 +146,7 @@ public class GameListManager
 		synchronized (gameList)
 		{
 			currentGame = gameList.getGameViewOnly(index);
-			myPlayer.setCurrentGame(currentGame);
+			snakeMain.getMyPlayer().setCurrentGame(currentGame);
 		}
 	}
 
@@ -163,7 +160,7 @@ public class GameListManager
 		{
 			if (currentGame != null)
 			{
-				gameList.leaveGame(currentGame, myPlayer);
+				gameList.leaveGame(currentGame, snakeMain.getMyPlayer());
 			}
 		}
 	}
@@ -185,7 +182,9 @@ public class GameListManager
 				return;
 			}
 
-			myPlayer.setPlayerState(newState);
+			log.debug("\n\ncurrent state: "+snakeMain.getMyPlayer().getPlayerState());
+			snakeMain.getMyPlayer().setPlayerState(newState);
+			log.debug("\n\nnew state: "+snakeMain.getMyPlayer().getPlayerState());
 
 			if (myPlayerIsLeader())
 			{
@@ -193,19 +192,30 @@ public class GameListManager
 				if (newState == PlayerState.notinit)
 				{
 					//set game opened if leader not initialized
-					gameList.setGameState(currentGame, GameState.opened);
+					gameList.setGameState(currentGame, GameState.opened, false);
 				}
 				else if (newState == PlayerState.init)
 				{
 					//set game ready if player initialized
-					gameList.setGameState(currentGame, GameState.ready);
+					gameList.setGameState(currentGame, GameState.ready, false);
 				}
 				else if (newState == PlayerState.loaded)
 				{
 					//set game running if player loaded
-					gameList.setGameState(currentGame, GameState.running);
+					gameList.setGameState(currentGame, GameState.running, false);
 				}
 			}
+
+			for (int i = 0; i < currentGame.getPlayerAnz(); i++) {
+				log.debug("\n\n P"+i+" state: "+currentGame.getPlayer(i).getPlayerState());
+			}
+
+			// updated player must be sent
+			Util.getInstance().update(
+					ContainerCoordinatorMapper.GAME_LIST,
+					currentGame,
+					String.valueOf(currentGame.getNr())
+			);
 		}
 	}
 
@@ -328,7 +338,7 @@ public class GameListManager
 	 */
 	public boolean myPlayerIsLeader()
 	{
-		return currentGame.getLeader().equals(myPlayer);
+		return currentGame.getLeader().equals(snakeMain.getMyPlayer());
 	}
 
 	/**
@@ -356,6 +366,14 @@ public class GameListManager
 	}
 	public void setCurrentGame(Game game) {
 		currentGame = game;
+		// update myplayer on main
+		for (int i = 0; i < game.getPlayerAnz(); i++) {
+			Player player = game.getPlayer(i);
+			if (player.getNr().equals(snakeMain.getMyPlayer().getNr())) {
+				snakeMain.setMyPlayer(player);
+				break;
+			}
+		}
 	}
 
 	/**

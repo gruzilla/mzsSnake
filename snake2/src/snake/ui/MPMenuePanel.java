@@ -25,8 +25,7 @@ public class MPMenuePanel extends JPanel implements DataChangeListener
 {
 	private static final long serialVersionUID = 1L;
 	private Snake snakeMain = null;
-	private GameListManager gameList = null;
-	private Player myPlayer = null;
+	private GameListManager gameListManager = null;
 	private LevelsManager levels = null;
 	private Logger log = LoggerFactory.getLogger(MPMenuePanel.class);
 
@@ -58,17 +57,16 @@ public class MPMenuePanel extends JPanel implements DataChangeListener
 	/**
 	 * Create a new MPMenuePanel.
 	 * @param snakeMain Snake main class
-	 * @param gameList manager of the game list
+	 * @param gameListManager manager of the game list
 	 * @param myPlayer the own player
 	 * @param levels LevelsManager
 	 */
-	public MPMenuePanel(Snake snakeMain, GameListManager gameList, Player myPlayer, LevelsManager levels)
+	public MPMenuePanel(Snake snakeMain, GameListManager gameListManager, LevelsManager levels)
 	{
 		this.snakeMain = snakeMain;
-		this.gameList = gameList;
-		this.myPlayer = myPlayer;
+		this.gameListManager = gameListManager;
 		this.levels = levels;
-		gameList.setDataChangeListener(this); //set itself as DataChangeListener of the game list
+		gameListManager.setDataChangeListener(this); //set itself as DataChangeListener of the game list
 
 		try
 		{
@@ -186,13 +184,13 @@ public class MPMenuePanel extends JPanel implements DataChangeListener
 			{
 			}
 		}
-		for (int i = 0; i < gameList.getListSize(); i++)
+		for (int i = 0; i < gameListManager.getListSize(); i++)
 		{
-			lbGames.setListData(gameList.getList().getVector());
+			lbGames.setListData(gameListManager.getList().getVector());
 		}
-		btBeitreten.setEnabled( (gameList.getListSize() > 0));
-		btView.setEnabled( (gameList.getListSize() > 0));
-		if (oldIndex >= 0 && oldIndex < gameList.getListSize())
+		btBeitreten.setEnabled( (gameListManager.getListSize() > 0));
+		btView.setEnabled( (gameListManager.getListSize() > 0));
+		if (oldIndex >= 0 && oldIndex < gameListManager.getListSize())
 		{
 			lbGames.setSelectedIndex(oldIndex);
 			if (temp != null && !lbGames.getSelectedValue().equals(temp))
@@ -224,23 +222,23 @@ public class MPMenuePanel extends JPanel implements DataChangeListener
 	 */
 	public void btNeu_actionPerformed(ActionEvent e)
 	{
-		gameList.setViewOnly(false, false);
+		gameListManager.setViewOnly(false, false);
 		String gameName = tfNeu.getText();
 		//check if name exists
-		if (gameList.gameNameExists(gameName))
+		if (gameListManager.gameNameExists(gameName))
 		{
 			Messages.errorMessage(snakeMain,"A game with this name already exists,\nplease choose another name.");
 			return;
 		}
 
 		//set player state back to not init when necessary
-		if (myPlayer.getPlayerState() != PlayerState.notinit)
+		if (snakeMain.getMyPlayer().getPlayerState() != PlayerState.notinit)
 		{
-			myPlayer.setPlayerState(PlayerState.notinit);
-			myPlayer.saveToSpace();
+			snakeMain.getMyPlayer().setPlayerState(PlayerState.notinit);
+			//myPlayer.saveToSpace();
 		}
 
-		gameList.createGame(gameName);
+		gameListManager.createGame(gameName);
 
 		//open new game menu
 		snakeMain.openMPNewGameMenue();
@@ -255,29 +253,29 @@ public class MPMenuePanel extends JPanel implements DataChangeListener
 	{
 		if (lbGames.getSelectedIndex() > -1)
 		{
-			gameList.setViewOnly(false, false);
+			gameListManager.setViewOnly(false, false);
 			//check if game can be joined
-			if (!gameList.isGameJoinable(lbGames.getSelectedIndex()))
+			if (!gameListManager.isGameJoinable(lbGames.getSelectedIndex()))
 			{
 				Messages.infoMessage(snakeMain,"Can't join this game, because it's full or already started.");
 			}
 			else
 			{
 				//set player state back to not init when necessary
-				if (myPlayer.getPlayerState() != PlayerState.notinit)
+				if (snakeMain.getMyPlayer().getPlayerState() != PlayerState.notinit)
 				{
-					myPlayer.setPlayerState(PlayerState.notinit);
-					myPlayer.saveToSpace();
+					snakeMain.getMyPlayer().setPlayerState(PlayerState.notinit);
+					//myPlayer.saveToSpace();
 				}
 				//join game
-				gameList.joinGame(lbGames.getSelectedIndex());
+				gameListManager.joinGame(lbGames.getSelectedIndex());
 				//open new game menu
 				snakeMain.openMPNewGameMenue();
 			}
 		}
 		else
 		{
-			if (gameList.getListSize() > 0)
+			if (gameListManager.getListSize() > 0)
 			{
 				Messages.infoMessage(snakeMain, "Please choose a game from the list.");
 			}
@@ -300,24 +298,24 @@ public class MPMenuePanel extends JPanel implements DataChangeListener
 		if (selectedIndex > -1)
 		{
 			//set player state back to not init when necessary
-			if (myPlayer.getPlayerState() != PlayerState.notinit)
+			if (snakeMain.getMyPlayer().getPlayerState() != PlayerState.notinit)
 			{
-				myPlayer.setPlayerState(PlayerState.notinit);
-				myPlayer.saveToSpace();
+				snakeMain.getMyPlayer().setPlayerState(PlayerState.notinit);
+				//myPlayer.saveToSpace();
 			}
 
-			GameState gameState = gameList.getList().getGameState(selectedIndex);
+			GameState gameState = gameListManager.getList().getGameState(selectedIndex);
 			//check if game can be joined
 			if (gameState == GameState.aktiv || gameState == GameState.running || gameState == GameState.ended)
 			{
-				gameList.setViewOnly(true, false);
-				gameList.joinGameViewOnly(selectedIndex);
+				gameListManager.setViewOnly(true, false);
+				gameListManager.joinGameViewOnly(selectedIndex);
 
-				Game currentGame = gameList.getCurrentGame();
+				Game currentGame = gameListManager.getCurrentGame();
 
 				if (!levels.levelExists(currentGame.getLevelDir()))
 				{
-					LevelData levelData = gameList.getCurrentGame().getLevelData();
+					LevelData levelData = gameListManager.getCurrentGame().getLevelData();
 					levelData.SaveData(levels);
 				}
 
@@ -336,7 +334,7 @@ public class MPMenuePanel extends JPanel implements DataChangeListener
 					byte[] levelHash = levels.getLevelHash();
 					if (!java.util.Arrays.equals(levelHash, currentGame.getLevelCheckSum()))
 					{
-						LevelData levelData = gameList.getCurrentGame().getLevelData();
+						LevelData levelData = gameListManager.getCurrentGame().getLevelData();
 						levelData.SaveData(levels);
 					}
 				}
@@ -344,14 +342,14 @@ public class MPMenuePanel extends JPanel implements DataChangeListener
 				//init all game sprites and start the game
 				snakeMain.initMyGameSprites();
 				snakeMain.initOtherGameSprites();
-				gameList.checkCurrentGame();
+				gameListManager.checkCurrentGame();
 				snakeMain.startMultiplayerGame();
 			}
 			else
 			{
 				//game not started yet
-				gameList.setViewOnly(true, true);
-				gameList.joinGameViewOnly(selectedIndex);
+				gameListManager.setViewOnly(true, true);
+				gameListManager.joinGameViewOnly(selectedIndex);
 				//open new game menu
 				snakeMain.openMPNewGameMenue();
 			}

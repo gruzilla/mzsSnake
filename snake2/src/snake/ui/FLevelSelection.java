@@ -15,7 +15,6 @@ import javax.swing.event.ListSelectionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import snake.data.GameList;
 import snake.data.LevelData;
 
 /**

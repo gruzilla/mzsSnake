@@ -3,8 +3,6 @@ package snake.mzspaces;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
 
 import org.mozartspaces.capi3.Coordinator;
 import org.mozartspaces.capi3.CountNotMetException;
@@ -24,16 +22,12 @@ import org.mozartspaces.core.MzsCoreException;
 import org.mozartspaces.core.TransactionReference;
 import org.mozartspaces.core.MzsConstants.Container;
 import org.mozartspaces.core.MzsConstants.RequestTimeout;
-import org.mozartspaces.core.config.Configuration;
 import org.mozartspaces.notifications.NotificationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.esotericsoftware.minlog.Log;
-
 import snake.*;
 import snake.data.Game;
-import snake.util.SnakeLog;
 
 /**
  * Manages the connection to the xvsm space.

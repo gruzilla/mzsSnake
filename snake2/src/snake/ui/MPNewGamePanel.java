@@ -31,9 +31,8 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 {
 	private static final long serialVersionUID = 1L;
 	private Snake snakeMain = null;
-	private GameListManager gameList = null;
+	private GameListManager gameListManager = null;
 	private LevelsManager levels = null;
-	private Player myPlayer = null;
 	private boolean ready = false;
 	private BufferedImage levelImage = null;
 	private String currentLevelDir = null;
@@ -95,12 +94,10 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 	 * @param myPlayer the own player
 	 * @param aLevelManager LevelsManager
 	 */
-	public MPNewGamePanel(Snake snakeMain, GameListManager gameList, Player myPlayer,
-												LevelsManager aLevelManager)
+	public MPNewGamePanel(Snake snakeMain, GameListManager gameList, LevelsManager aLevelManager)
 	{
 		this.snakeMain = snakeMain;
-		this.gameList = gameList;
-		this.myPlayer = myPlayer;
+		this.gameListManager = gameList;
 		this.levels = aLevelManager;
 
 		gameList.setDataChangeListener(this); //set itself as DataChangeListener for the game list
@@ -330,11 +327,11 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 		if (type == DataChangeType.game || type == DataChangeType.undefined)
 		{
 			//get current game
-			Game newGame = gameList.getCurrentGame();
+			Game newGame = gameListManager.getCurrentGame();
 			if (newGame == null)
 			{
 				//back to multplayer menu if current game could not be found
-				gameList.setDataChangeListener(null);
+				gameListManager.setDataChangeListener(null);
 				System.out.println("Joining game failed.");
 				Messages.errorMessage(snakeMain, "Joining game failed!");
 				snakeMain.openMPMenue();
@@ -343,15 +340,15 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 
 			//check if game settings have been changed. set player state back to not init if settings
 			//have changed, and game state to opened if player is leader
-			if (myPlayer.isStateInit() && currentGame != null && !currentGame.settingsEqual(newGame))
+			if (snakeMain.getMyPlayer().isStateInit() && currentGame != null && !currentGame.settingsEqual(newGame))
 			{
 				//System.out.println("Game settings changed, set playerstate back to notinit.");
-				myPlayer.setPlayerState(PlayerState.notinit);
-				myPlayer.saveToSpace();
-				if (gameList.myPlayerIsLeader() && gameList.getCurrentGame().getState() != GameState.opened)
+				snakeMain.getMyPlayer().setPlayerState(PlayerState.notinit);
+				//myPlayer.saveToSpace();
+				if (gameListManager.myPlayerIsLeader() && gameListManager.getCurrentGame().getState() != GameState.opened)
 				{
 					//System.out.println("set gamestate back to open.");
-					gameList.setGameState(GameState.opened);
+					gameListManager.setGameState(GameState.opened);
 				}
 			}
 			currentGame = newGame;
@@ -359,8 +356,8 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 			//update game settings
 			rbSpielPunkte.setSelected(currentGame.getGameType() == GameType.points);
 			spSpielPunkte.setEnabled(rbSpielPunkte.isSelected());
-			spSpielPunkte.setVisible(gameList.myPlayerIsLeader());
-			if (rbSpielPunkte.isSelected() && !gameList.myPlayerIsLeader())
+			spSpielPunkte.setVisible(gameListManager.myPlayerIsLeader());
+			if (rbSpielPunkte.isSelected() && !gameListManager.myPlayerIsLeader())
 			{
 				tfSpielPunkte.setVisible(true);
 				tfSpielPunkte.setText(String.valueOf(currentGame.getWinValue()));
@@ -371,8 +368,8 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 			}
 			rbSpielZeit.setSelected(currentGame.getGameType() == GameType.time);
 			spSpielZeit.setEnabled(rbSpielZeit.isSelected());
-			spSpielZeit.setVisible(gameList.myPlayerIsLeader());
-			if (rbSpielZeit.isSelected() && !gameList.myPlayerIsLeader())
+			spSpielZeit.setVisible(gameListManager.myPlayerIsLeader());
+			if (rbSpielZeit.isSelected() && !gameListManager.myPlayerIsLeader())
 			{
 				tfSpielZeit.setVisible(true);
 				tfSpielZeit.setText(String.valueOf(currentGame.getWinValue()));
@@ -390,14 +387,14 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 			{
 				if (!levels.levelExists(currentGame.getLevelDir()))
 				{
-					LevelData levelData = gameList.getCurrentGame().getLevelData();
+					LevelData levelData = gameListManager.getCurrentGame().getLevelData();
 					levelData.SaveData(levels);
 				}
 
 				//cancel if level does not exist
 				if (!levels.levelExists(currentGame.getLevelDir()))
 				{
-					gameList.setDataChangeListener(null);
+					gameListManager.setDataChangeListener(null);
 					Messages.errorMessage(snakeMain,
 																"Error occured: the level \"" + currentGame.getLevelDir() +
 																"\" can't be found!");
@@ -411,7 +408,7 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 					byte[] levelHash = levels.getLevelHash();
 					if (!java.util.Arrays.equals(levelHash, currentGame.getLevelCheckSum()))
 					{
-						LevelData levelData = gameList.getCurrentGame().getLevelData();
+						LevelData levelData = gameListManager.getCurrentGame().getLevelData();
 						levelData.SaveData(levels);
 					}
 
@@ -455,7 +452,7 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 		Game game;
 		if (gameData == null)
 		{
-			game = gameList.getCurrentGame();
+			game = gameListManager.getCurrentGame();
 		}
 		else
 		{
@@ -471,9 +468,9 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 			updatePlayerInfo(game, 3, tfPlayer4, laPlayer4Ready);
 
 			//check if player is ready (when state is not notinit)
-			ready = myPlayer.getPlayerState() != PlayerState.notinit;
+			ready = snakeMain.getMyPlayer().getPlayerState() != PlayerState.notinit;
 
-			if (gameList.isViewOnly())
+			if (gameListManager.isViewOnly())
 			{
 				btStart.setEnabled(false);
 			}
@@ -482,7 +479,7 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 				btStart.setEnabled(!ready);
 			}
 			//settings can only be edited if player is leader and not ready
-			btLevel.setVisible(gameList.myPlayerIsLeader());
+			btLevel.setVisible(gameListManager.myPlayerIsLeader());
 			btLevel.setEnabled(!ready);
 			if (ready)
 			{
@@ -519,12 +516,9 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 				}
 			}
 			//display ready information in the label, green if player is ready, otherwise red
-			if (activePlayer.isStateInit() || activePlayer.isStateLoaded())
-			{
+			if (activePlayer.isStateInit() || activePlayer.isStateLoaded()) {
 				laPlayerReady.setBackground(Color.GREEN);
-			}
-			else
-			{
+			} else {
 				laPlayerReady.setBackground(Color.RED);
 			}
 		}
@@ -548,13 +542,13 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 		if (ready)
 		{
 			//set player back to not init (= not ready)
-			gameList.setMyPlayerReady(PlayerState.notinit);
+			gameListManager.setMyPlayerReady(PlayerState.notinit);
 		}
 		else
 		{
 			//leave game
-			gameList.setDataChangeListener(null);
-			gameList.leaveGame();
+			gameListManager.setDataChangeListener(null);
+			gameListManager.leaveGame();
 
 			//open multiplayer menu
 			snakeMain.openMPMenue();
@@ -568,7 +562,7 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 	public void btLevel_actionPerformed(ActionEvent e)
 	{
 		//Levelauswahl anzeigen
-		FLevelSelection form = new FLevelSelection(snakeMain, levels, gameList);
+		FLevelSelection form = new FLevelSelection(snakeMain, levels, gameListManager);
 		form.setVisible(true);
 	}
 
@@ -579,10 +573,9 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 	 */
 	public void btStart_actionPerformed(ActionEvent e)
 	{
-		if (gameList.getCurrentGame().getPlayerAnz() > 1)
+		if (gameListManager.getCurrentGame().getPlayerAnz() > 1)
 		{
 			snakeMain.initMyGameSprites();
-			snakeMain.startMultiplayerGame();
 			updateForm();
 		}
 	}
@@ -595,7 +588,7 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 		GameType gameType = rbSpielPunkte.isSelected() ? GameType.points : GameType.time;
 		Integer winValue = rbSpielPunkte.isSelected() ? (Integer) spSpielPunkte.getValue() :
 				(Integer) spSpielZeit.getValue();
-		gameList.setGameData(gameType, winValue.intValue(), chKollisionWand.isSelected(),
+		gameListManager.setGameData(gameType, winValue.intValue(), chKollisionWand.isSelected(),
 												 chKollisionSelbst.isSelected(),
 												 chKollisionAndere.isSelected());
 	}
@@ -607,7 +600,7 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 	 */
 	public void rbSpielPunkte_actionPerformed(ActionEvent e)
 	{
-		if (!ready && gameList.myPlayerIsLeader())
+		if (!ready && gameListManager.myPlayerIsLeader())
 		{
 			rbSpielPunkte.setSelected(true);
 			spSpielPunkte.setEnabled(true);
@@ -617,7 +610,7 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 		}
 		else
 		{
-			rbSpielPunkte.setSelected(gameList.getCurrentGame().getGameType() == GameType.points);
+			rbSpielPunkte.setSelected(gameListManager.getCurrentGame().getGameType() == GameType.points);
 		}
 	}
 
@@ -628,7 +621,7 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 	 */
 	public void rbSpielZeit_actionPerformed(ActionEvent e)
 	{
-		if (!ready && gameList.myPlayerIsLeader())
+		if (!ready && gameListManager.myPlayerIsLeader())
 		{
 			rbSpielPunkte.setSelected(false);
 			spSpielPunkte.setEnabled(false);
@@ -638,7 +631,7 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 		}
 		else
 		{
-			rbSpielZeit.setSelected(gameList.getCurrentGame().getGameType() == GameType.time);
+			rbSpielZeit.setSelected(gameListManager.getCurrentGame().getGameType() == GameType.time);
 		}
 	}
 
@@ -648,13 +641,13 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 	 */
 	public void chKollisionWand_actionPerformed(ActionEvent e)
 	{
-		if (!ready && gameList.myPlayerIsLeader())
+		if (!ready && gameListManager.myPlayerIsLeader())
 		{
 			saveGameData();
 		}
 		else
 		{
-			chKollisionWand.setSelected(gameList.getCurrentGame().getCollisionTypeWall());
+			chKollisionWand.setSelected(gameListManager.getCurrentGame().getCollisionTypeWall());
 		}
 	}
 
@@ -664,13 +657,13 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 	 */
 	public void chKollisionSelbst_actionPerformed(ActionEvent e)
 	{
-		if (!ready && gameList.myPlayerIsLeader())
+		if (!ready && gameListManager.myPlayerIsLeader())
 		{
 			saveGameData();
 		}
 		else
 		{
-			chKollisionSelbst.setSelected(gameList.getCurrentGame().getCollisionTypeOwn());
+			chKollisionSelbst.setSelected(gameListManager.getCurrentGame().getCollisionTypeOwn());
 		}
 	}
 
@@ -680,13 +673,13 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 	 */
 	public void chKollisionAndere_actionPerformed(ActionEvent e)
 	{
-		if (!ready && gameList.myPlayerIsLeader())
+		if (!ready && gameListManager.myPlayerIsLeader())
 		{
 			saveGameData();
 		}
 		else
 		{
-			chKollisionAndere.setSelected(gameList.getCurrentGame().getCollisionTypeOther());
+			chKollisionAndere.setSelected(gameListManager.getCurrentGame().getCollisionTypeOther());
 		}
 	}
 
@@ -695,7 +688,7 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 	 */
 	public void spSpielPunkte_stateChanged(ChangeEvent e)
 	{
-		if (gameList.myPlayerIsLeader() && spSpielPunkte.isEnabled())
+		if (gameListManager.myPlayerIsLeader() && spSpielPunkte.isEnabled())
 		{
 			saveGameData();
 		}
@@ -707,7 +700,7 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 	 */
 	public void spSpielZeit_stateChanged(ChangeEvent e)
 	{
-		if (gameList.myPlayerIsLeader() && spSpielZeit.isEnabled())
+		if (gameListManager.myPlayerIsLeader() && spSpielZeit.isEnabled())
 		{
 			saveGameData();
 		}
