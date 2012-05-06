@@ -133,7 +133,7 @@ public class MPNewGamePanel extends JPanel implements DataChangeListener
 	 */
 	public void dataChanged(DataChangeEvent changeEvent)
 	{
-		log.debug("\n\nreceived change event, updating form\n\n");
+		//log.debug("\n\nreceived change event, updating form\n\n");
 		updateForm(changeEvent.getType());
 	}
 

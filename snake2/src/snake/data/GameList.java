@@ -3,6 +3,7 @@ package snake.data;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.Vector;
 
 import org.mozartspaces.capi3.FifoCoordinator;
@@ -37,19 +38,15 @@ public class GameList implements Serializable, NotificationListener
 	private Notification notification;
 
 	private Logger log = LoggerFactory.getLogger(GameList.class);
-	private GameListManager manager;
 	
 	/**
 	 * create a new game list.
-	 * the manager has to be passed so that we can inform him about the new current game, if a player leaves
 	 *
 	 * @param listener
 	 * @param playerList
-	 * @param mgnr
 	 */
-	public GameList(DataChangeListener listener, PlayerList playerList, GameListManager mgnr)
+	public GameList(DataChangeListener listener, PlayerList playerList)
 	{
-		this.manager = mgnr;
 		this.games = new Vector<Game>();
 		this.listener = listener;
 		this.playerList = playerList;
@@ -325,14 +322,15 @@ public class GameList implements Serializable, NotificationListener
 	 * @param game game that is searched in the game list
 	 * @return original game from the game list, null if the game is not found
 	 */
-	public Game getGame(Game game)
+	public Game getGame(UUID id)
 	{
 		//Spiel auslesen
-		int index = games.indexOf(game);
-		if (index > -1)
-			return (Game)games.elementAt(index);
-		else
-			return null;
+		for (Game gameEntry : games) {
+			if (gameEntry.getNr().equals(id)) {
+				return gameEntry;
+			}
+		}
+		return null;
 	}
 
 	public int size()
@@ -371,13 +369,9 @@ public class GameList implements Serializable, NotificationListener
 						if (games.get(i).getNr().equals(game.getNr())) {
 							found = true;
 							
-							if (manager.getCurrentGame().getNr().equals(game.getNr())) {
-								manager.setCurrentGame(game);
-								// find player and set new myplayer
-							}
 							games.set(i, game);
 							
-							log.debug("\n\n level: "+game.getLevelDir() +"\n\n");
+							//log.debug("\n\n level: "+game.getLevelDir() +"\n\n");
 							changed = true;
 							break;
 						}

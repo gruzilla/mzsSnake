@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import snake.data.*;
 import snake.mzspaces.ContainerCoordinatorMapper;
+import snake.mzspaces.DataChangeEvent;
 import snake.mzspaces.DataChangeListener;
 import snake.mzspaces.Util;
 
@@ -18,7 +19,7 @@ import snake.mzspaces.Util;
  * on to a set DataChangeListener.
  * @author Thomas Scheller, Markus Karolus
  */
-public class GameListManager
+public class GameListManager implements DataChangeListener
 {
 	private GameList gameList = null;
 	private PlayerList playerList = null;
@@ -53,9 +54,9 @@ public class GameListManager
 	 */
 	public void initialize()
 	{
-			playerList = new PlayerList();
-			gameList = new GameList(listener, playerList, this);
-			playerList.addPlayer(snakeMain.getMyPlayer());
+		playerList = new PlayerList();
+		gameList = new GameList(this, playerList);
+		playerList.addPlayer(snakeMain.getMyPlayer());
 	}
 
 	/**
@@ -239,7 +240,7 @@ public class GameListManager
 	{
 		synchronized (gameList)
 		{
-			gameList.setGameLevel(gameList.getGame(currentGame), levelData);
+			gameList.setGameLevel(gameList.getGame(currentGame.getNr()), levelData);
 		}
 	}
 
@@ -256,7 +257,7 @@ public class GameListManager
 	{
 		synchronized (gameList)
 		{
-			gameList.setGameData(gameList.getGame(currentGame), gameType, winValue, collisionWall, collisionOwn,
+			gameList.setGameData(gameList.getGame(currentGame.getNr()), gameType, winValue, collisionWall, collisionOwn,
 					collisionOther);
 		}
 	}
@@ -361,18 +362,7 @@ public class GameListManager
 		synchronized (gameList)
 		{
 			//aktuelles Spiel auslesen
-			return gameList.getGame(currentGame);
-		}
-	}
-	public void setCurrentGame(Game game) {
-		currentGame = game;
-		// update myplayer on main
-		for (int i = 0; i < game.getPlayerAnz(); i++) {
-			Player player = game.getPlayer(i);
-			if (player.getNr().equals(snakeMain.getMyPlayer().getNr())) {
-				snakeMain.setMyPlayer(player);
-				break;
-			}
+			return gameList.getGame(currentGame.getNr());
 		}
 	}
 
@@ -381,7 +371,7 @@ public class GameListManager
 	 */
 	public void checkCurrentGame()
 	{
-		currentGame = gameList.getGame(currentGame);
+		currentGame = gameList.getGame(currentGame.getNr());
 		if (currentGame != null)
 		{
 			GameState state = currentGame.getState();
@@ -439,14 +429,34 @@ public class GameListManager
 		return highScore;
 	}
 
-
 	public void writeHighScore(HighScore highScore) {
 		// TODO Auto-generated method stub
 	}
 
-
 	public void setDataChangeListener(DataChangeListener listener) {
 		this.listener = listener;
-		gameList.setDataChangeListener(listener);
+	}
+
+	@Override
+	public void dataChanged(DataChangeEvent changeEvent) {
+		// TODO Auto-generated method stub
+		synchronized (gameList) {
+			log.debug("\n\noverwriting current game\n");
+			currentGame = gameList.getGame(currentGame.getNr());
+
+			for (int i = 0; i < currentGame.getPlayerAnz(); i++) {
+				Player player = currentGame.getPlayer(i);
+				if (player.getNr().equals(snakeMain.getMyPlayer().getNr())) {
+					snakeMain.setMyPlayer(player);
+					break;
+				}
+			}
+
+			checkCurrentGame();
+
+			if (listener != null) {
+				listener.dataChanged(changeEvent);
+			}
+		}
 	}
 }
