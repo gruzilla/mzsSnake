@@ -55,11 +55,11 @@ public class SnakeSpriteData
 	private int snakePartWidth = 0;
 	//private CorsoStrategy strat = null;
 	private CollectableSprite collectables = null;
-	private Player myPlayer = null;
 	//private SnakeSpriteNotifier notifier = null;
 	//private CorsoConnection conn = null;
 	private boolean multiplayer = false;
 	private SnakeSprite sprite = null;
+	private Snake snakeMain = null;
 	private GameListManager gameListManager;
 
 	//collision values
@@ -74,6 +74,7 @@ public class SnakeSpriteData
 	public java.awt.Point[] pixelPos = new java.awt.Point[MAXPOINTS * 6];
 	public int[] pixelDirection = new int[MAXPOINTS * 6];
 	public int pixelHeadPos = STARTPARTS * POINTDIST * STEP;
+	private Player otherPlayer;
 
 
 	/**
@@ -85,11 +86,11 @@ public class SnakeSpriteData
 	 * @param aGameMap manager for the level background
 	 * @param collisionMode collision mode of the game (collision with self, others, wall)
 	 */
-	public SnakeSpriteData(ClipsLoader aClipsLoader, GameListManager gameListManager, Player aPlayer,
+	public SnakeSpriteData(ClipsLoader aClipsLoader, GameListManager gameListManager, Snake snakeMain,
 												 BackgroundManager aGameMap, int collisionMode)
 	{
 		clipsLoader = aClipsLoader;
-		myPlayer = aPlayer;
+		this.snakeMain = snakeMain;
 		gameMap = aGameMap;
 		this.gameListManager = gameListManager;
 		//this.conn = conn;
@@ -115,9 +116,23 @@ public class SnakeSpriteData
 	 * @param aPlayer the own player
 	 * @param aClipsLoader ClipsLoader with the eat, crash and die sounds of the snake
 	 */
-	public SnakeSpriteData(Player aPlayer, ClipsLoader aClipsLoader)
+	public SnakeSpriteData(Snake snakeMain, ClipsLoader aClipsLoader)
 	{
-		myPlayer = aPlayer;
+		this.snakeMain = snakeMain;
+		clipsLoader = aClipsLoader;
+		
+		//read initial data
+		readInitData();
+
+		//start notifier thread
+		// TODO: USE player-notification instead
+		//notifier = new SnakeSpriteNotifier();
+		//Thread notifierThread = new Thread(notifier);
+		//notifierThread.start();
+	}
+
+	public SnakeSpriteData(Player otherPlayer, ClipsLoader aClipsLoader) {
+		this.otherPlayer = otherPlayer;
 		clipsLoader = aClipsLoader;
 		
 		//read initial data
@@ -174,6 +189,10 @@ public class SnakeSpriteData
 	private void writePlayer() {
 		// TODO: implement
 	}
+	
+	private Player getPlayer() {
+		return snakeMain == null ? otherPlayer : snakeMain.getMyPlayer();
+	}
 
 	/**
 	 * Write all positions of the snake to space (from headpos to tailpos), also write
@@ -191,8 +210,8 @@ public class SnakeSpriteData
 				//CorsoTopTransaction tx = conn.createTopTransaction();
 				TransactionReference tx = Util.getInstance().createTransaction();
 
-				int stop = myPlayer.getHeadPos();
-				int start = myPlayer.getTailPos();
+				int stop = getPlayer().getHeadPos();
+				int start = getPlayer().getTailPos();
 
 /*				if (snake.corso.Util.usingOneSpace)
 				{
@@ -203,10 +222,10 @@ public class SnakeSpriteData
 					snakeTailOid.writeInt(tailPos, tx);
 				}
 */				//write the snake parts
-				Entry[] entries = new Entry[myPlayer.getParts().length];
+				Entry[] entries = new Entry[getPlayer().getParts().length];
 				while (start != stop)
 				{
-					entries[start] = new Entry(myPlayer.getPart(start));
+					entries[start] = new Entry(getPlayer().getPart(start));
 //					snakePosList.oidList[start].writeShareable(parts[start], tx);
 
 					start++;
@@ -217,7 +236,7 @@ public class SnakeSpriteData
 
 				}
 				//snakePosList.oidList[start].writeShareable(parts[start], tx);
-				entries[start] = new Entry(myPlayer.getPart(start));
+				entries[start] = new Entry(getPlayer().getPart(start));
 
 				ContainerReference gCont = Util.getInstance().getGameContainer(gameListManager.getCurrentGame());
 				Util.getInstance().getConnection().write(
@@ -265,15 +284,15 @@ public class SnakeSpriteData
 	 */
 	private void createData(double startX, double startY, int degree)
 	{
-		for (int i = myPlayer.getHeadPos(); i >= myPlayer.getTailPos(); i--)
+		for (int i = getPlayer().getHeadPos(); i >= getPlayer().getTailPos(); i--)
 		{
-			myPlayer.setPart(i, new SnakePos(startX, startY, degree));
+			getPlayer().setPart(i, new SnakePos(startX, startY, degree));
 			//parts[i] = new SnakePos(startX, startY, degree);
 		}
 		for (int i = 0; i < MAXPOINTS; i++) //fill unused points with 0
 		{
-			if (myPlayer.getPart(i) == null)
-				myPlayer.setPart(i, new SnakePos());
+			if (getPlayer().getPart(i) == null)
+				getPlayer().setPart(i, new SnakePos());
 			/*
 			if (parts[i] == null)
 			{
@@ -306,10 +325,10 @@ public class SnakeSpriteData
 			//	snakePosList.oidList[i] = conn.createVarOid(strat);
 			//	snakePosList.oidList[i].writeShareable(parts[i], tx);
 			//}
-			//myPlayer.setPlayerState(snakeState);
-			//myPlayer.setHeadPos(headPos);
-			//myPlayer.setTailPos(tailPos);
-			//myPlayer.setParts(parts);
+			//getPlayer().setPlayerState(snakeState);
+			//getPlayer().setHeadPos(headPos);
+			//getPlayer().setTailPos(tailPos);
+			//getPlayer().setParts(parts);
 			
 			//snakePosOid.writeShareable(snakePosList, tx);
 			//snakeHeadOid.writeInt(headPos, tx);
@@ -335,10 +354,10 @@ public class SnakeSpriteData
 		try
 		{
 			// CorsoStrategy strat = new CorsoStrategy(Util.STRATEGY);
-			snakeHeadOid = myPlayer.getSnakeHeadOid();
-			snakeTailOid = myPlayer.getSnakeTailOid();
-			snakePosOid = myPlayer.getSnakePosOid();
-			snakeStateOid = myPlayer.getSnakeStateOid();
+			snakeHeadOid = getPlayer().getSnakeHeadOid();
+			snakeTailOid = getPlayer().getSnakeTailOid();
+			snakePosOid = getPlayer().getSnakePosOid();
+			snakeStateOid = getPlayer().getSnakeStateOid();
 
 			// CorsoTopTransaction tx = conn.createTopTransaction();
 			headPos = snakeHeadOid.readInt(null, CorsoConnection.INFINITE_TIMEOUT);
@@ -384,10 +403,10 @@ public class SnakeSpriteData
 	{
 		pixelHeadPos = 0;
 		int step = STEP + (includeSpeedChange ? speedChange : 0);
-		for (int i = myPlayer.getTailPos(); i < myPlayer.getHeadPos(); i++)
+		for (int i = getPlayer().getTailPos(); i < getPlayer().getHeadPos(); i++)
 		{
-			SnakePos pos1 = myPlayer.getPart(i);
-			SnakePos pos2 = myPlayer.getPart(i + 1);
+			SnakePos pos1 = getPlayer().getPart(i);
+			SnakePos pos2 = getPlayer().getPart(i + 1);
 
 			//calculate x and y increment per step from part 1 to part 2
 			double xIncrement = (pos2.x - pos1.x) / (double) step;
@@ -402,8 +421,8 @@ public class SnakeSpriteData
 				pixelHeadPos++;
 			}
 		}
-		pixelPos[pixelHeadPos] = new java.awt.Point( (int) myPlayer.getHeadPart().x, (int) myPlayer.getHeadPart().y);
-		pixelDirection[pixelHeadPos] = (int) myPlayer.getHeadPart().direction;
+		pixelPos[pixelHeadPos] = new java.awt.Point( (int) getPlayer().getHeadPart().x, (int) getPlayer().getHeadPart().y);
+		pixelDirection[pixelHeadPos] = (int) getPlayer().getHeadPart().direction;
 	}
 
 	/**
@@ -452,28 +471,28 @@ public class SnakeSpriteData
 	 */
 	private void resetSnake()
 	{
-		SnakeStartPoint start = gameMap.getStartPoint(myPlayer.getNr());
+		SnakeStartPoint start = gameMap.getStartPoint(getPlayer().getNr());
 		direction = start.getDegree();
-		myPlayer.setHeadPos(STARTPARTS * POINTDIST);
-		myPlayer.setParts(new SnakePos[MAXPOINTS]);
+		getPlayer().setHeadPos(STARTPARTS * POINTDIST);
+		getPlayer().setParts(new SnakePos[MAXPOINTS]);
 		//headPos = STARTPARTS * POINTDIST;
-		myPlayer.setTailPos(0);
+		getPlayer().setTailPos(0);
 		//tailPos = 0;
 		starting = STARTPARTS * POINTDIST;
 
-		myPlayer.setSnakeState(SnakeState.active);
+		getPlayer().setSnakeState(SnakeState.active);
 		//snakeState = SnakeState.active;
 		createData(start.getX(), start.getY(), start.getDegree());
 
 		int collisionTemp = collision_mode;
 		collision_mode = 0; //turn off collision while starting
-		int end = myPlayer.getHeadPos();
+		int end = getPlayer().getHeadPos();
 		//int end = headPos;
 		for (int i = 0; i < STARTPARTS * POINTDIST; i++)
 		{
 			updateData(0.0);
 		}
-		myPlayer.setTailPos(end);
+		getPlayer().setTailPos(end);
 		//tailPos = end;
 		collision_mode = collisionTemp;
 
@@ -495,9 +514,9 @@ public class SnakeSpriteData
 	 */
 	private void restartSnake()
 	{
-		myPlayer.setSnakeState(SnakeState.unverwundbar);
+		getPlayer().setSnakeState(SnakeState.unverwundbar);
 		//snakeState = SnakeState.unverwundbar;
-		SnakeStartPoint newStartPoint = gameMap.getStartPoint(myPlayer.getNr());
+		SnakeStartPoint newStartPoint = gameMap.getStartPoint(getPlayer().getNr());
 		starting = STARTPARTS * POINTDIST;
 		direction = newStartPoint.getDegree();
 
@@ -506,19 +525,19 @@ public class SnakeSpriteData
 		int collisionTemp = collision_mode;
 		collision_mode = 0; //turn off collision while starting
 		updateData(0.0);
-		myPlayer.getHeadPart().direction = direction;
+		getPlayer().getHeadPart().direction = direction;
 		//parts[headPos].direction = direction;
-		myPlayer.getHeadPart().x = newStartPoint.getX();
+		getPlayer().getHeadPart().x = newStartPoint.getX();
 		//parts[headPos].x = newStartPoint.getX();
-		myPlayer.getHeadPart().y = newStartPoint.getY();
+		getPlayer().getHeadPart().y = newStartPoint.getY();
 		//parts[headPos].y = newStartPoint.getY();
-		int end = myPlayer.getHeadPos();
+		int end = getPlayer().getHeadPos();
 		//int end = headPos;
 		for (int i = 0; i < STARTPARTS * POINTDIST; i++)
 		{
 			updateData(0.0);
 		}
-		myPlayer.setTailPos(end);
+		getPlayer().setTailPos(end);
 		//tailPos = end;
 		partsAnz = STARTPARTS;
 
@@ -551,8 +570,8 @@ public class SnakeSpriteData
 	 */
 	private boolean checkCrash(Rectangle controllRect, int abstandHead, int snakeLength)
 	{
-		int start = myPlayer.getTailPos();
-		int stop = myPlayer.getHeadPos() - abstandHead;
+		int start = getPlayer().getTailPos();
+		int stop = getPlayer().getHeadPos() - abstandHead;
 		if (stop < 0)
 		{
 			stop = MAXPOINTS + stop;
@@ -561,7 +580,7 @@ public class SnakeSpriteData
 		while (start != stop)
 		{
 			//create a rectangle for the current snake part
-			Rectangle rect = new Rectangle( (int) myPlayer.getPart(start).x + 2, (int) myPlayer.getPart(start).y + 2,
+			Rectangle rect = new Rectangle( (int) getPlayer().getPart(start).x + 2, (int) getPlayer().getPart(start).y + 2,
 																		 snakePartWidth - 4,
 																		 snakePartHeight - 4);
 
@@ -574,7 +593,7 @@ public class SnakeSpriteData
 			//check if the rectangle intersects with the control rectangle (-> crash)
 			if (rect.intersects(controllRect))
 			{
-				if (start == myPlayer.getHeadPos())
+				if (start == getPlayer().getHeadPos())
 				{
 					if (getSnakeLength() > snakeLength)
 					{ //own snake is longer and wins
@@ -638,8 +657,8 @@ public class SnakeSpriteData
 				{
 					SnakeSpriteData otherSnakeData = otherSnakes[j].getData();
 
-					Rectangle headRectOther = new Rectangle( (int) otherSnakeData.myPlayer.getHeadPart().x + 2,
-																									(int) otherSnakeData.myPlayer.getHeadPart().y + 2,
+					Rectangle headRectOther = new Rectangle( (int) otherSnakeData.getPlayer().getHeadPart().x + 2,
+																									(int) otherSnakeData.getPlayer().getHeadPart().y + 2,
 																									snakePartWidth - 4, snakePartHeight - 4);
 					return checkCrash(headRectOther, 0, otherSnakeData.getSnakeLength());
 				}
@@ -672,8 +691,8 @@ public class SnakeSpriteData
 		double changeX = (step * Math.cos(Math.toRadians(direction)));
 		double changeY = (step * Math.sin(Math.toRadians(direction)));
 
-		int controllPosX = (int) (myPlayer.getHeadPart().x - changeX);
-		int controllPosY = (int) (myPlayer.getHeadPart().y - changeY);
+		int controllPosX = (int) (getPlayer().getHeadPart().x - changeX);
+		int controllPosY = (int) (getPlayer().getHeadPart().y - changeY);
 
 		//check crash with self
 		boolean end = false;
@@ -725,9 +744,9 @@ public class SnakeSpriteData
 
 		if (!multiplayer)
 		{
-			if (getroffen == 0 && myPlayer.getSnakeState() != SnakeState.active)
+			if (getroffen == 0 && getPlayer().getSnakeState() != SnakeState.active)
 			{
-				myPlayer.setSnakeState(SnakeState.active);
+				getPlayer().setSnakeState(SnakeState.active);
 			}
 		}
 
@@ -744,15 +763,15 @@ public class SnakeSpriteData
 			return; //crash occured, cancel update
 		}
 
-		int prevPos = myPlayer.getHeadPos(); // save old head pos while creating new one
+		int prevPos = getPlayer().getHeadPos(); // save old head pos while creating new one
 
-		myPlayer.setHeadPos((myPlayer.getHeadPos() + 1) % MAXPOINTS);
+		getPlayer().setHeadPos((getPlayer().getHeadPos() + 1) % MAXPOINTS);
 		//headPos = (headPos + 1) % MAXPOINTS;
-		myPlayer.setTailPos((myPlayer.getTailPos() + 1) % MAXPOINTS);
+		getPlayer().setTailPos((getPlayer().getTailPos() + 1) % MAXPOINTS);
 		//tailPos = (tailPos + 1) % MAXPOINTS;
 
-		double newPosX = myPlayer.getPart(prevPos).x - changeX;
-		double newPosY = myPlayer.getPart(prevPos).y - changeY;
+		double newPosX = getPlayer().getPart(prevPos).x - changeX;
+		double newPosY = getPlayer().getPart(prevPos).y - changeY;
 
 		boolean setChanges = true;
 		// modify newX/newY if < 0, or > pWidth/pHeight; use wraparound
@@ -803,18 +822,18 @@ public class SnakeSpriteData
 		//set new head position if it is valid
 		if (!setChanges)
 		{
-			myPlayer.getHeadPart().x = myPlayer.getPart(prevPos).x;
-			myPlayer.getHeadPart().y = myPlayer.getPart(prevPos).y;
+			getPlayer().getHeadPart().x = getPlayer().getPart(prevPos).x;
+			getPlayer().getHeadPart().y = getPlayer().getPart(prevPos).y;
 		}
 		else
 		{
-			myPlayer.getHeadPart().x = newPosX;
-			myPlayer.getHeadPart().y = newPosY;
+			getPlayer().getHeadPart().x = newPosX;
+			getPlayer().getHeadPart().y = newPosY;
 		}
-		myPlayer.getHeadPart().direction = direction;
+		getPlayer().getHeadPart().direction = direction;
 
 		//calculate pixel positions from last headpos to new headpos
-		updatePixelPositions(myPlayer.getHeadPos(), prevPos, true);
+		updatePixelPositions(getPlayer().getHeadPos(), prevPos, true);
 
 		//check crash with other snakes
 		if (checkCrashOther())
@@ -842,14 +861,14 @@ public class SnakeSpriteData
 		if (activeSnake)
 		{
 			//active (writing) snake: simply calculate x and y increment for pixel positions
-			xIncrement = (myPlayer.getHeadPart().x - myPlayer.getPart(prevHeadPos).x) / (double) step;
-			yIncrement = (myPlayer.getHeadPart().y - myPlayer.getPart(prevHeadPos).y) / (double) step;
+			xIncrement = (getPlayer().getHeadPart().x - getPlayer().getPart(prevHeadPos).x) / (double) step;
+			yIncrement = (getPlayer().getHeadPart().y - getPlayer().getPart(prevHeadPos).y) / (double) step;
 		}
 		else
 		{
 			//passive (reading) snake: control if speed has changed, by checking the distance between the two points
-			double x = myPlayer.getHeadPart().x - myPlayer.getPart(prevHeadPos).x;
-			double y = myPlayer.getHeadPart().y - myPlayer.getPart(prevHeadPos).y;
+			double x = getPlayer().getHeadPart().x - getPlayer().getPart(prevHeadPos).x;
+			double y = getPlayer().getHeadPart().y - getPlayer().getPart(prevHeadPos).y;
 			//calc distance between points and round to new speed change value
 			int distance = (int) Math.round(Math.sqrt(x * x + y * y));
 			if (distance != step && distance < 20) //check if speed has changed; must not be seen as changed if snake crossed a window border
@@ -871,17 +890,17 @@ public class SnakeSpriteData
 		//calculate the pixel positions by using the previously calculated increment values
 		for (int i = 0; i < step; i++)
 		{
-			pixelPos[pixelHeadPos] = new java.awt.Point( (int) (myPlayer.getPart(prevHeadPos).x + xIncrement * i),
-																									(int) (myPlayer.getPart(prevHeadPos).y + yIncrement * i));
-			pixelDirection[pixelHeadPos] = (int) myPlayer.getPart(prevHeadPos).direction;
+			pixelPos[pixelHeadPos] = new java.awt.Point( (int) (getPlayer().getPart(prevHeadPos).x + xIncrement * i),
+																									(int) (getPlayer().getPart(prevHeadPos).y + yIncrement * i));
+			pixelDirection[pixelHeadPos] = (int) getPlayer().getPart(prevHeadPos).direction;
 			pixelHeadPos++;
 			if (pixelHeadPos >= pixelPos.length)
 			{
 				pixelHeadPos -= pixelPos.length;
 			}
 		}
-		pixelPos[pixelHeadPos] = new java.awt.Point( (int) myPlayer.getHeadPart().x, (int) myPlayer.getHeadPart().y);
-		pixelDirection[pixelHeadPos] = (int) myPlayer.getHeadPart().direction;
+		pixelPos[pixelHeadPos] = new java.awt.Point( (int) getPlayer().getHeadPart().x, (int) getPlayer().getHeadPart().y);
+		pixelDirection[pixelHeadPos] = (int) getPlayer().getHeadPart().direction;
 	}
 
 	/**
@@ -909,7 +928,7 @@ public class SnakeSpriteData
 				 // System.out.println("Crash with other snake");
 					removeSnakePart();
 					getroffen = STARTPARTS * POINTDIST;
-					myPlayer.setSnakeState(SnakeState.crashed);
+					getPlayer().setSnakeState(SnakeState.crashed);
 					//snakeState = SnakeState.crashed;
 					writePlayer();
 					//writeState();
@@ -925,7 +944,7 @@ public class SnakeSpriteData
 				//System.out.println("Crash with itself");
 				removeSnakePart();
 				getroffen = STARTPARTS * POINTDIST;
-				myPlayer.setSnakeState(SnakeState.crashed);
+				getPlayer().setSnakeState(SnakeState.crashed);
 				//snakeState = SnakeState.crashed;
 				writePlayer();
 				//writeState();
@@ -958,13 +977,13 @@ public class SnakeSpriteData
 		if (STARTPARTS < partsAnz)
 		{
 			partsAnz--;
-			int tailPos = myPlayer.getTailPos();
+			int tailPos = getPlayer().getTailPos();
 			tailPos += POINTDIST;
 			if (tailPos >= MAXPOINTS)
 			{
 				tailPos = tailPos - MAXPOINTS;
 			}
-			myPlayer.setTailPos(tailPos);
+			getPlayer().setTailPos(tailPos);
 		}
 	}
 
@@ -977,13 +996,13 @@ public class SnakeSpriteData
 		if (partsAnz < MAXPARTS)
 		{
 			partsAnz++;
-			int tailPos = myPlayer.getTailPos();
+			int tailPos = getPlayer().getTailPos();
 			tailPos -= POINTDIST;
 			if (tailPos < 0)
 			{
 				tailPos += MAXPOINTS;
 			}
-			myPlayer.setTailPos(tailPos);
+			getPlayer().setTailPos(tailPos);
 		}
 	}
 
