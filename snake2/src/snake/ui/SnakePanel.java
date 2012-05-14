@@ -347,7 +347,8 @@ public class SnakePanel extends JPanel implements Runnable
 			// create own game sprites
 			snakeMain.getMyPlayer().setPlayerNr(game.indexOf(snakeMain.getMyPlayer()));
 
-			snakeSprite = new SnakeSprite(imgLoader, snakeMain.getMyPlayer(), gameMap, this,
+			// as we have a multiplayer game, send game list manager
+			snakeSprite = new SnakeSprite(imgLoader, snakeMain.getMyPlayer(), gameListManager, gameMap, this,
 					game.getCollisionType());
 		}
 		else
@@ -433,7 +434,8 @@ public class SnakePanel extends JPanel implements Runnable
 		// create game sprites
 		Player player = new Player(settings.getPlayerName(), settings.getSnakeSkin());
 		player.setPlayerNr(1);
-		snakeSprite = new SnakeSprite(imgLoader, player, gameMap, this,
+		// no game list manager when playing singleplayermode
+		snakeSprite = new SnakeSprite(imgLoader, player, null, gameMap, this,
 				SnakeSpriteData.COLLISION_OWN | SnakeSpriteData.COLLISION_WALL);
 		collectables = new CollectableSprite(pWidth, pHeight, imgLoader, snakeSprite, this,
 				gameListManager, snakeMain.getMyPlayer(), gameMap);

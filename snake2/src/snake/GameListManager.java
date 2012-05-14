@@ -402,7 +402,7 @@ public class GameListManager implements DataChangeListener
 					{
 						synchronized (currentGame)
 						{
-							setGameState(GameState.aktiv);
+							initializeMultiplayerGame();
 						}
 					}
 				}
@@ -416,6 +416,16 @@ public class GameListManager implements DataChangeListener
 				}
 			}
 		}
+	}
+	
+	/**
+	 * create game container and set game to state aktiv
+	 * this method is called by the leader of the game when all players are ready.
+	 * the gamecontainer is used to save all the game sprites
+	 */
+	private void initializeMultiplayerGame() {
+		Util.getInstance().getGameContainer(getCurrentGame());
+		setGameState(GameState.aktiv);
 	}
 
 	/**

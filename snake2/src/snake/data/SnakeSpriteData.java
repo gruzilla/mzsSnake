@@ -1,10 +1,16 @@
 package snake.data;
 
 import snake.*;
+import snake.mzspaces.Util;
 import snake.util.*;
 import snake.ui.SnakeSprite;
 import snake.ui.CollectableSprite;
 import java.awt.Rectangle;
+
+import org.mozartspaces.core.ContainerReference;
+import org.mozartspaces.core.Entry;
+import org.mozartspaces.core.MzsConstants;
+import org.mozartspaces.core.TransactionReference;
 
 /**
  * Manages all data of a snake, calculating the positions of the snake parts, and
@@ -54,6 +60,7 @@ public class SnakeSpriteData
 	//private CorsoConnection conn = null;
 	private boolean multiplayer = false;
 	private SnakeSprite sprite = null;
+	private GameListManager gameListManager;
 
 	//collision values
 	public static final int COLLISION_NONE = 0;
@@ -78,15 +85,16 @@ public class SnakeSpriteData
 	 * @param aGameMap manager for the level background
 	 * @param collisionMode collision mode of the game (collision with self, others, wall)
 	 */
-	public SnakeSpriteData(ClipsLoader aClipsLoader, boolean isMultiplayer, Player aPlayer,
+	public SnakeSpriteData(ClipsLoader aClipsLoader, GameListManager gameListManager, Player aPlayer,
 												 BackgroundManager aGameMap, int collisionMode)
 	{
 		clipsLoader = aClipsLoader;
 		myPlayer = aPlayer;
 		gameMap = aGameMap;
+		this.gameListManager = gameListManager;
 		//this.conn = conn;
 		// if (this.conn == null)
-		if (isMultiplayer)
+		if (gameListManager != null)
 		{
 			multiplayer = true;
 		}
@@ -168,6 +176,86 @@ public class SnakeSpriteData
 	}
 
 	/**
+	 * Write all positions of the snake to space (from headpos to tailpos), also write
+	 * headpos, tailpos and state of the snake to space. A different order is used when
+	 * using one space or multiple spaces so that notification always come in the same
+	 * order for other players.
+	 */
+	private void writeSnakePositions()
+	{
+		int count = 10;
+		while (count > 0) //try multiple times if writing fails
+		{
+			try
+			{
+				//CorsoTopTransaction tx = conn.createTopTransaction();
+				TransactionReference tx = Util.getInstance().createTransaction();
+
+				int stop = myPlayer.getHeadPos();
+				int start = myPlayer.getTailPos();
+
+/*				if (snake.corso.Util.usingOneSpace)
+				{
+					//SPECIAL: notifications come in a different order if using one space or
+					//multiple spaces (reason unknown). When using one space, headpos has to be
+					//written BEFORE the parts so that the notification for the parts comes first.
+					snakeHeadOid.writeInt(headPos, tx);
+					snakeTailOid.writeInt(tailPos, tx);
+				}
+*/				//write the snake parts
+				Entry[] entries = new Entry[myPlayer.getParts().length];
+				while (start != stop)
+				{
+					entries[start] = new Entry(myPlayer.getPart(start));
+//					snakePosList.oidList[start].writeShareable(parts[start], tx);
+
+					start++;
+					if (start >= MAXPOINTS)
+					{
+						start = start - MAXPOINTS;
+					}
+
+				}
+				//snakePosList.oidList[start].writeShareable(parts[start], tx);
+				entries[start] = new Entry(myPlayer.getPart(start));
+
+				ContainerReference gCont = Util.getInstance().getGameContainer(gameListManager.getCurrentGame());
+				Util.getInstance().getConnection().write(
+					gCont,
+					MzsConstants.RequestTimeout.INFINITE,
+					tx,
+					entries
+				);
+
+/*				if (!snake.corso.Util.usingOneSpace)
+				{
+					//SPECIAL: notifications come in a different order if using one space or
+					//multiple spaces (reason unknown). When using multiple spaces, headpos has to be
+					//written AFTER the parts so that the notification for the parts comes first.
+					snakeHeadOid.writeInt(headPos, tx);
+					snakeTailOid.writeInt(tailPos, tx);
+				}
+*/
+				//write the snake state
+//				snakeStateOid.writeInt(snakeState.ordinal(), tx);
+//				tx.commit(CorsoConnection.INFINITE_TIMEOUT);
+				Util.getInstance().getConnection().commitTransaction(tx);
+				count = -1;
+			}
+			catch (Exception ex)
+			{
+				System.out.println("writeSnakePositions: Corso Error occured:");
+				ex.printStackTrace(System.out);
+				count--;
+			}
+		}
+		if (count == 0)
+		{
+			System.out.println("SnakeSpriteData: can't writeSnakePositions!");
+		}
+	}
+
+	 /**
 	 * Create the snake and its parts by setting the coordinates and degree of all parts
 	 * to the given start point. Also initialize the pixel positions with the same coordinates.
 	 * Save all data of the snake to space if in multiplayer mode.
@@ -392,7 +480,7 @@ public class SnakeSpriteData
 		if (multiplayer)
 		{
 			writePlayer();
-			//writeSnakePositions();
+			writeSnakePositions();
 		}
 	}
 
@@ -439,7 +527,7 @@ public class SnakeSpriteData
 		if (multiplayer)
 		{
 			writePlayer();
-			//writeSnakePositions();
+			writeSnakePositions();
 		}
 
 		sprite.restartSnake(); //restart effect
@@ -490,13 +578,13 @@ public class SnakeSpriteData
 				{
 					if (getSnakeLength() > snakeLength)
 					{ //own snake is longer and wins
-						//System.out.println("�ber Kopf gewonnen");
+						//System.out.println("Ueber Kopf gewonnen");
 						return false;
 					}
 					else
 					{
 						//own snake is shorter and looses
-						//System.out.println("�ber Kopf verloren");
+						//System.out.println("Ueber Kopf verloren");
 					}
 				}
 				return true;
@@ -657,7 +745,7 @@ public class SnakeSpriteData
 		}
 
 		int prevPos = myPlayer.getHeadPos(); // save old head pos while creating new one
-		
+
 		myPlayer.setHeadPos((myPlayer.getHeadPos() + 1) % MAXPOINTS);
 		//headPos = (headPos + 1) % MAXPOINTS;
 		myPlayer.setTailPos((myPlayer.getTailPos() + 1) % MAXPOINTS);
@@ -712,7 +800,7 @@ public class SnakeSpriteData
 				setChanges = false;
 			}
 		}
-		//set new head position if it is vaid
+		//set new head position if it is valid
 		if (!setChanges)
 		{
 			myPlayer.getHeadPart().x = myPlayer.getPart(prevPos).x;
