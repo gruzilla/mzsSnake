@@ -70,7 +70,7 @@ public class SnakeSprite
 	{
 		this.snakeMain = snakeMain;
 		this.imgLoader = imgLoader;
-		skinsManager.setCurrentSkin(snakeMain.getMyPlayer().getSkin());
+		skinsManager.setCurrentSkin(getPlayer().getSkin());
 
 		msgsFont = new Font("SansSerif", Font.BOLD, 16);
 		specialFont = new Font("SansSerif", Font.BOLD, 20);
@@ -92,43 +92,26 @@ public class SnakeSprite
 	 * @param aPlayer the own player
 	 * @param snakePanel SnakePanel where the game is drawn
 	 */
-	public SnakeSprite(ImageLoader imgLoader, Snake snakeMain, SnakePanel snakePanel)
-	{
+	public SnakeSprite(ImageLoader imgLoader,
+			 Snake snakeMain,
+			 GameListManager gameListManager,
+			SnakePanel snakePanel, Player player, String skin) {
+		this.imgLoader = imgLoader;
+		skinsManager.setCurrentSkin(skin);
 		this.snakeMain = snakeMain;
-		this.imgLoader = imgLoader;
-		skinsManager.setCurrentSkin(snakeMain.getMyPlayer().getSkin());
-
-		msgsFont = new Font("SansSerif", Font.BOLD, 16);
-		metrics = snakePanel.getFontMetrics(msgsFont);
-		data = new SnakeSpriteData(snakeMain, skinsManager.getClipsLoader());
-		data.setSprite(this);
-		writingSnake = false;
-		loadGraphics();
-		restartSnake(); //start effect for the snake
-	}
-
-	public SnakeSprite(ImageLoader imgLoader, Player player,
-			SnakePanel snakePanel) {
 		otherPlayer = player;
-		this.imgLoader = imgLoader;
-		skinsManager.setCurrentSkin(snakeMain.getMyPlayer().getSkin());
 
 		msgsFont = new Font("SansSerif", Font.BOLD, 16);
 		metrics = snakePanel.getFontMetrics(msgsFont);
-		data = new SnakeSpriteData(otherPlayer, skinsManager.getClipsLoader());
+		data = new SnakeSpriteData(skinsManager.getClipsLoader(), gameListManager, snakeMain, player, snakePanel);
 		data.setSprite(this);
 		writingSnake = false;
 		loadGraphics();
 		restartSnake(); //start effect for the snake
 	}
-
-	/**
-	 * Set the snakes of the other players of the current game.
-	 * @param otherPlayer array including SnakeSprite objects of the other players
-	 */
-	public void setOtherPlayers(SnakeSprite[] otherPlayers)
-	{
-		data.setOtherPlayers(otherPlayers);
+	
+	private Player getPlayer() {
+		return (otherPlayer != null) ? otherPlayer : snakeMain.getMyPlayer();
 	}
 
 	/**
@@ -254,8 +237,8 @@ public class SnakeSprite
 		}
 
 		//calculate positions that must be drawn
-		int headPos = snakeMain.getMyPlayer().getHeadPos();
-		int tailPos = snakeMain.getMyPlayer().getTailPos();
+		int headPos = getPlayer().getHeadPos();
+		int tailPos = getPlayer().getTailPos();
 		int maxPos = headPos;
 		if (maxPos < tailPos)
 		{
@@ -298,7 +281,7 @@ public class SnakeSprite
 		}
 
 		//draw head
-		g2d.drawImage(imgLoader.getBrighterImage(imgLoader.getRotatedImage(imgHead, (int) (snakeMain.getMyPlayer().getHeadPart().direction - 90)),effect.hasBrightenEffect() ? effect.getBrightenValue() : 1.0f),
+		g2d.drawImage(imgLoader.getBrighterImage(imgLoader.getRotatedImage(imgHead, (int) (getPlayer().getHeadPart().direction - 90)),effect.hasBrightenEffect() ? effect.getBrightenValue() : 1.0f),
 									(int) data.pixelPos[data.pixelHeadPos].x - correctionPos.x,
 									(int) data.pixelPos[data.pixelHeadPos].y - correctionPos.y, null);
 
@@ -306,10 +289,10 @@ public class SnakeSprite
 		g2d.setColor(Color.darkGray);
 		g2d.setFont(msgsFont);
 		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
-		g2d.drawString(snakeMain.getMyPlayer().getName(),
-									 (int) snakeMain.getMyPlayer().getHeadPart().x + (imgHead.getWidth() / 2) -
-									 (metrics.stringWidth(snakeMain.getMyPlayer().getName()) / 2) - correctionPos.x,
-									 (int) snakeMain.getMyPlayer().getHeadPart().y - 10 - correctionPos.y);
+		g2d.drawString(getPlayer().getName(),
+									 (int) getPlayer().getHeadPart().x + (imgHead.getWidth() / 2) -
+									 (metrics.stringWidth(getPlayer().getName()) / 2) - correctionPos.x,
+									 (int) getPlayer().getHeadPart().y - 10 - correctionPos.y);
 		g2d.setComposite(c); // restore the old composite so it doesn't mess up future rendering
 
 		//show remaing time and symbol of speedup effect, if active
@@ -330,7 +313,7 @@ public class SnakeSprite
 	 */
 	public Rectangle getHeadRectangle()
 	{
-		return new Rectangle( (int) snakeMain.getMyPlayer().getHeadPart().x + 2, (int) snakeMain.getMyPlayer().getHeadPart().y + 2,
+		return new Rectangle( (int) getPlayer().getHeadPart().x + 2, (int) getPlayer().getHeadPart().y + 2,
 												 headSize - 4, headSize - 4);
 	}
 
@@ -340,7 +323,7 @@ public class SnakeSprite
 	 */
 	public snake.data.SnakePos getHeadPos()
 	{
-		return snakeMain.getMyPlayer().getHeadPart();
+		return getPlayer().getHeadPart();
 	}
 
 	/**

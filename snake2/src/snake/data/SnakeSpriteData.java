@@ -3,6 +3,7 @@ package snake.data;
 import snake.*;
 import snake.mzspaces.Util;
 import snake.util.*;
+import snake.ui.SnakePanel;
 import snake.ui.SnakeSprite;
 import snake.ui.CollectableSprite;
 import java.awt.Rectangle;
@@ -50,7 +51,6 @@ public class SnakeSpriteData
 	//private SnakeOidList snakePosList = null;
 	private BackgroundManager gameMap = null;
 	private ClipsLoader clipsLoader = null;
-	private SnakeSprite[] otherSnakes = null;
 	private int snakePartHeight = 0;
 	private int snakePartWidth = 0;
 	//private CorsoStrategy strat = null;
@@ -60,7 +60,6 @@ public class SnakeSpriteData
 	private boolean multiplayer = false;
 	private SnakeSprite sprite = null;
 	private Snake snakeMain = null;
-	private GameListManager gameListManager;
 
 	//collision values
 	public static final int COLLISION_NONE = 0;
@@ -75,6 +74,8 @@ public class SnakeSpriteData
 	public int[] pixelDirection = new int[MAXPOINTS * 6];
 	public int pixelHeadPos = STARTPARTS * POINTDIST * STEP;
 	private Player otherPlayer;
+	private SnakePanel snakePanel;
+	private GameListManager gameListManager;
 
 
 	/**
@@ -116,11 +117,15 @@ public class SnakeSpriteData
 	 * @param aPlayer the own player
 	 * @param aClipsLoader ClipsLoader with the eat, crash and die sounds of the snake
 	 */
-	public SnakeSpriteData(Snake snakeMain, ClipsLoader aClipsLoader)
+	public SnakeSpriteData(ClipsLoader aClipsLoader, GameListManager gameListManager, Snake snakeMain, Player player, SnakePanel panel)
 	{
+		this.snakePanel = panel;
 		this.snakeMain = snakeMain;
 		clipsLoader = aClipsLoader;
-		
+		this.gameListManager = gameListManager;
+		otherPlayer = player;
+		multiplayer = true;
+
 		//read initial data
 		readInitData();
 
@@ -129,29 +134,6 @@ public class SnakeSpriteData
 		//notifier = new SnakeSpriteNotifier();
 		//Thread notifierThread = new Thread(notifier);
 		//notifierThread.start();
-	}
-
-	public SnakeSpriteData(Player otherPlayer, ClipsLoader aClipsLoader) {
-		this.otherPlayer = otherPlayer;
-		clipsLoader = aClipsLoader;
-		
-		//read initial data
-		readInitData();
-
-		//start notifier thread
-		// TODO: USE player-notification instead
-		//notifier = new SnakeSpriteNotifier();
-		//Thread notifierThread = new Thread(notifier);
-		//notifierThread.start();
-	}
-
-	/**
-	 * Set the snakes of the other players.
-	 * @param otherPlayer snakes of the other players
-	 */
-	public void setOtherPlayers(SnakeSprite[] otherPlayer)
-	{
-		otherSnakes = otherPlayer;
 	}
 
 	/**
@@ -219,7 +201,7 @@ public class SnakeSpriteData
 	}
 	
 	private Player getPlayer() {
-		return snakeMain == null ? otherPlayer : snakeMain.getMyPlayer();
+		return snakeMain == null ? getOtherPlayer() : snakeMain.getMyPlayer();
 	}
 
 	/**
@@ -681,15 +663,16 @@ public class SnakeSpriteData
 	{
 		if (useCollisionOTHER())
 		{
-			if (otherSnakes != null && otherSnakes.length > 0)
+			if (snakePanel != null && snakePanel.getOtherSnakes().length > 0)
 			{
-				for (int j = 0; j < otherSnakes.length; j++)
+				for (int j = 0; j < snakePanel.getOtherSnakes().length; j++)
 				{
-					SnakeSpriteData otherSnakeData = otherSnakes[j].getData();
+					SnakeSpriteData otherSnakeData = snakePanel.getOtherSnakes()[j].getData();
 
 					Rectangle headRectOther = new Rectangle( (int) otherSnakeData.getPlayer().getHeadPart().x + 2,
-																									(int) otherSnakeData.getPlayer().getHeadPart().y + 2,
-																									snakePartWidth - 4, snakePartHeight - 4);
+						(int) otherSnakeData.getPlayer().getHeadPart().y + 2,
+						snakePartWidth - 4, snakePartHeight - 4
+					);
 					return checkCrash(headRectOther, 0, otherSnakeData.getSnakeLength());
 				}
 			}
@@ -1043,6 +1026,14 @@ public class SnakeSpriteData
 	public void setSpeedChange(int value)
 	{
 		speedChange = value;
+	}
+
+	public Player getOtherPlayer() {
+		return otherPlayer;
+	}
+
+	public void setOtherPlayer(Player otherPlayer) {
+		this.otherPlayer = otherPlayer;
 	}
 
 	/*

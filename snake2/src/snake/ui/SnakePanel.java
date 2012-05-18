@@ -2,6 +2,7 @@ package snake.ui;
 
 import javax.swing.*;
 
+import org.mozartspaces.core.ContainerReference;
 import org.mozartspaces.core.Entry;
 import org.mozartspaces.core.MzsCoreException;
 import org.mozartspaces.notifications.Notification;
@@ -18,9 +19,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import snake.*;
-import snake.mzspaces.ContainerCoordinatorMapper;
-import snake.mzspaces.DataChangeEvent;
-import snake.mzspaces.DataChangeType;
 import snake.mzspaces.Util;
 import snake.util.*;
 import snake.data.*;
@@ -409,15 +407,15 @@ public class SnakePanel extends JPanel implements Runnable, NotificationListener
 				if (!game.getPlayer(i).equals(snakeMain.getMyPlayer()))
 				{
 					//System.out.println("Fuege SnakeSprite Hinzu: " + game.getPlayer(i));
-					otherSnakeSprites[counter] = new SnakeSprite(imgLoader, game.getPlayer(i), this);
+					otherSnakeSprites[counter] = new SnakeSprite(imgLoader, snakeMain, gameListManager, this, game.getPlayer(i), snakeMain.getMyPlayer().getSkin());
 					counter++;
 				}
 			}
-			if (snakeSprite != null)
+/*			if (snakeSprite != null)
 			{
 				snakeSprite.setOtherPlayers(otherSnakeSprites);
 			}
-			//set player loaded
+*/			//set player loaded
 			gameListManager.setMyPlayerReady(PlayerState.loaded);
 			//System.out.println("initOtherGameSprites stoped");
 		}
@@ -452,6 +450,7 @@ public class SnakePanel extends JPanel implements Runnable, NotificationListener
 		snakeMain.setMyPlayer(player);
 
 		// no game list manager when playing singleplayermode
+		// WAWRNING: it is important, that the gameListManager stays null in single player mode. the sprite decides if this is a multiplayer game or not depending on that.
 		snakeSprite = new SnakeSprite(imgLoader, snakeMain, null, gameMap, this,
 				SnakeSpriteData.COLLISION_OWN | SnakeSpriteData.COLLISION_WALL);
 		collectables = new CollectableSprite(pWidth, pHeight, imgLoader, snakeSprite, this,
@@ -588,8 +587,9 @@ public class SnakePanel extends JPanel implements Runnable, NotificationListener
 		// create a notification that updates the list whenever a game gets added
 		NotificationManager notifManager = Util.getInstance().getNotificationManager();
 		try {
+			ContainerReference gCont = Util.getInstance().getGameContainer(gameListManager.getCurrentGame());
 			this.notification = notifManager.createNotification(
-					Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME_LIST),
+					gCont,
 					this,
 					Operation.WRITE, Operation.DELETE
 			);
@@ -625,8 +625,19 @@ public class SnakePanel extends JPanel implements Runnable, NotificationListener
 				if (obj instanceof Player) {
 					Player player = (Player) obj;
 					
-					// TODO: check if player is myplayer. if yes, update snakeMain (thats enough, because our own snakesprite takes the player from there)
-					// if the player is not ours, update the corresponding otherSnakeSprite
+					// check if player is myplayer. if yes, update snakeMain (thats enough, because our own snakesprite takes the player from there)
+					if (snakeMain != null && snakeMain.getMyPlayer().equals(player)) {
+						snakeMain.setMyPlayer(player);
+					} else {
+						// if the player is not ours, update the corresponding otherSnakeSprite
+						for (SnakeSprite sprite : otherSnakeSprites) {
+							if (sprite.getData().getOtherPlayer().equals(player)) {
+								sprite.getData().setOtherPlayer(player);
+							}
+						}
+						
+						// TODO: check if we also need to update the player-list in the games-object. but im not sure here
+					}
 				}
 			}
 			break;
@@ -909,5 +920,9 @@ public class SnakePanel extends JPanel implements Runnable, NotificationListener
 	public int getGameTime()
 	{
 		return timeSpentInGame;
+	}
+
+	public SnakeSprite[] getOtherSnakes() {
+		return otherSnakeSprites;
 	}
 }

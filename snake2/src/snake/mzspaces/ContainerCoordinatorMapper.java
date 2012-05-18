@@ -43,7 +43,7 @@ public class ContainerCoordinatorMapper {
 		// GAME
 		// each (network) game gets its own container to share playerinfo etc
 		list = new ArrayList<Coordinator>();
-		list.add(new LindaCoordinator());
+		list.add(new FifoCoordinator());
 		map.put(GAME, list);
 	}
 
