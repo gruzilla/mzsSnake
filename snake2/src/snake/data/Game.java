@@ -35,9 +35,7 @@ public class Game implements Serializable
 
 	private Logger log = LoggerFactory.getLogger(Game.class);
 
-	public Game(PlayerList playerList)
-	{
-	}
+	public Game() { }
 
 	/**
 	 * Create a new game with the given player as leader.
@@ -46,8 +44,7 @@ public class Game implements Serializable
 	 * @param leader the leader of the game (the player who opend the game)
 	 * @param playerList PlayerList
 	 */
-	public Game(int nr, String name, Player leader, PlayerList playerList)
-	{
+	public Game(int nr, String name, Player leader) {
 		this.name = name;
 		joinGame(leader);
 	}

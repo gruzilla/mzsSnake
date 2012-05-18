@@ -22,7 +22,6 @@ import snake.mzspaces.Util;
 public class GameListManager implements DataChangeListener
 {
 	private GameList gameList = null;
-	private PlayerList playerList = null;
 	private Snake snakeMain = null; //needed to report back when game can be startet
 
 	private Game currentGame = null;
@@ -54,9 +53,7 @@ public class GameListManager implements DataChangeListener
 	 */
 	public void initialize()
 	{
-		playerList = new PlayerList();
-		gameList = new GameList(this, playerList);
-		playerList.addPlayer(snakeMain.getMyPlayer());
+		gameList = new GameList(this);
 	}
 
 	/**

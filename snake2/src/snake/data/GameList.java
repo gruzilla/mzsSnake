@@ -33,7 +33,6 @@ public class GameList implements Serializable, NotificationListener
 {
 	private static final long serialVersionUID = 1L;
 	private Vector<Game> games;
-	private PlayerList playerList = null;
 	private DataChangeListener listener;
 	private Notification notification;
 
@@ -45,11 +44,10 @@ public class GameList implements Serializable, NotificationListener
 	 * @param listener
 	 * @param playerList
 	 */
-	public GameList(DataChangeListener listener, PlayerList playerList)
+	public GameList(DataChangeListener listener)
 	{
 		this.games = new Vector<Game>();
 		this.listener = listener;
-		this.playerList = playerList;
 		
 		// read current games and add them to the local vector
 		ContainerReference gamesContainer = Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME_LIST);
@@ -135,7 +133,7 @@ public class GameList implements Serializable, NotificationListener
 	public Game addGame(String name, Player leader,LevelData initData)
 	{
 		// create the game, initialize it with nr 0, because our IndexAspect creates teh number
-		Game game = new Game(0, name, leader, playerList);
+		Game game = new Game(0, name, leader);
 		game.setLevelData(initData);
 		games.addElement(game);
 		

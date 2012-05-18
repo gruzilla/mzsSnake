@@ -187,7 +187,35 @@ public class SnakeSpriteData
 	 * write player to space
 	 */
 	private void writePlayer() {
-		// TODO: implement
+		int count = 10;
+		while (count > 0) //try multiple times if writing fails
+		{
+			try
+			{
+				//CorsoTopTransaction tx = conn.createTopTransaction();
+				TransactionReference tx = Util.getInstance().createTransaction();
+
+				ContainerReference gCont = Util.getInstance().getGameContainer(gameListManager.getCurrentGame());
+				Util.getInstance().getConnection().write(
+					gCont,
+					MzsConstants.RequestTimeout.INFINITE,
+					tx,
+					new Entry(getPlayer())
+				);
+				Util.getInstance().getConnection().commitTransaction(tx);
+				count = -1;
+			}
+			catch (Exception ex)
+			{
+				System.out.println("writeSnakePositions: Corso Error occured:");
+				ex.printStackTrace(System.out);
+				count--;
+			}
+		}
+		if (count == 0)
+		{
+			System.out.println("SnakeSpriteData: can't writeSnakePositions!");
+		}
 	}
 	
 	private Player getPlayer() {
@@ -195,11 +223,13 @@ public class SnakeSpriteData
 	}
 
 	/**
+	 * METHOD NOT NECESSARY; EVERYTHING THAT IS WRITTEN HERE IS AVAILABLE OVER THE PLAYER see writePlayer
+	 * 
 	 * Write all positions of the snake to space (from headpos to tailpos), also write
 	 * headpos, tailpos and state of the snake to space. A different order is used when
 	 * using one space or multiple spaces so that notification always come in the same
 	 * order for other players.
-	 */
+	 * /
 	private void writeSnakePositions()
 	{
 		int count = 10;
@@ -221,7 +251,7 @@ public class SnakeSpriteData
 					snakeHeadOid.writeInt(headPos, tx);
 					snakeTailOid.writeInt(tailPos, tx);
 				}
-*/				//write the snake parts
+* /				//write the snake parts
 				Entry[] entries = new Entry[getPlayer().getParts().length];
 				while (start != stop)
 				{
@@ -254,7 +284,7 @@ public class SnakeSpriteData
 					snakeHeadOid.writeInt(headPos, tx);
 					snakeTailOid.writeInt(tailPos, tx);
 				}
-*/
+* /
 				//write the snake state
 //				snakeStateOid.writeInt(snakeState.ordinal(), tx);
 //				tx.commit(CorsoConnection.INFINITE_TIMEOUT);
@@ -499,7 +529,7 @@ public class SnakeSpriteData
 		if (multiplayer)
 		{
 			writePlayer();
-			writeSnakePositions();
+			//writeSnakePositions();
 		}
 	}
 
@@ -546,7 +576,7 @@ public class SnakeSpriteData
 		if (multiplayer)
 		{
 			writePlayer();
-			writeSnakePositions();
+			//writeSnakePositions();
 		}
 
 		sprite.restartSnake(); //restart effect

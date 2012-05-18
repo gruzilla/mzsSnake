@@ -2,11 +2,26 @@ package snake.ui;
 
 import javax.swing.*;
 
+import org.mozartspaces.core.Entry;
+import org.mozartspaces.core.MzsCoreException;
+import org.mozartspaces.notifications.Notification;
+import org.mozartspaces.notifications.NotificationListener;
+import org.mozartspaces.notifications.NotificationManager;
+import org.mozartspaces.notifications.Operation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.image.*;
 import java.awt.event.*;
 import java.awt.*;
+import java.io.Serializable;
+import java.util.List;
 
 import snake.*;
+import snake.mzspaces.ContainerCoordinatorMapper;
+import snake.mzspaces.DataChangeEvent;
+import snake.mzspaces.DataChangeType;
+import snake.mzspaces.Util;
 import snake.util.*;
 import snake.data.*;
 
@@ -19,7 +34,7 @@ import snake.data.*;
  * @author Thomas Scheller, Markus Karolus
  */
 
-public class SnakePanel extends JPanel implements Runnable
+public class SnakePanel extends JPanel implements Runnable, NotificationListener
 {
 	/**
 	 * 
@@ -84,6 +99,8 @@ public class SnakePanel extends JPanel implements Runnable
 	private String lastBackGroundImagePath = null;
 	private Game game;
 	private GameListManager gameListManager;
+	private Object notification;
+	private Logger log = LoggerFactory.getLogger(SnakePanel.class);
 
 	/**
 	 * Create a new SnakePanel. Create a BackgroundManager that calculates obstacles and
@@ -104,9 +121,7 @@ public class SnakePanel extends JPanel implements Runnable
 		this.levelManager = aLevelManager;
 		this.gameListManager = gameListManager;
 
-		PlayerList playerList = new PlayerList();
-		playerList.addPlayer(snakeMain.getMyPlayer());
-		this.game = new Game(playerList);
+		this.game = new Game();
 
 		setDoubleBuffered(false);
 		setBackground(Color.white);
@@ -508,6 +523,8 @@ public class SnakePanel extends JPanel implements Runnable
 		com.vladium.utils.timing.ITimer specialTimer = com.vladium.utils.timing.TimerFactory.newTimer();
 		specialTimer.start();
 
+		initPlayerNotification();
+		
 		//  java.util.Date date = new java.util.Date();
 		//  System.out.println("start at: " + date.toString());
 		//  System.out.println("SnakePanel Loop started");
@@ -565,6 +582,65 @@ public class SnakePanel extends JPanel implements Runnable
 		}
 		specialTimer.stop();
 		//  System.out.println("SnakePanel Loop Stopped");
+	}
+
+	private void initPlayerNotification() {
+		// create a notification that updates the list whenever a game gets added
+		NotificationManager notifManager = Util.getInstance().getNotificationManager();
+		try {
+			this.notification = notifManager.createNotification(
+					Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME_LIST),
+					this,
+					Operation.WRITE, Operation.DELETE
+			);
+		} catch (MzsCoreException e) {
+			// TODO Auto-generated catch block
+			log.error("ERROR: could not create notification (mzsexception)");
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			log.error("ERROR: could not create notification (interrupted)");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (notification == null) {
+				log.error("ERROR: could not create notification (null after creation)");
+			} else {
+				log.debug("NOTFICATION successfully created");
+			}
+		}
+	}
+
+	@Override
+	public void entryOperationFinished(Notification notification, Operation operation,
+			List<? extends Serializable> entries) {
+
+		switch (operation) {
+		case WRITE:
+			// if a game is written to the container add it to the local vector
+			if (entries != null)
+			for (Serializable entry : entries) {
+				// log.debug("entry has type "+entry.getClass());
+				Serializable obj = ((Entry) entry).getValue();
+				// log.debug("value of entry has type "+obj.getClass());
+				if (obj instanceof Player) {
+					Player player = (Player) obj;
+					
+					// TODO: check if player is myplayer. if yes, update snakeMain (thats enough, because our own snakesprite takes the player from there)
+					// if the player is not ours, update the corresponding otherSnakeSprite
+				}
+			}
+			break;
+
+		/* we do not listen to take any more 
+		case TAKE:
+			// nothing on take. we only take to update.
+			log.debug("\n\n\n GAME TAKEN -> do nothing");
+			break;
+		*/
+		case DELETE:
+			log.debug("\n\n\n GAME DELETED -> delete it from local game list");
+			break;
+		}
 	}
 
 	/**
