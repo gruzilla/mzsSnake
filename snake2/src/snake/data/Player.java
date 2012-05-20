@@ -234,8 +234,10 @@ public class Player implements Serializable
 		//System.out.println("Tail: " + tailPos);
 	}
 
-	public void setParts(SnakePos[] parts) {
-		this.parts = parts;
+	public void setParts(SnakePos[] newParts) {
+		for (int i = 0; i < newParts.length; i++) {
+			parts[i] = newParts[i];
+		}
 	}
 
 	public int getHeadPos() {
@@ -309,19 +311,25 @@ public class Player implements Serializable
 		this.currentGame = currentGame;
 	}
 
-	public void updatePart(SnakePos headPart) {
+	public boolean updatePart(SnakePos headPart) {
+		//log.debug("			trying to update "+(headPart == null ? "nullhead" : headPart.id));
+		if (headPart == null) return false;
+		boolean found = false;
 		for (SnakePos pos : parts) {
+			//log.debug("\n\n trying to match "+(pos == null ? "nullpos" : pos.id)+"\n\n");
 			if (pos == null) continue;
-			if (headPart == null) continue;
 			if (pos.id != null && headPart.id != null && pos.id.equals(headPart.id)) {
+				log.debug("			found matching head part "+headPart.id);
 				pos.direction = headPart.direction;
 				pos.x = headPart.x;
 				pos.y = headPart.y;
+				found = true;
 				break;
 			}
 		}
+		return found;
 	}
-	
+
 	public void syncWith(Player player) {
 		setPlayerState(player.state);
 		setSnakeState(player.snakeState);
@@ -330,8 +338,10 @@ public class Player implements Serializable
 		setTailPos(player.tailPos);
 		setHeadPos(player.headPos);
 		setPlayerNr(player.playerNumber);
-		for (SnakePos pos : player.parts) {
-			updatePart(pos);
+		for (int i = 0; i < player.parts.length; i++) {
+			if (!updatePart(player.parts[i])) {
+				parts[i] = player.parts[i];
+			}
 		}
 	}
 }

@@ -664,7 +664,7 @@ public class SnakePanel extends JPanel implements Runnable, NotificationListener
 					{
 						//snake crashed - play sound and show crash effect
 						// System.out.println("Snake crashed.");
-						otherSnakeSprite.crashSnake();
+						otherSnakeSprite.crashSnake(true);
 					}
 					else if (player.getSnakeState() == SnakeState.unverwundbar)
 					{
@@ -676,6 +676,7 @@ public class SnakePanel extends JPanel implements Runnable, NotificationListener
 					//update for snake head position
 					//int newHeadPos = fired.varOid().readInt(null, CorsoConnection.INFINITE_TIMEOUT);
 					//update pixelpositions
+					log.debug("\n\nsetting headPos to "+holder.headPos+"\n\n");
 					otherSnakeSprite.setHeadPos(holder.headPos);
 
 					//update for snake tail position

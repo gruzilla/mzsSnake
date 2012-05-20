@@ -364,4 +364,26 @@ public class Game implements Serializable
 	public boolean hasNr() {
 		return (nr != null);
 	}
+
+	public void syncWith(Game game) {
+		setLevelDir(game.levelDir);
+		gameType = game.gameType;
+		winValue = game.winValue;
+		collisionType = game.collisionType;
+		setState(game.state);
+		for (Player p : players) {
+			int i = game.players.indexOf(p);
+			if (i < 0) {
+				players.remove(i);
+			}
+		}
+		for (Player p : game.players) {
+			int i = players.indexOf(p);
+			if (i < 0) {
+				players.add(p);
+			} else {
+				players.get(i).syncWith(p);
+			}
+		}
+	}
 }

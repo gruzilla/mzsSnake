@@ -3,8 +3,10 @@ package snake.ui;
 import java.awt.*;
 import java.awt.image.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import snake.*;
-import snake.mzspaces.Util;
 import snake.util.ImageLoader;
 import snake.data.*;
 
@@ -40,6 +42,7 @@ public class SnakeSprite
 	private BufferedImage imgHead = null;
 	private BufferedImage imgTail = null;
 	private BufferedImage imgSpeedUp = null;
+	private Logger log = LoggerFactory.getLogger(SnakeSprite.class);
 
 	//values for snake effects
 	private SnakeEffect effect = new SnakeEffect(); //general effects (fading, brightness, ...)
@@ -223,86 +226,96 @@ public class SnakeSprite
 	 */
 	public void drawSprite(Graphics g, java.awt.Point correctionPos)
 	{
-		Graphics2D g2d = (Graphics2D) g;
-		g2d.setColor(Color.black);
-
-		effect.update(); //called here becaus the updateSprite method concerns only active snakes
-										 //and the effects are needed for passive snakes also
-		Composite c = g2d.getComposite(); // backup the old composite
-		if (effect.hasFadeEffect())
-		{
-			//when snake has a fade effect, change the alpha composite of the graphics object
-			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, effect.getFadeValue()));
-		}
-
-		//calculate positions that must be drawn
-		int headPos = getPlayer().getHeadPos();
-		int tailPos = getPlayer().getTailPos();
-		int maxPos = headPos;
-		if (maxPos < tailPos)
-		{
-			maxPos += SnakeSpriteData.MAXPOINTS;
-		}
-		if (headPos > 0)
-		{
-			headPos -= 1;
-		}
-		else
-		{
-			headPos = SnakeSpriteData.MAXPOINTS - 1;
-		}
-
-		int tempPos = data.pixelHeadPos-((maxPos-tailPos)*(SnakeSpriteData.PARTDIST/SnakeSpriteData.POINTDIST));
-		if (tempPos < 0)
-			tempPos += data.pixelPos.length;
-
-		//draw the snake: rotation an brighten effects are applied to the image when needed,
-		//the map position of the snake is corrected by the correction position to get
-		//screen coordinates
-
-		//draw tail
-		g2d.drawImage(imgLoader.getBrighterImage(imgLoader.getRotatedImage(imgTail, (int) (data.pixelDirection[tempPos] - 90)),effect.hasBrightenEffect() ? effect.getBrightenValue() : 1.0f),
-									(int) data.pixelPos[tempPos].x - correctionPos.x,
-									(int) data.pixelPos[tempPos].y - correctionPos.y, null);
-		tempPos+=SnakeSpriteData.PARTDIST;
-
-		//draw parts: pixelpositions are read from the SnakeSpriteData object, the array
-		//position is increased by a constant value that is the pixel distance between
-		//two parts.
-		//The rotated images are read from the previously created array, so they dont have
-		//to be recreated every time they are drawn.
-		for (int ix = tailPos; ix < maxPos-3; ix += SnakeSpriteData.POINTDIST) //the -3 decrease prevents a passive snake to have flickering parts because of inconsistent arrival of notifications from space
-		{
-			tempPos = tempPos % data.pixelPos.length;
-			g2d.drawImage(imgLoader.getBrighterImage(imgPartsTurned[ ( data.pixelDirection[tempPos] / (int) TURNSTEP)],effect.hasBrightenEffect() ? effect.getBrightenValue() : 1.0f),
-										(int) data.pixelPos[tempPos].x - correctionPos.x, (int) data.pixelPos[tempPos].y - correctionPos.y, null);
-			tempPos+=SnakeSpriteData.PARTDIST;
-		}
-
-		//draw head
-		g2d.drawImage(imgLoader.getBrighterImage(imgLoader.getRotatedImage(imgHead, (int) (getPlayer().getHeadPart().direction - 90)),effect.hasBrightenEffect() ? effect.getBrightenValue() : 1.0f),
-									(int) data.pixelPos[data.pixelHeadPos].x - correctionPos.x,
-									(int) data.pixelPos[data.pixelHeadPos].y - correctionPos.y, null);
-
-		//draw name (half transparent)
-		g2d.setColor(Color.darkGray);
-		g2d.setFont(msgsFont);
-		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
-		g2d.drawString(getPlayer().getName(),
-									 (int) getPlayer().getHeadPart().x + (imgHead.getWidth() / 2) -
-									 (metrics.stringWidth(getPlayer().getName()) / 2) - correctionPos.x,
-									 (int) getPlayer().getHeadPart().y - 10 - correctionPos.y);
-		g2d.setComposite(c); // restore the old composite so it doesn't mess up future rendering
-
-		//show remaing time and symbol of speedup effect, if active
-		if (speedUp)
-		{
+		try {
+			Graphics2D g2d = (Graphics2D) g;
 			g2d.setColor(Color.black);
+	
+			effect.update(); //called here because the updateSprite method concerns only active snakes
+											 //and the effects are needed for passive snakes also
+			Composite c = g2d.getComposite(); // backup the old composite
+			if (effect.hasFadeEffect())
+			{
+				//when snake has a fade effect, change the alpha composite of the graphics object
+				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, effect.getFadeValue()));
+			}
+	
+			//calculate positions that must be drawn
+			int headPos = getPlayer().getHeadPos();
+			int tailPos = getPlayer().getTailPos();
+			int maxPos = headPos;
+			if (maxPos < tailPos)
+			{
+				maxPos += SnakeSpriteData.MAXPOINTS;
+			}
+			if (headPos > 0)
+			{
+				headPos -= 1;
+			}
+			else
+			{
+				headPos = SnakeSpriteData.MAXPOINTS - 1;
+			}
+	
+			int tempPos = data.pixelHeadPos-((maxPos-tailPos)*(SnakeSpriteData.PARTDIST/SnakeSpriteData.POINTDIST));
+			if (tempPos < 0)
+				tempPos += data.pixelPos.length;
+	
+			//draw the snake: rotation an brighten effects are applied to the image when needed,
+			//the map position of the snake is corrected by the correction position to get
+			//screen coordinates
+	
+			//draw tail
+			g2d.drawImage(imgLoader.getBrighterImage(imgLoader.getRotatedImage(imgTail, (int) (data.pixelDirection[tempPos] - 90)),effect.hasBrightenEffect() ? effect.getBrightenValue() : 1.0f),
+										(int) data.pixelPos[tempPos].x - correctionPos.x,
+										(int) data.pixelPos[tempPos].y - correctionPos.y, null);
+			tempPos+=SnakeSpriteData.PARTDIST;
+	
+			//draw parts: pixelpositions are read from the SnakeSpriteData object, the array
+			//position is increased by a constant value that is the pixel distance between
+			//two parts.
+			//The rotated images are read from the previously created array, so they dont have
+			//to be recreated every time they are drawn.
+			for (int ix = tailPos; ix < maxPos-3; ix += SnakeSpriteData.POINTDIST) //the -3 decrease prevents a passive snake to have flickering parts because of inconsistent arrival of notifications from space
+			{
+				tempPos = tempPos % data.pixelPos.length;
+				g2d.drawImage(imgLoader.getBrighterImage(imgPartsTurned[ ( data.pixelDirection[tempPos] / (int) TURNSTEP)],effect.hasBrightenEffect() ? effect.getBrightenValue() : 1.0f),
+											(int) data.pixelPos[tempPos].x - correctionPos.x, (int) data.pixelPos[tempPos].y - correctionPos.y, null);
+				tempPos+=SnakeSpriteData.PARTDIST;
+			}
+	
+			//draw head
+			if (getPlayer() == null) log.error("\n\nplayer is null\n\n");
+			if (getPlayer().getHeadPart() == null) log.error("\n\nhead part is null\n\n");
+			g2d.drawImage(imgLoader.getBrighterImage(imgLoader.getRotatedImage(imgHead, (int) (getPlayer().getHeadPart().direction - 90)),effect.hasBrightenEffect() ? effect.getBrightenValue() : 1.0f),
+										(int) data.pixelPos[data.pixelHeadPos].x - correctionPos.x,
+										(int) data.pixelPos[data.pixelHeadPos].y - correctionPos.y, null);
+	
+			//draw name (half transparent)
+			g2d.setColor(Color.darkGray);
+			g2d.setFont(msgsFont);
 			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
-			g2d.setFont(specialFont);
-			g2d.drawImage(imgSpeedUp,15,60,null);
-			g2d.drawString(String.valueOf (speedUpState/Snake.DEFAULT_FPS),45,78);
-			g2d.setComposite(c);
+			g2d.drawString(getPlayer().getName(),
+										 (int) getPlayer().getHeadPart().x + (imgHead.getWidth() / 2) -
+										 (metrics.stringWidth(getPlayer().getName()) / 2) - correctionPos.x,
+										 (int) getPlayer().getHeadPart().y - 10 - correctionPos.y);
+			g2d.setComposite(c); // restore the old composite so it doesn't mess up future rendering
+	
+			//show remaing time and symbol of speedup effect, if active
+			if (speedUp)
+			{
+				g2d.setColor(Color.black);
+				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+				g2d.setFont(specialFont);
+				g2d.drawImage(imgSpeedUp,15,60,null);
+				g2d.drawString(String.valueOf (speedUpState/Snake.DEFAULT_FPS),45,78);
+				g2d.setComposite(c);
+			}
+		}
+		catch (Exception ex)
+		{
+			System.out.println("drawSprite: Exception occured:");
+			ex.printStackTrace(System.out);
+			System.exit(0); //Test-Fehlerloesung
 		}
 	}
 
@@ -341,7 +354,7 @@ public class SnakeSprite
 	}
 	public void restartSnake(boolean playSound)
 	{
-		skinsManager.getClipsLoader().playDie();
+		if (playSound) skinsManager.getClipsLoader().playDie();
 		effect.showStandardRestartEffect();
 	}
 
@@ -350,7 +363,11 @@ public class SnakeSprite
 	 */
 	public void crashSnake()
 	{
-		skinsManager.getClipsLoader().playCrash();
+		crashSnake(false);
+	}
+	public void crashSnake(boolean playSound)
+	{
+		if (playSound) skinsManager.getClipsLoader().playCrash();
 		effect.showStandardCrashEffect();
 	}
 

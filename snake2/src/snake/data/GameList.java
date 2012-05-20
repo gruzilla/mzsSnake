@@ -367,7 +367,7 @@ public class GameList implements Serializable, NotificationListener
 						if (games.get(i).getNr().equals(game.getNr())) {
 							found = true;
 							
-							games.set(i, game);
+							games.get(i).syncWith(game);
 							
 							//log.debug("\n\n level: "+game.getLevelDir() +"\n\n");
 							changed = true;
