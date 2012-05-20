@@ -343,7 +343,7 @@ public class MPMenuePanel extends JPanel implements DataChangeListener
 				snakeMain.initMyGameSprites();
 				snakeMain.initOtherGameSprites();
 				gameListManager.checkCurrentGame();
-				snakeMain.startMultiplayerGame();
+				snakeMain.startMultiplayerGame(); // not necessary, checkCurrentGame does this too
 			}
 			else
 			{

@@ -1,6 +1,7 @@
 package snake.data;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * The position and direction of one snake part.
@@ -12,6 +13,7 @@ public class SnakePos implements Serializable
 	public double x = 0;
 	public double y = 0;
 	public double direction = 0;
+	public UUID id = UUID.randomUUID();
 
 	public SnakePos()
 	{

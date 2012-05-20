@@ -3,14 +3,8 @@ package snake.data;
 import java.io.Serializable;
 import java.util.UUID;
 
-import org.mozartspaces.core.ContainerReference;
-import org.mozartspaces.core.Entry;
-import org.mozartspaces.core.MzsCoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import snake.mzspaces.ContainerCoordinatorMapper;
-import snake.mzspaces.Util;
 
 /**
  * Representation of a player in corsospace.
@@ -231,13 +225,13 @@ public class Player implements Serializable
 	}
 
 	public void setHeadPos(int headPos) {
-		System.out.println(headPos);
+		//System.out.println(headPos);
 		this.headPos = headPos;
 	}
 
 	public void setTailPos(int tailPos) {
 		this.tailPos = tailPos;
-		System.out.println("Tail: " + tailPos);
+		//System.out.println("Tail: " + tailPos);
 	}
 
 	public void setParts(SnakePos[] parts) {
@@ -313,5 +307,31 @@ public class Player implements Serializable
 
 	public void setCurrentGame(Game currentGame) {
 		this.currentGame = currentGame;
+	}
+
+	public void updatePart(SnakePos headPart) {
+		for (SnakePos pos : parts) {
+			if (pos == null) continue;
+			if (headPart == null) continue;
+			if (pos.id != null && headPart.id != null && pos.id.equals(headPart.id)) {
+				pos.direction = headPart.direction;
+				pos.x = headPart.x;
+				pos.y = headPart.y;
+				break;
+			}
+		}
+	}
+	
+	public void syncWith(Player player) {
+		setPlayerState(player.state);
+		setSnakeState(player.snakeState);
+		setReady(player.ready);
+		setPoints(player.points);
+		setTailPos(player.tailPos);
+		setHeadPos(player.headPos);
+		setPlayerNr(player.playerNumber);
+		for (SnakePos pos : player.parts) {
+			updatePart(pos);
+		}
 	}
 }

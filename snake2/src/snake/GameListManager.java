@@ -204,6 +204,7 @@ public class GameListManager implements DataChangeListener
 				}
 			}
 
+			// TODO: we have different player instances here. this is pain in the ass.
 			for (int i = 0; i < currentGame.getPlayerAnz(); i++) {
 				log.debug("\n\n P"+i+" state: "+currentGame.getPlayer(i).getPlayerState());
 			}
@@ -377,7 +378,7 @@ public class GameListManager implements DataChangeListener
 			{
 				if (!isViewOnly() || viewOnlyAutostart)
 				{
-					//System.out.println("Spiel geladen -> starte Spiel");
+					System.out.println("Spiel geladen -> starte Spiel");
 					snakeMain.startMultiplayerGame();
 				}
 			}
@@ -454,7 +455,7 @@ public class GameListManager implements DataChangeListener
 			for (int i = 0; i < currentGame.getPlayerAnz(); i++) {
 				Player player = currentGame.getPlayer(i);
 				if (player.getNr().equals(snakeMain.getMyPlayer().getNr())) {
-					snakeMain.setMyPlayer(player);
+					snakeMain.getMyPlayer().syncWith(player);
 					break;
 				}
 			}

@@ -447,7 +447,7 @@ public class SnakePanel extends JPanel implements Runnable, NotificationListener
 		// create game sprites
 		Player player = new Player(settings.getPlayerName(), settings.getSnakeSkin());
 		player.setPlayerNr(1);
-		snakeMain.setMyPlayer(player);
+		//snakeMain.setMyPlayer(player); // not necessary?
 
 		// no game list manager when playing singleplayermode
 		// WAWRNING: it is important, that the gameListManager stays null in single player mode. the sprite decides if this is a multiplayer game or not depending on that.
@@ -616,7 +616,7 @@ public class SnakePanel extends JPanel implements Runnable, NotificationListener
 
 		switch (operation) {
 		case WRITE:
-			// if a game is written to the container add it to the local vector
+			// if a player is written to the container update our or the other player
 			if (entries != null)
 			for (Serializable entry : entries) {
 				// log.debug("entry has type "+entry.getClass());
@@ -627,29 +627,78 @@ public class SnakePanel extends JPanel implements Runnable, NotificationListener
 					
 					// check if player is myplayer. if yes, update snakeMain (thats enough, because our own snakesprite takes the player from there)
 					if (snakeMain != null && snakeMain.getMyPlayer().equals(player)) {
-						snakeMain.setMyPlayer(player);
+						snakeMain.getMyPlayer().syncWith(player);
 					} else {
 						// if the player is not ours, update the corresponding otherSnakeSprite
 						for (SnakeSprite sprite : otherSnakeSprites) {
 							if (sprite.getData().getOtherPlayer().equals(player)) {
-								sprite.getData().setOtherPlayer(player);
+								sprite.getData().getOtherPlayer().syncWith(player);
 							}
 						}
 						
 						// TODO: check if we also need to update the player-list in the games-object. but im not sure here
 					}
+				} else if (obj instanceof SnakeSpriteDataHolder) {
+					SnakeSpriteDataHolder holder = (SnakeSpriteDataHolder) obj;
+
+					// do not update myself
+					if (snakeMain != null && snakeMain.getMyPlayer().getNr().equals(holder.id)) continue;
+
+					// if this sprite has not the same player continue
+					Player player = null;
+					SnakeSprite otherSnakeSprite = null;
+					for (SnakeSprite sprite : otherSnakeSprites) {
+						if (sprite.getData().getOtherPlayer().getNr().equals(holder.id)) {
+							player = sprite.getData().getOtherPlayer();
+							otherSnakeSprite = sprite;
+						}
+					}
+					if (player == null || otherSnakeSprite == null) continue;
+
+					//update for snake state
+					//snakeState = SnakeState.values()[fired.varOid().readInt(null, CorsoConnection.NO_TIMEOUT)];
+					player.setSnakeState(holder.snakeState);
+
+					// System.out.println("SNAKESTATE: " + snakeState);
+					if (player.getSnakeState() == SnakeState.crashed)
+					{
+						//snake crashed - play sound and show crash effect
+						// System.out.println("Snake crashed.");
+						otherSnakeSprite.crashSnake();
+					}
+					else if (player.getSnakeState() == SnakeState.unverwundbar)
+					{
+						//snake died - play sound and show restart effect
+						//System.out.println("Snake died - restart.");
+						otherSnakeSprite.restartSnake(true);
+					}
+
+					//update for snake head position
+					//int newHeadPos = fired.varOid().readInt(null, CorsoConnection.INFINITE_TIMEOUT);
+					//update pixelpositions
+					otherSnakeSprite.setHeadPos(holder.headPos);
+
+					//update for snake tail position
+					//tailPos = fired.varOid().readInt(null, CorsoConnection.INFINITE_TIMEOUT);
+					player.setTailPos(holder.tailPos);
+
+					//update for a snake part - find correct part and update it
+					player.updatePart(holder.headPart);
+					/*for (int i = 0; i < snakePosList.oidList.length; i++)
+					{
+						if (fired.varOid().equals(snakePosList.oidList[i]))
+						{
+							fired.varOid().readShareable(parts[i], null,
+									CorsoConnection.INFINITE_TIMEOUT);
+							break;
+						}
+					}*/
 				}
 			}
 			break;
 
-		/* we do not listen to take any more 
-		case TAKE:
-			// nothing on take. we only take to update.
-			log.debug("\n\n\n GAME TAKEN -> do nothing");
-			break;
-		*/
 		case DELETE:
-			log.debug("\n\n\n GAME DELETED -> delete it from local game list");
+			log.debug("\n\n\n PLAYER DELETED");
 			break;
 		}
 	}

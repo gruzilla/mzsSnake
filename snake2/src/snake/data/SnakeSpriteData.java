@@ -12,6 +12,8 @@ import org.mozartspaces.core.ContainerReference;
 import org.mozartspaces.core.Entry;
 import org.mozartspaces.core.MzsConstants;
 import org.mozartspaces.core.TransactionReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manages all data of a snake, calculating the positions of the snake parts, and
@@ -60,6 +62,7 @@ public class SnakeSpriteData
 	private boolean multiplayer = false;
 	private SnakeSprite sprite = null;
 	private Snake snakeMain = null;
+	private Logger log = LoggerFactory.getLogger(SnakeSpriteData.class);
 
 	//collision values
 	public static final int COLLISION_NONE = 0;
@@ -76,7 +79,6 @@ public class SnakeSpriteData
 	private Player otherPlayer;
 	private SnakePanel snakePanel;
 	private GameListManager gameListManager;
-
 
 	/**
 	 * SnakeSpriteData constructor for active (writing) snake. Get all oids from the player
@@ -130,7 +132,6 @@ public class SnakeSpriteData
 		readInitData();
 
 		//start notifier thread
-		// TODO: USE player-notification instead
 		//notifier = new SnakeSpriteNotifier();
 		//Thread notifierThread = new Thread(notifier);
 		//notifierThread.start();
@@ -168,8 +169,9 @@ public class SnakeSpriteData
 	/**
 	 * write player to space
 	 */
-	private void writePlayer() {
+	public void writePlayer() {
 		int count = 10;
+		log.debug("\n\n WRITING PLAYER \n\n");
 		while (count > 0) //try multiple times if writing fails
 		{
 			try
@@ -865,7 +867,7 @@ public class SnakeSpriteData
 	 * @param prevHeadPos previous snake head position
 	 * @param activeSnake true if the snake is an active (writing) snake
 	 */
-	private void updatePixelPositions(int headPos, int prevHeadPos, boolean activeSnake)
+	public void updatePixelPositions(int headPos, int prevHeadPos, boolean activeSnake)
 	{
 		//Pixelpositionen zwischen letzter HeadPos und neuer HeadPos berechnen
 		int step = STEP + speedChange;
@@ -1032,61 +1034,81 @@ public class SnakeSpriteData
 		return otherPlayer;
 	}
 
+	/*
 	public void setOtherPlayer(Player otherPlayer) {
 		this.otherPlayer = otherPlayer;
 	}
+	*/
 
-	/*
 	public void writeData()
 	{
-		if (multiplayer)
+		if (!multiplayer) return;
+
+		//Daten in CorsoSpace aktualisieren
+		int count = 10;
+		while (count > 0)
 		{
-			//Daten in CorsoSpace aktualisieren
-			int count = 10;
-			while (count > 0)
+			try
 			{
-				try
+				log.debug("\n\n WRITING DATA HOLDER \n\n");
+				SnakeSpriteDataHolder holder = new SnakeSpriteDataHolder();
+				holder.id = getPlayer().getNr();
+				//CorsoTopTransaction tx = conn.createTopTransaction();
+
+				if (getroffen == 0 && getPlayer().getSnakeState() != SnakeState.active)
 				{
-
-					CorsoTopTransaction tx = conn.createTopTransaction();
-
-					if (getroffen == 0 && snakeState != SnakeState.active)
-					{
-						snakeState = SnakeState.active;
-						snakeStateOid.writeInt(snakeState.ordinal(), tx);
-					}
-					if (snake.corso.Util.usingOneSpace)
-					{
-						snakeHeadOid.writeInt(headPos, tx);
-						snakeTailOid.writeInt(tailPos, tx);
-					}
-
-					snakePosList.oidList[headPos].writeShareable(parts[headPos], tx);
-
-					if (!snake.corso.Util.usingOneSpace)
-					{
-						snakeHeadOid.writeInt(headPos, tx);
-						snakeTailOid.writeInt(tailPos, tx);
-					}
-
-					tx.commit(CorsoConnection.INFINITE_TIMEOUT);
-					count = -1;
-
+					//snakeState = SnakeState.active;
+					getPlayer().setSnakeState(SnakeState.active);
+					//snakeStateOid.writeInt(snakeState.ordinal(), tx);
+					holder.snakeState = getPlayer().getSnakeState();
 				}
-				catch (CorsoException ex)
+				/*
+				if (snake.corso.Util.usingOneSpace)
 				{
-					System.out.println("writeData: Corso Error occured:");
-					ex.printStackTrace(System.out);
-					System.exit(0); //Test-Fehlerl�sung
-					count--;
+					snakeHeadOid.writeInt(headPos, tx);
+					snakeTailOid.writeInt(tailPos, tx);
 				}
+				*/
+
+				//snakePosList.oidList[headPos].writeShareable(parts[headPos], tx);
+				holder.headPart = getPlayer().getHeadPart();
+
+				/*
+				if (!snake.corso.Util.usingOneSpace)
+				{
+					snakeHeadOid.writeInt(headPos, tx);
+					snakeTailOid.writeInt(tailPos, tx);
+				}
+				*/
+				holder.headPos = getPlayer().getHeadPos();
+				holder.tailPos = getPlayer().getTailPos();
+
+				//tx.commit(CorsoConnection.INFINITE_TIMEOUT);
+				
+				//CorsoTopTransaction tx = conn.createTopTransaction();
+
+				ContainerReference gCont = Util.getInstance().getGameContainer(gameListManager.getCurrentGame());
+				Util.getInstance().getConnection().write(
+					gCont,
+					new Entry(holder)
+				);
+
+				count = -1;
+
 			}
-			if (count == 0)
+			catch (Exception ex)
 			{
-				System.out.println("SnakeSpriteData can't set writeData!");
+				System.out.println("writeData: MZS Error occured:");
+				ex.printStackTrace(System.out);
+				System.exit(0); //Test-Fehlerloesung
+				count--;
 			}
-
 		}
+		if (count == 0)
+		{
+			System.out.println("SnakeSpriteData can't write data!");
+		}
+
 	}
 
 	/*

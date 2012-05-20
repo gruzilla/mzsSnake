@@ -403,9 +403,11 @@ public class Snake extends JFrame implements WindowListener
 		return myPlayer;
 	}
 
+	/*
 	public void setMyPlayer(Player myPlayer) {
 		this.myPlayer = myPlayer;
 	}
+	*/
 }
 
 class Snake_this_componentAdapter extends ComponentAdapter

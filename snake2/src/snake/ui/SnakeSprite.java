@@ -196,8 +196,7 @@ public class SnakeSprite
 			if (!effect.hasNoMoveEffect())
 			{
 				data.updateData(turn);
-				// data.writeData(); // TODO: write sprites into game container
-				//Util.getInstance().getGameContainer(game)
+				data.writeData();
 			}
 			// update speedup effect
 			if (speedUp)
@@ -337,8 +336,12 @@ public class SnakeSprite
 	/**
 	 * Activate a restart effect (managed by SnakeEffect object).
 	 */
-	public void restartSnake()
+	public void restartSnake() {
+		restartSnake(false);
+	}
+	public void restartSnake(boolean playSound)
 	{
+		skinsManager.getClipsLoader().playDie();
 		effect.showStandardRestartEffect();
 	}
 
@@ -347,6 +350,7 @@ public class SnakeSprite
 	 */
 	public void crashSnake()
 	{
+		skinsManager.getClipsLoader().playCrash();
 		effect.showStandardCrashEffect();
 	}
 
@@ -358,5 +362,14 @@ public class SnakeSprite
 		speedUp = true;
 		speedUpState = speedUpDuration;
 		data.setSpeedChange(speedUpStandardValue);
+	}
+
+	public void setHeadPos(int headPos) {
+		while (getPlayer().getHeadPos() != headPos)
+		{
+			int prevPos = getPlayer().getHeadPos();
+			getPlayer().setHeadPos((headPos + 1) % SnakeSpriteData.MAXPOINTS);
+			data.updatePixelPositions(getPlayer().getHeadPos(), prevPos, false);
+		}
 	}
 }
