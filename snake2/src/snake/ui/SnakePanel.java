@@ -386,7 +386,7 @@ public class SnakePanel extends JPanel implements Runnable, NotificationListener
 		{
 			if (snakeMain.getMyPlayer().getPlayerState() != PlayerState.init)
 			{
-				System.out.println("initOtherGameSprites: playerstate not init");
+				log.debug("initOtherGameSprites: playerstate not init");
 				return;
 			}
 
@@ -404,12 +404,14 @@ public class SnakePanel extends JPanel implements Runnable, NotificationListener
 			//System.out.println("InitOtherSnakeSprites: PlayerAnzahl=" + game.getPlayerAnz());
 			for (int i = 0; i < game.getPlayerAnz(); i++)
 			{
-				if (!game.getPlayer(i).equals(snakeMain.getMyPlayer()))
-				{
-					//System.out.println("Fuege SnakeSprite Hinzu: " + game.getPlayer(i));
-					otherSnakeSprites[counter] = new SnakeSprite(imgLoader, snakeMain, gameListManager, this, game.getPlayer(i), snakeMain.getMyPlayer().getSkin());
-					counter++;
-				}
+				// check for own player
+				if(game.getPlayer(i).equals(snakeMain.getMyPlayer()))
+					continue;
+				
+				
+				log.debug("Fuege SnakeSprite Hinzu: " + game.getPlayer(i));
+				otherSnakeSprites[counter] = new SnakeSprite(imgLoader, snakeMain, gameListManager, this, game.getPlayer(i), snakeMain.getMyPlayer().getSkin());
+				counter++;
 			}
 /*			if (snakeSprite != null)
 			{

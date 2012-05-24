@@ -417,7 +417,8 @@ public class GameList implements Serializable, NotificationListener
 
 		// trigger data changed event
 		if (changed && listener != null) {
-			//log.debug("informing listener about changed data: "+games.size());
+			log.debug("listener " + listener);
+			log.debug("informing listener about changed data: "+games.size());
 			listener.dataChanged(new DataChangeEvent(this, DataChangeType.game));
 		}
 	}

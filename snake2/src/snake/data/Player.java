@@ -23,7 +23,7 @@ public class Player implements Serializable
 	private int headPos;
 	private int tailPos;
 	private SnakePos[] parts = new SnakePos[100];
-	private Logger log = LoggerFactory.getLogger(GameList.class);
+	private Logger log = LoggerFactory.getLogger(Player.class);
 	private int playerNumber;
 	private Game currentGame;
 
@@ -319,7 +319,7 @@ public class Player implements Serializable
 			//log.debug("\n\n trying to match "+(pos == null ? "nullpos" : pos.id)+"\n\n");
 			if (pos == null) continue;
 			if (pos.id != null && headPart.id != null && pos.id.equals(headPart.id)) {
-				log.debug("			found matching head part "+headPart.id);
+				log.debug("			found matching head part for player " + this.playerNumber + " " +headPart.id);
 				pos.direction = headPart.direction;
 				pos.x = headPart.x;
 				pos.y = headPart.y;

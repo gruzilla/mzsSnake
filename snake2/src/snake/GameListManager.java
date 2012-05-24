@@ -158,7 +158,10 @@ public class GameListManager implements DataChangeListener
 		{
 			if (currentGame != null)
 			{
+				// leave game
 				gameList.leaveGame(currentGame, snakeMain.getMyPlayer());
+				// set currentgame to null
+				currentGame = null;
 			}
 		}
 	}
@@ -447,21 +450,23 @@ public class GameListManager implements DataChangeListener
 
 	@Override
 	public void dataChanged(DataChangeEvent changeEvent) {
+		log.debug("DATA CHANGE EVENT!!!!");
 		// TODO Auto-generated method stub
 		synchronized (gameList) {
 			log.debug("\n\noverwriting current game\n");
-			currentGame = gameList.getGame(currentGame.getNr());
-
-			for (int i = 0; i < currentGame.getPlayerAnz(); i++) {
-				Player player = currentGame.getPlayer(i);
-				if (player.getNr().equals(snakeMain.getMyPlayer().getNr())) {
-					snakeMain.getMyPlayer().syncWith(player);
-					break;
+			if(currentGame != null) {
+				currentGame = gameList.getGame(currentGame.getNr());
+	
+				for (int i = 0; i < currentGame.getPlayerAnz(); i++) {
+					Player player = currentGame.getPlayer(i);
+					if (player.getNr().equals(snakeMain.getMyPlayer().getNr())) {
+						snakeMain.getMyPlayer().syncWith(player);
+						break;
+					}
 				}
+	
+				checkCurrentGame();
 			}
-
-			checkCurrentGame();
-
 			if (listener != null) {
 				listener.dataChanged(changeEvent);
 			}
