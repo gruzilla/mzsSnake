@@ -1086,8 +1086,9 @@ public class SnakeSpriteData
 				//tx.commit(CorsoConnection.INFINITE_TIMEOUT);
 				
 				//CorsoTopTransaction tx = conn.createTopTransaction();
-
+				
 				ContainerReference gCont = Util.getInstance().getGameContainer(gameListManager.getCurrentGame());
+				
 				Util.getInstance().getConnection().write(
 					gCont,
 					new Entry(holder)

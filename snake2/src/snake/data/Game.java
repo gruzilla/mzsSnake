@@ -213,7 +213,7 @@ public class Game implements Serializable
 	public void joinGame(Player player)
 	{
 		//Spieler zu Spiel hinzufuegen
-		log.debug("current anz: "+getPlayerAnz()+" index of player is "+indexOf(player)+" and max is "+MAXPLAYERS);
+		log.debug("current anz: "+ player + " :" +getPlayerAnz()+" index of player is "+indexOf(player)+" and max is "+MAXPLAYERS);
 		if (getPlayerAnz() < MAXPLAYERS && indexOf(player) == -1)
 		{
 			players.add(player);
@@ -227,6 +227,7 @@ public class Game implements Serializable
 				leader = player;
 			}
 		}
+		log.debug("CCCCcurrent anz: "+ player + " :" +getPlayerAnz()+" index of player is "+indexOf(player)+" and max is "+MAXPLAYERS);
 	}
 
 	/**
