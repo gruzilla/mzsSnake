@@ -5,6 +5,9 @@ import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
 
+import mzs.util.ContainerCoordinatorMapper;
+import mzs.util.Util;
+
 import client.data.Snake;
 
 public class GameFrame extends JFrame implements Runnable, KeyListener {
@@ -16,12 +19,25 @@ public class GameFrame extends JFrame implements Runnable, KeyListener {
 	private Thread gameThread;
 	private Snake snake;
 
+	private Snake snake2;
+
+	/**
+	 * constructor setting isViewer to false
+	 */
 	public GameFrame() {
+		this(false);
+	}
+	
+	public GameFrame(boolean isViewer) {
 		snake = new Snake();
-
-		panel = new GamePanel(snake);
+		
+		snake2 = new Snake();
+		snake2.getParts().get(0).setX(500);
+		snake2.getParts().get(0).setY(500);
+		snake2.getParts().get(0).setDirection(90);
+		
+		panel = new GamePanel(new Snake[]{snake, snake2});
 		getContentPane().add(panel);
-
 		pack();
 		setVisible(true);
 		setResizable(false);
@@ -34,11 +50,21 @@ public class GameFrame extends JFrame implements Runnable, KeyListener {
 
 	@Override
 	public void run() {
+		boolean first = true;
 		while (running ) {
 			snake.moveForward(15);
+			snake2.moveForward(15);
 			panel.repaint();
+			
+			Util.getInstance().update(
+					ContainerCoordinatorMapper.GAME_LIST, 
+					snake.getSnakeDataHolder(first),
+					snake.getId().toString());
+			
+			if(first) first = false;
+			
 			try {
-				Thread.sleep(150);
+				Thread.sleep(5000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -51,11 +77,11 @@ public class GameFrame extends JFrame implements Runnable, KeyListener {
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) {
+	public void keyReleased(KeyEvent e) {
 	}
 
 	@Override
-	public void keyTyped(KeyEvent arg0) {
+	public void keyTyped(KeyEvent e) {
 	}
 
 }

@@ -13,10 +13,10 @@ public class GamePanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private BufferedImage gameMap;
-	private Snake snake;
+	private Snake[] snakes;
 
-	public GamePanel(Snake snake) {
-		this.snake = snake;
+	public GamePanel(Snake[] snakes) {
+		this.snakes = snakes;
 
 		ImageLoader loader = new ImageLoader();
 		gameMap = loader.loadImage("res/levels/Level1/back.jpg", false);
@@ -31,9 +31,9 @@ public class GamePanel extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		g.drawImage(gameMap, 0, 0, null);
-
-		SnakeSprite sprite = new SnakeSprite(snake);
-
-		sprite.draw(g);
+		for(Snake s : this.snakes)	{
+			SnakeSprite sprite = new SnakeSprite(s);
+			sprite.draw(g);
+		}
 	}
 }

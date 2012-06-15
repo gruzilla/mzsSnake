@@ -2,13 +2,24 @@ package client.data;
 
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.UUID;
+
+import mzs.data.SnakeDataHolder;
 
 public class Snake {
 	private ArrayList<SnakePart> snakeParts = new ArrayList<SnakePart>();
 	private float direction = 45;
 	private int distance = 18;
 
+	private UUID id = UUID.randomUUID();
+	// represents snake in space
+	private SnakeDataHolder dataHolder;
+	
 	public Snake() {
+		
+		// dataholder has same id as Snake (SnakeDataHolder represents snake in space)
+		dataHolder = new SnakeDataHolder(getId());
+		
 		SnakePart head = new SnakePart();
 		head.setX(100);
 		head.setY(200);
@@ -23,7 +34,7 @@ public class Snake {
 	}
 	
 	public float getDirection() {
-		return direction ;
+		return direction;
 	}
 	
 	public void setDirection(float d) {
@@ -32,6 +43,30 @@ public class Snake {
 	
 	public ArrayList<SnakePart> getParts() {
 		return snakeParts;
+	}
+	
+	public SnakePart getHeadPart()	{
+		return this.snakeParts.get(0);
+	}
+	
+	public SnakePart getTailPart()	{
+		return this.snakeParts.get(this.snakeParts.size() - 1);
+	}
+	
+	public SnakeDataHolder getSnakeDataHolder()	{
+		return getSnakeDataHolder(false);
+	}
+	
+	public SnakeDataHolder getSnakeDataHolder(boolean full)	{
+		
+		dataHolder.reset();
+		if(full)	{
+			dataHolder.setParts(this.snakeParts);
+		} else	{
+			dataHolder.addPart(this.getHeadPart());
+			dataHolder.addPart(this.getTailPart());
+		}
+		return this.dataHolder;
 	}
 
 	/**
@@ -88,5 +123,13 @@ public class Snake {
 		}
 
 		direction %= 360;
+	}
+
+	public void setId(UUID id) {
+		this.id = id;
+	}
+
+	public UUID getId() {
+		return id;
 	}
 }

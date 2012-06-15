@@ -82,54 +82,62 @@
 
 <!-- ==================== Run Target ====================================== -->
 
+	<!--- DEV -->
 	<!--    starts the game
 				arguments for java:
 				- java path
 				- mozartspaces config file (multiplayer)
 				- default look & feel
 	-->
-
-	<target description="Clean and build, then run class Snake" depends="compile" name="run">
+	
+	<target description="Clean and build, then run class Snake" depends="run.dev, run.prod" name="run" />
+	
+	<target description="Clean and build, then run class Snake" depends="compile" name="run.dev" if="dev">
 		<java classname="client.SnakeMain" fork="yes"
             jvm="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/bin/java">
-			<jvmarg value="-Dmozartspaces.configurationFile=${dist.home}/res/mozartspaces_player.xml" />
+			<jvmarg value="-Dmozartspaces.configurationFile=res/mzs/mozartspaces_player.xml" />
 			<jvmarg value="-Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel" />
 			<classpath refid="run.classpath.dev" />
 		</java>
 	</target>
 	
-	<!--    starts the game (2nd)
-				arguments for java:
-				- java path
-				- mozartspaces config file (multiplayer)
-				- default look & feel
-	-->
-
+	<!--    starts the game (2nd) -->
 	<target description="Clean and build, then run class Snake" depends="compile" name="run2">
 		<java classname="client.SnakeMain" fork="yes"
             jvm="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/bin/java">
-			<jvmarg value="-Dmozartspaces.configurationFile=${dist.home}/res/mozartspaces_player.xml" />
+			<jvmarg value="-Dmozartspaces.configurationFile=res/mzs/mozartspaces_player.xml" />
 			<jvmarg value="-Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel" />
 			<classpath refid="run.classpath.dev" />
 		</java>
 	</target>
 
-	<!--    starts the game (3rd)
+	<!--    starts the game (3rd) -->
+	<target description="Clean build and dist, then run class Snake" depends="compile" name="run3">
+		<java classname="client.SnakeMain" fork="yes"
+            jvm="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/bin/java">
+			<jvmarg value="-Dmozartspaces.configurationFile=res/mzs/mozartspaces_player.xml" />
+			<jvmarg value="-Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel" />
+			<classpath refid="run.classpath.dev" />
+		</java>
+	</target>
+
+	
+	
+	<!--- PROD -->
+	<!--    starts the game
 				arguments for java:
 				- java path
 				- mozartspaces config file (multiplayer)
 				- default look & feel
 	-->
-
-	<target description="Clean build and dist, then run class Snake" depends="compile" name="run3">
+	<target description="Clean and build, then run class Snake" depends="compile" name="run.prod" unless="dev">
 		<java classname="client.SnakeMain" fork="yes"
             jvm="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/bin/java">
-			<jvmarg value="-Dmozartspaces.configurationFile=${dist.home}/res/mozartspaces_player.xml" />
+			<jvmarg value="-Dmozartspaces.configurationFile=${dist.home}/res/mzs/mozartspaces_player.xml" />
 			<jvmarg value="-Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel" />
-			<classpath refid="run.classpath.dev" />
+			<classpath refid="run.classpath" />
 		</java>
 	</target>
-
 
 
 <!-- ==================== All Target ====================================== -->
@@ -145,11 +153,21 @@
 <!-- ==================== Server Target =================================== -->
 
 <!--    The "server" target starts a new mozart default space  -->
-	<target name="server" depends="compile, dist" description="starts mozart space">
-		<java classname="snake.mzspaces.gameserver.Server" fork="yes"
+	<target name="server" depends="server.dev, server.prod" description="starts mozart space" />
+	
+	<target name="server.dev" depends="compile" description="starts mozart space" if="dev">
+		<java classname="server.Server" fork="yes"
             jvm="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/bin/java">
-			<jvmarg value="-Dmozartspaces.configurationFile=${dist.home}/res/mozartspaces.xml" />
+			<jvmarg value="-Dmozartspaces.configurationFile=res/mzs/mozartspaces.xml" />
 			<classpath refid="run.classpath.dev" />
+		</java>
+	</target>
+	
+	<target name="server.prod" depends="compile, dist" description="starts mozart space" unless="dev">
+		<java classname="server.Server" fork="yes"
+            jvm="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/bin/java">
+			<jvmarg value="-Dmozartspaces.configurationFile=${dist.home}/res/mzs/mozartspaces.xml" />
+			<classpath refid="run.classpath" />
 		</java>
 	</target>
 
@@ -174,7 +192,9 @@
 	<target depends="prepare" description="Compile Java sources" name="compile">
 
 		<!-- Compile Java classes as necessary -->
-		<javac debug="${compile.debug}"  deprecation="${compile.deprecation}" destdir="${build.home}" optimize="${compile.optimize}" srcdir="src">
+		<javac debug="${compile.debug}"  deprecation="${compile.deprecation}" destdir="${build.home}" optimize="${compile.optimize}">
+			<src path="src"/>
+			<src path="test"/>
 			<classpath refid="compile.classpath"/>
 		</javac>
 		
@@ -247,4 +267,19 @@
 		<mkdir dir="${build.home}"/>
 	</target>
 
+	
+	
+	<!--  VIEWER TEST -->
+	
+	<target description="Clean and build, then run class Snake" depends="compile" name="viewer" if="dev">
+		<java classname="test.Viewer" fork="yes"
+            jvm="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/bin/java">
+			<jvmarg value="-Dmozartspaces.configurationFile=res/mzs/mozartspaces_player.xml" />
+			<jvmarg value="-Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel" />
+			<classpath refid="run.classpath.dev" />
+		</java>
+	</target>
+	
+	
+	
 </project>

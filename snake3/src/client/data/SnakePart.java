@@ -1,7 +1,11 @@
 package client.data;
 
-public class SnakePart {
+import java.io.Serializable;
 
+public class SnakePart implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
 	private int x;
 	private int y;
 	private float d;
