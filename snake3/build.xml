@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--SNAKE XVSM - ant File -->
+<!--	contains targets for building, running, distribution of Snake XVSM -->
+<project basedir="." default="compile" name="snake">
+
+<!-- ===================== Property Definitions =========================== -->
+
+<!--    Each of the following properties are used in the build script.
+	Values for these properties are set by the first place they are
+	defined, from the following list:
+	* Definitions on the "ant" command line (ant -Dcatalina.home=xyz compile)
+	* Definitions from a "build.properties" file in the top level source directory
+	* Definitions from a "build.properties" file in the developer's home directory
+	* Default definitions in this build.xml file
+	You will note below that property values can be composed based on the
+	contents of previously defined properties. This is a powerful technique
+	that helps you minimize the number of changes required when your development
+	environment is modified.  Note that property composition is allowed within
+	"build.properties" files as well as in the "build.xml" script.  -->
+<!-- NO PROPERTY BUILD FILES USED atm -->
+<!--  <property file="build.properties"/> -->
+<!--  <property file="${user.home}/build.properties"/> -->
+
+<!-- ==================== File and Directory Names ======================== -->
+
+	<property name="app.mode" value="DEV"/> <!-- DEV / PROD -->
+	
+	<property name="app.version" value="0.1"/>
+	<property name="dist.home" value="dist"/>
+	<property name="build.home" value="bin"/>
+
+
+	<condition property="dev">
+	    <equals arg1="${app.mode}" arg2="DEV"/>
+	</condition>
+
+	
+
+<!--  ==================== Compilation Control Options ==================== -->
+
+<!--    These properties control option settings on the Javac compiler when it
+	is invoked using the <javac> task.
+	compile.debug        Should compilation include the debug option?
+	compile.deprecation  Should compilation include the deprecation option?
+	compile.optimize     Should compilation include the optimize option?  -->
+
+	<property name="compile.debug" value="true"/>
+	<property name="compile.deprecation" value="true"/>
+	<property name="compile.optimize" value="true"/>
+
+
+
+<!-- ==================== Compilation Classpath =========================== -->
+
+<!--    Rather than relying on the CLASSPATH environment variable, Ant includes
+	features that makes it easy to dynamically construct the classpath you
+	need for each compilation.  -->
+
+	<path id="run.classpath">
+		<fileset dir="lib">
+			<include name="**/*.jar"/>
+		</fileset>
+		<fileset dir="${dist.home}">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+
+	<path id="run.classpath.dev">
+		<pathelement path="${build.home}"/>
+		<fileset dir="lib">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+	
+	<path id="compile.classpath">
+		<fileset dir="lib">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+
+
+
+<!-- ==================== Run Target ====================================== -->
+
+	<!--    starts the game
+				arguments for java:
+				- java path
+				- mozartspaces config file (multiplayer)
+				- default look & feel
+	-->
+
+	<target description="Clean and build, then run class Snake" depends="compile" name="run">
+		<java classname="client.SnakeMain" fork="yes"
+            jvm="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/bin/java">
+			<jvmarg value="-Dmozartspaces.configurationFile=${dist.home}/res/mozartspaces_player.xml" />
+			<jvmarg value="-Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel" />
+			<classpath refid="run.classpath.dev" />
+		</java>
+	</target>
+	
+	<!--    starts the game (2nd)
+				arguments for java:
+				- java path
+				- mozartspaces config file (multiplayer)
+				- default look & feel
+	-->
+
+	<target description="Clean and build, then run class Snake" depends="compile" name="run2">
+		<java classname="client.SnakeMain" fork="yes"
+            jvm="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/bin/java">
+			<jvmarg value="-Dmozartspaces.configurationFile=${dist.home}/res/mozartspaces_player.xml" />
+			<jvmarg value="-Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel" />
+			<classpath refid="run.classpath.dev" />
+		</java>
+	</target>
+
+	<!--    starts the game (3rd)
+				arguments for java:
+				- java path
+				- mozartspaces config file (multiplayer)
+				- default look & feel
+	-->
+
+	<target description="Clean build and dist, then run class Snake" depends="compile" name="run3">
+		<java classname="client.SnakeMain" fork="yes"
+            jvm="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/bin/java">
+			<jvmarg value="-Dmozartspaces.configurationFile=${dist.home}/res/mozartspaces_player.xml" />
+			<jvmarg value="-Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel" />
+			<classpath refid="run.classpath.dev" />
+		</java>
+	</target>
+
+
+
+<!-- ==================== All Target ====================================== -->
+
+<!--    The "all" target is a shortcut for running the "clean" target followed
+	by the "compile" "dist" and "javadoc" target, to force a complete
+	recompile.  -->
+
+	<target depends="clean,compile,dist" description="Clean build and dist" name="all"/>
+
+
+
+<!-- ==================== Server Target =================================== -->
+
+<!--    The "server" target starts a new mozart default space  -->
+	<target name="server" depends="compile, dist" description="starts mozart space">
+		<java classname="snake.mzspaces.gameserver.Server" fork="yes"
+            jvm="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/bin/java">
+			<jvmarg value="-Dmozartspaces.configurationFile=${dist.home}/res/mozartspaces.xml" />
+			<classpath refid="run.classpath.dev" />
+		</java>
+	</target>
+
+
+<!-- ==================== Clean Target ==================================== -->
+
+<!--    The "clean" target deletes any previous "build" and "dist" directory,
+	so that you can be ensured the application can be built from scratch.  -->
+
+	<target description="Delete old build and dist directories" name="clean">
+		<delete dir="${build.home}"/>
+		<delete dir="${dist.home}"/>
+	</target>
+
+
+
+<!-- ==================== Compile Target ================================== -->
+
+<!--    The "compile" target transforms source files (from your "src" directory)
+	into object files in the appropriate location in the build directory.  -->
+
+	<target depends="prepare" description="Compile Java sources" name="compile">
+
+		<!-- Compile Java classes as necessary -->
+		<javac debug="${compile.debug}"  deprecation="${compile.deprecation}" destdir="${build.home}" optimize="${compile.optimize}" srcdir="src">
+			<classpath refid="compile.classpath"/>
+		</javac>
+		
+	
+
+	</target>
+
+
+
+<!-- ==================== Dist Target ===================================== -->
+
+
+<!--    The "dist" target creates a binary distribution of your application
+	in a directory structure ready to be archived in a tar.gz or zip file.
+	Note that this target depends on two others:
+	* "compile" so that the entire application will have been assembled
+	* "javadoc" so that the application Javadocs will have been created  -->
+
+	<target depends="compile" description="Create binary distribution" name="dist">
+
+		<copy todir="${dist.home}">
+			<fileset dir="bin">
+				<include name="**" />
+			</fileset>
+		</copy>
+		<copy todir="${dist.home}/skins">
+			<fileset dir="skins" />
+		</copy>
+		<copy todir="${dist.home}/levels">
+			<fileset dir="levels" />
+		</copy>
+		<copy todir="${dist.home}/images">
+			<fileset dir="images" />
+		</copy>
+		<copy todir="${dist.home}/res">
+			<fileset dir="res" />
+		</copy>
+		<!-- Create snake JAR file -->
+		<jar basedir="${build.home}" jarfile="${dist.home}/snake.jar" includes="** snake.properties"/>
+	</target>
+
+
+
+<!-- ==================== Javadoc Target ================================== -->
+
+<!--    The "javadoc" target creates Javadoc API documentation for the Java
+	classes included in your application. Normally, this is only required
+	when preparing a distribution release, but is available as a separate
+	target in case the developer wants to create Javadocs independently.  -->
+<!--does not work without a package structure :( but we can do "javadoc *.java -d ../dist/docs/api"-->
+	<target description="Create Javadoc API documentation" name="javadoc">
+
+	<mkdir dir="${dist.home}/docs"/>
+		<javadoc destdir="${dist.home}/docs" sourcepath="src" packagenames="*.*" >
+			<classpath refid="compile.classpath"/>
+		</javadoc>
+	</target>
+
+
+
+<!-- ==================== Prepare Target ================================== -->
+
+<!--    The "prepare" target is used to create the "build" destination directory,
+	and copy the static contents of your application to it. Normally, this
+	task is executed indirectly when needed.  -->
+
+	<target name="prepare">
+		<!-- Create build directory and copy static content -->
+		<mkdir dir="${dist.home}"/>
+		<mkdir dir="${build.home}"/>
+	</target>
+
+</project>

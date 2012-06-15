@@ -11,10 +11,6 @@ public class GameFrame extends JFrame implements Runnable, KeyListener {
 
 	private static final long serialVersionUID = 1L;
 
-	public static void main(String[] args) {
-		new GameFrame();
-	}
-
 	private GamePanel panel;
 	private boolean running = true;
 	private Thread gameThread;
