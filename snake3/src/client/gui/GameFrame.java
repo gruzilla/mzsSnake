@@ -42,7 +42,7 @@ public class GameFrame extends JFrame implements Runnable, KeyListener {
 			snake.moveForward(15);
 			panel.repaint();
 			try {
-				Thread.sleep(100);
+				Thread.sleep(150);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -51,32 +51,7 @@ public class GameFrame extends JFrame implements Runnable, KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-
-		int key = e.getKeyCode();
-
-		if ((key == KeyEvent.VK_LEFT) && (!right)) {
-			left = true;
-			up = false;
-			down = false;
-		}
-
-		if ((key == KeyEvent.VK_RIGHT) && (!left)) {
-			right = true;
-			up = false;
-			down = false;
-		}
-
-		if ((key == KeyEvent.VK_UP) && (!down)) {
-			up = true;
-			right = false;
-			left = false;
-		}
-
-		if ((key == KeyEvent.VK_DOWN) && (!up)) {
-			down = true;
-			right = false;
-			left = false;
-		}
+		snake.move(e);
 	}
 
 	@Override
