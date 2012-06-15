@@ -28,7 +28,7 @@ public class SnakeSprite {
 			if (i == 0) image = head;
 			if (i == snake.getParts().size()-1) image = tail;
 
-			System.out.println("drawing on "+p.getX()+" "+p.getY()+" "+p.getDirection());
+			//System.out.println("drawing on "+p.getX()+" "+p.getY()+" "+p.getDirection());
 			g.drawImage(
 				snakePartImageLoader.getRotatedImage(image, (int) p.getDirection()),
 				p.getX(),

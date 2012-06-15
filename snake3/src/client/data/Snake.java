@@ -1,5 +1,6 @@
 package client.data;
 
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 public class Snake {
@@ -37,8 +38,12 @@ public class Snake {
 	 * calculate X and Y values of the other snake parts depending on the head-part
 	 */
 	protected void calculateParts() {
-		int startX = snakeParts.get(0).getX();
-		int startY = snakeParts.get(0).getY();
+		SnakePart head = snakeParts.get(0);
+
+		int startX = head.getX();
+		int startY = head.getY();
+
+		head.setDirection(getDirection());
 
 		for (int i = 1; i < snakeParts.size(); i++) {
 			SnakePart part = snakeParts.get(i);
@@ -53,12 +58,35 @@ public class Snake {
 	}
 
 	public void moveForward(int forward) {
-		double xOffset = Math.sin((360 - getDirection()) * Math.PI / 180) * forward;
-		double yOffset = Math.cos((360 - getDirection()) * Math.PI / 180) * forward;
+		double xOffset = Math.sin((360 - getDirection()) * Math.PI / 180) * distance;
+		double yOffset = Math.cos((360 - getDirection()) * Math.PI / 180) * distance;
 		
 		SnakePart head = snakeParts.get(0);
-		head.setX((int)(head.getX() - xOffset));
-		head.setY((int)(head.getY() - yOffset));
-		calculateParts();
+
+		// pop
+		SnakePart tail = snakeParts.remove(snakeParts.size()-1);
+
+		// use tail as new head, lulz
+		tail.setX((int)(head.getX() - xOffset));
+		tail.setY((int)(head.getY() - yOffset));
+		tail.setDirection(getDirection());
+
+		// unshift
+		snakeParts.add(0, tail);
+	}
+
+	public void move(KeyEvent e) {
+		int key = e.getKeyCode();
+
+		switch (key) {
+		case KeyEvent.VK_LEFT:
+			direction -= 15;
+			break;
+		case KeyEvent.VK_RIGHT:
+			direction += 15;
+			break;
+		}
+
+		direction %= 360;
 	}
 }
