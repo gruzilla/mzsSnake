@@ -21,6 +21,10 @@ public class SnakeDataHolder implements Serializable {
 		this.parts = new ArrayList<SnakePart>();
 	}
 
+	public UUID getId() {
+		return id;
+	}
+	
 	public void reset()	{
 		parts = new ArrayList<SnakePart>();
 	}

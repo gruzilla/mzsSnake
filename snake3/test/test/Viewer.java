@@ -7,6 +7,8 @@ import mzs.data.SnakeDataHolder;
 import mzs.util.ContainerCoordinatorMapper;
 import mzs.util.Util;
 
+import org.mozartspaces.capi3.CoordinationData;
+import org.mozartspaces.capi3.KeyCoordinator;
 import org.mozartspaces.core.Entry;
 import org.mozartspaces.core.MzsCoreException;
 import org.mozartspaces.notifications.Notification;
@@ -15,6 +17,9 @@ import org.mozartspaces.notifications.NotificationManager;
 import org.mozartspaces.notifications.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import client.data.Snake;
+import client.gui.GameFrame;
 
 
 /**
@@ -27,6 +32,8 @@ import org.slf4j.LoggerFactory;
 public class Viewer implements NotificationListener {
 
 	private Notification notification;
+
+	private GameFrame gameFrame;
 	
 	private static Logger log = LoggerFactory.getLogger(Viewer.class);
 	
@@ -38,6 +45,8 @@ public class Viewer implements NotificationListener {
 	}
 
 	public Viewer()	{
+		
+		// create notification
 		NotificationManager notifManager = Util.getInstance().getNotificationManager();
 		try {
 			this.notification = notifManager.createNotification(
@@ -58,7 +67,9 @@ public class Viewer implements NotificationListener {
 			} else {
 				log.debug("NOTFICATION successfully created");
 			}
-		}		
+		}
+		
+		gameFrame = new GameFrame(true);
 	}
 	
 	
@@ -67,19 +78,43 @@ public class Viewer implements NotificationListener {
 			List<? extends Serializable> entries) {
 		log.debug("received notification");
 		
-		switch (operation) {
-		case WRITE:
-			
-			if (entries != null)	{
-				for (Serializable entry : entries) {
-					Serializable obj = ((Entry) entry).getValue();
-					if (obj instanceof SnakeDataHolder) {
-						SnakeDataHolder snake = (SnakeDataHolder) obj;
-						log.debug("received: " + snake);
+		
+		if (entries != null && operation == Operation.WRITE)	{
+			for (Serializable entry : entries) {
+				Entry e = ((Entry) entry);
+				/* how to get the key of keycoordinator *
+				KeyCoordinator.KeyData kdata = null;
+				for(CoordinationData cdata : e.getCoordinationData())	{
+					if(cdata instanceof KeyCoordinator.KeyData)	{
+						kdata = ((KeyCoordinator.KeyData) cdata);
 					}
 				}
+				log.debug(kdata.getName() + " " + kdata.getKey());
+				 */
+				
+				Serializable obj = ((Entry) entry).getValue();
+				
+				log.debug(e.getCoordinationData().toString());
+				
+				if (obj instanceof SnakeDataHolder) {
+					SnakeDataHolder snakedataholder = (SnakeDataHolder) obj;
+//					log.debug("received: " + snakedataholder);
+					
+					/**
+					 * @TODO check if update comes from own snake
+					 * 	=> if so, ignore it (can not be done in viewer)
+					 */
+					
+					
+					// how to get the key easier... lulz
+					if(!gameFrame.hasSnake(snakedataholder.getId()))	{
+						// create Snake (temporarly here - i think)
+						gameFrame.addSnake(new Snake(snakedataholder.getId()));
+					}
+					// update snake
+					this.gameFrame.updateSnake(snakedataholder);
+				}
 			}
-			break;
 		}
 	}
 

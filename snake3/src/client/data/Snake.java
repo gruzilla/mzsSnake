@@ -4,16 +4,35 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import mzs.data.SnakeDataHolder;
 
 public class Snake {
 	private ArrayList<SnakePart> snakeParts = new ArrayList<SnakePart>();
+
 	private float direction = 45;
 	private int distance = 18;
 
 	private UUID id = UUID.randomUUID();
 	// represents snake in space
 	private SnakeDataHolder dataHolder;
+	
+	private static Logger log = LoggerFactory.getLogger(Snake.class);
+	
+	/**
+	 * constructor should only be used for comparison (equals)
+	 * 
+	 * 	Snake can not be used as Instance if created using this constructor
+	 * 
+	 * @TODO bessere lšsung als equals immer snake.getId().equals zu machen?
+	 * 
+	 * @param id
+	 */
+	public Snake(UUID id)	{
+		this.id = id;
+	}
 	
 	public Snake() {
 		
@@ -32,6 +51,15 @@ public class Snake {
 
 		calculateParts();
 	}
+
+	/** GETTER / SETTER **/
+	public void setId(UUID id) {
+		this.id = id;
+	}
+
+	public UUID getId() {
+		return id;
+	}
 	
 	public float getDirection() {
 		return direction;
@@ -41,8 +69,12 @@ public class Snake {
 		direction = d;
 	}
 	
-	public ArrayList<SnakePart> getParts() {
+	public ArrayList<SnakePart> getSnakeParts() {
 		return snakeParts;
+	}
+
+	public void setSnakeParts(ArrayList<SnakePart> snakeParts) {
+		this.snakeParts = snakeParts;
 	}
 	
 	public SnakePart getHeadPart()	{
@@ -56,6 +88,7 @@ public class Snake {
 	public SnakeDataHolder getSnakeDataHolder()	{
 		return getSnakeDataHolder(false);
 	}
+	/** END GETTER / SETTER **/
 	
 	public SnakeDataHolder getSnakeDataHolder(boolean full)	{
 		
@@ -124,12 +157,66 @@ public class Snake {
 
 		direction %= 360;
 	}
-
-	public void setId(UUID id) {
-		this.id = id;
+	
+	
+	/**
+	 * called for remote snakes, to adopt position
+	 * 
+	 * @TODO make sure, that own player snake does not get updated (MUST be done in notification - before update call)
+	 * 
+	 * @param sdh
+	 */
+	public void updateSnakeParts(SnakeDataHolder sdh) {
+		
+		log.info("UPDATE SNAKE PARTS");
+		// check for 2 parts (head and tail
+		if(sdh.getParts().size() > 2)	{
+			this.setSnakeParts(sdh.getParts());
+		} else	{
+			// set new head and tail
+			
+			/** 
+			 * @TODO what if snake gets longer? at least the length must be provided in snakedataholder
+			 * 	=> or all snake parts are written to space each time
+			 */
+			
+			// remove tail
+			SnakePart tail = snakeParts.remove(snakeParts.size()-1);
+			
+			// use tail as new head, lulz
+			// unshift
+			snakeParts.add(0, sdh.getParts().get(0));
+		}
 	}
 
-	public UUID getId() {
-		return id;
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Snake other = (Snake) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
 	}
 }
