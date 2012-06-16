@@ -21,12 +21,12 @@ public class SnakeSprite {
 		BufferedImage tail = snakePartImageLoader.loadImage("res/skins/Snake/snaketail.png", false);
 		
 		
-		for (int i = 0; i < snake.getParts().size(); i++) {
-			SnakePart p = snake.getParts().get(i);
+		for (int i = 0; i < snake.getSnakeParts().size(); i++) {
+			SnakePart p = snake.getSnakeParts().get(i);
 
 			BufferedImage image = part;
 			if (i == 0) image = head;
-			if (i == snake.getParts().size()-1) image = tail;
+			if (i == snake.getSnakeParts().size()-1) image = tail;
 
 			//System.out.println("drawing on "+p.getX()+" "+p.getY()+" "+p.getDirection());
 			g.drawImage(

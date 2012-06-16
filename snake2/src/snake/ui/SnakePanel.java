@@ -340,6 +340,7 @@ public class SnakePanel extends JPanel implements Runnable, NotificationListener
 	{
 		setMode(MODE_STARTING);
 		modeQuit = MODE_STARTING;
+		Game game = gameListManager.getCurrentGame();
 		try
 		{
 			if (!lastBackGroundImagePath.equals(levelManager.getBackPicturePath()))
@@ -357,6 +358,8 @@ public class SnakePanel extends JPanel implements Runnable, NotificationListener
 
 		if (!gameListManager.isViewOnly())
 		{
+			log.debug("PPPplayernr: " + snakeMain.getMyPlayer());
+			log.debug("PPPPplayernr: " + game.indexOf(snakeMain.getMyPlayer()));
 			// create own game sprites
 			snakeMain.getMyPlayer().setPlayerNr(game.indexOf(snakeMain.getMyPlayer()));
 
@@ -540,11 +543,15 @@ public class SnakePanel extends JPanel implements Runnable, NotificationListener
 			specialTimer.reset();
 			specialTimer.start();
 			sleepTime = (period - timeDiff) - overSleepTime;
-
+			
+//			sleepTime = 1000;
+			
 			if (sleepTime > 0)
 			{ // some time left in this cycle
 				try
-				{
+				{	
+//					log.debug("sleeeping.......");
+//					Thread.sleep(sleepTime); // / 1000000L); // nano -> ms
 					Thread.sleep(sleepTime / 1000000L); // nano -> ms
 				}
 				catch (InterruptedException ex)

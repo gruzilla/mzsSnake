@@ -311,6 +311,10 @@ public class Player implements Serializable
 		this.currentGame = currentGame;
 	}
 
+	public String toString()	{
+		return "Player: " + playerNumber + "------" + nr.toString();
+	}
+	
 	public boolean updatePart(SnakePos headPart) {
 		//log.debug("			trying to update "+(headPart == null ? "nullhead" : headPart.id));
 		if (headPart == null) return false;
@@ -319,7 +323,7 @@ public class Player implements Serializable
 			//log.debug("\n\n trying to match "+(pos == null ? "nullpos" : pos.id)+"\n\n");
 			if (pos == null) continue;
 			if (pos.id != null && headPart.id != null && pos.id.equals(headPart.id)) {
-				log.debug("			found matching head part for player " + this.playerNumber + " " +headPart.id);
+//				log.debug("	found matching head part for player " + this.nr + " " +headPart.id);
 				pos.direction = headPart.direction;
 				pos.x = headPart.x;
 				pos.y = headPart.y;
