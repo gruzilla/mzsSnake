@@ -18,7 +18,6 @@ import org.mozartspaces.notifications.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import snake.GameListManager;
 import snake.mzspaces.ContainerCoordinatorMapper;
 import snake.mzspaces.DataChangeEvent;
 import snake.mzspaces.DataChangeListener;

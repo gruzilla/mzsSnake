@@ -79,6 +79,7 @@ public class SnakeSpriteData
 	private Player otherPlayer;
 	private SnakePanel snakePanel;
 	private GameListManager gameListManager;
+	private ContainerReference gCont;
 
 	/**
 	 * SnakeSpriteData constructor for active (writing) snake. Get all oids from the player
@@ -179,7 +180,9 @@ public class SnakeSpriteData
 				//CorsoTopTransaction tx = conn.createTopTransaction();
 				TransactionReference tx = Util.getInstance().createTransaction();
 
-				ContainerReference gCont = Util.getInstance().getGameContainer(gameListManager.getCurrentGame());
+				if (gCont == null) {
+					gCont = Util.getInstance().getGameContainer(gameListManager.getCurrentGame());
+				}
 				Util.getInstance().getConnection().write(
 					gCont,
 					MzsConstants.RequestTimeout.INFINITE,
@@ -1087,11 +1090,13 @@ public class SnakeSpriteData
 				
 				//CorsoTopTransaction tx = conn.createTopTransaction();
 
-				ContainerReference gCont = Util.getInstance().getGameContainer(gameListManager.getCurrentGame());
-				Util.getInstance().getConnection().write(
+				if (gCont == null) {
+					gCont = Util.getInstance().getGameContainer(gameListManager.getCurrentGame());
+				}
+				/*Util.getInstance().getConnection().write(
 					gCont,
 					new Entry(holder)
-				);
+				);*/
 
 				count = -1;
 

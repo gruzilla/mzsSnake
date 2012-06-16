@@ -618,6 +618,7 @@ public class SnakePanel extends JPanel implements Runnable, NotificationListener
 
 		switch (operation) {
 		case WRITE:
+			log.debug("received entry");
 			// if a player is written to the container update our or the other player
 			if (entries != null)
 			for (Serializable entry : entries) {
@@ -641,21 +642,32 @@ public class SnakePanel extends JPanel implements Runnable, NotificationListener
 						// TODO: check if we also need to update the player-list in the games-object. but im not sure here
 					}
 				} else if (obj instanceof SnakeSpriteDataHolder) {
+					log.debug("received snake sprite data holder");
 					SnakeSpriteDataHolder holder = (SnakeSpriteDataHolder) obj;
 
 					// do not update myself
-					if (snakeMain != null && snakeMain.getMyPlayer().getNr().equals(holder.id)) continue;
+					if (snakeMain != null && snakeMain.getMyPlayer().getNr().equals(holder.id)) {
+						log.debug("i dont update myself");
+						continue;
+					}
 
 					// if this sprite has not the same player continue
 					Player player = null;
 					SnakeSprite otherSnakeSprite = null;
+					log.debug("\n\n");
+					log.debug(snakeMain.getMyPlayer().getNr()+"\n\n");
 					for (SnakeSprite sprite : otherSnakeSprites) {
+						log.debug(sprite.getData().getOtherPlayer().getNr()+"\n\n");
 						if (sprite.getData().getOtherPlayer().getNr().equals(holder.id)) {
 							player = sprite.getData().getOtherPlayer();
 							otherSnakeSprite = sprite;
+							break;
 						}
 					}
+					log.debug(player == null ? "player is null" : "player: "+player.getNr());
+					log.debug(otherSnakeSprite == null ? "otherSnakeSprite is null" : "player: "+player.getNr());
 					if (player == null || otherSnakeSprite == null) continue;
+					else { log.debug("updating other snake sprite"); }
 
 					//update for snake state
 					//snakeState = SnakeState.values()[fired.varOid().readInt(null, CorsoConnection.NO_TIMEOUT)];
@@ -667,6 +679,7 @@ public class SnakePanel extends JPanel implements Runnable, NotificationListener
 						//snake crashed - play sound and show crash effect
 						// System.out.println("Snake crashed.");
 						otherSnakeSprite.crashSnake(true);
+						System.exit(0);
 					}
 					else if (player.getSnakeState() == SnakeState.unverwundbar)
 					{

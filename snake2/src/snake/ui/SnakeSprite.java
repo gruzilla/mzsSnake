@@ -263,13 +263,13 @@ public class SnakeSprite
 			//draw the snake: rotation an brighten effects are applied to the image when needed,
 			//the map position of the snake is corrected by the correction position to get
 			//screen coordinates
-	
+
 			//draw tail
 			g2d.drawImage(imgLoader.getBrighterImage(imgLoader.getRotatedImage(imgTail, (int) (data.pixelDirection[tempPos] - 90)),effect.hasBrightenEffect() ? effect.getBrightenValue() : 1.0f),
 										(int) data.pixelPos[tempPos].x - correctionPos.x,
 										(int) data.pixelPos[tempPos].y - correctionPos.y, null);
 			tempPos+=SnakeSpriteData.PARTDIST;
-	
+
 			//draw parts: pixelpositions are read from the SnakeSpriteData object, the array
 			//position is increased by a constant value that is the pixel distance between
 			//two parts.
@@ -282,14 +282,14 @@ public class SnakeSprite
 											(int) data.pixelPos[tempPos].x - correctionPos.x, (int) data.pixelPos[tempPos].y - correctionPos.y, null);
 				tempPos+=SnakeSpriteData.PARTDIST;
 			}
-	
+
 			//draw head
 			if (getPlayer() == null) log.error("\n\nplayer is null\n\n");
 			if (getPlayer().getHeadPart() == null) log.error("\n\nhead part is null\n\n");
 			g2d.drawImage(imgLoader.getBrighterImage(imgLoader.getRotatedImage(imgHead, (int) (getPlayer().getHeadPart().direction - 90)),effect.hasBrightenEffect() ? effect.getBrightenValue() : 1.0f),
 										(int) data.pixelPos[data.pixelHeadPos].x - correctionPos.x,
 										(int) data.pixelPos[data.pixelHeadPos].y - correctionPos.y, null);
-	
+
 			//draw name (half transparent)
 			g2d.setColor(Color.darkGray);
 			g2d.setFont(msgsFont);
