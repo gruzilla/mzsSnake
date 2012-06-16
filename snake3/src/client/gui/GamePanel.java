@@ -16,10 +16,17 @@ import mzs.data.SnakeDataHolder;
 import client.data.Snake;
 import client.gui.graphics.ImageLoader;
 
+/**
+ * represents the GamePanel, where everything is drawn
+ * 
+ * @author Jakob Lahmer, Matthias Steinbšck
+ *
+ */
 public class GamePanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private BufferedImage gameMap;
+	private Dimension gameMapSize;
 	private ArrayList<Snake> snakes;
 
 	Logger log = LoggerFactory.getLogger(GamePanel.class);
@@ -30,21 +37,27 @@ public class GamePanel extends JPanel {
 	
 	public GamePanel(Snake snake) {
 		this.snakes = new ArrayList<Snake>();
-		if(snake != null)
-			this.snakes.add(snake);
-
+		
 		ImageLoader loader = new ImageLoader();
 		gameMap = loader.loadImage("res/levels/Level1/back.jpg", false);
 
-		Dimension size = new Dimension(gameMap.getWidth(null), gameMap.getHeight(null));
-		setPreferredSize(size);
-		setMinimumSize(size);
-		setMaximumSize(size);
+		gameMapSize = new Dimension(gameMap.getWidth(null), gameMap.getHeight(null));
+		setPreferredSize(gameMapSize);
+		setMinimumSize(gameMapSize);
+		setMaximumSize(gameMapSize);
 		setLayout(null);
+		
+		// do this at last because dimensions of gamepanel must be known
+		if(snake != null)	{
+			snake.setGamePanelDimensions(gameMapSize);
+			this.snakes.add(snake);
+		}
+		
 	}
 
 	public void addSnake(Snake s)	{
 		snakes.add(s);
+		s.setGamePanelDimensions(gameMapSize);
 	}
 	
 	public boolean hasSnake(UUID id)	{
@@ -65,7 +78,6 @@ public class GamePanel extends JPanel {
 	
 	@Override
 	public void paintComponent(Graphics g) {
-		log.info("repaint it with " + this.snakes.size());
 		g.drawImage(gameMap, 0, 0, null);
 		for(Snake s : this.snakes)	{
 			SnakeSprite sprite = new SnakeSprite(s);

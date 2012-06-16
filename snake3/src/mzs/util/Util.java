@@ -52,13 +52,13 @@ public class Util
 			//read the properties from the config file
 			settings = new Settings();
 			settings.load();
-			log.debug("Settings loaded ");
+			log.info("Settings loaded ");
 //			log.debug("		local site:	" + settings.getCokeSiteLocal());
-			log.debug("		server site:	" + settings.getCokeSiteServer());
-			log.debug("		port:			" + settings.getPort());
-			log.debug("		playername:		" + settings.getPlayerName());
+			log.info("		server site:	" + settings.getCokeSiteServer());
+			log.info("		port:			" + settings.getPort());
+			log.info("		playername:		" + settings.getPlayerName());
 //			log.debug("		xvsm user:		" + settings.getUsername());
-			log.debug("");
+			log.info("");
 
 			// set space
 			space = this.getSettings().getUri();
@@ -141,7 +141,7 @@ public class Util
 	 * @return ContainerReference or null
 	 */
 	public ContainerReference getContainer(String containerName) {
-    	System.out.println("getting container "+containerName+" "+ this.getSpaceUri());
+    	log.debug("getting container "+containerName+" "+ this.getSpaceUri());
 		try {
 			return CapiUtil.lookupOrCreateContainer(
 					containerName,

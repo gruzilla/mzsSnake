@@ -1,5 +1,6 @@
 package client.data;
 
+import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -15,18 +16,21 @@ public class Snake {
 	private float direction = 45;
 	private int distance = 18;
 
-	private UUID id = UUID.randomUUID();
+	private UUID id;
 	// represents snake in space
 	private SnakeDataHolder dataHolder;
+	private Dimension gamePanelDimension;
 	
 	private static Logger log = LoggerFactory.getLogger(Snake.class);
 	
 	/**
-	 * constructor should only be used for comparison (equals)
+	 * constructor should only be used for:
+	 * 	- comparison (equals)
+	 * 	- to create remote snakes loacally
 	 * 
-	 * 	Snake can not be used as Instance if created using this constructor
+	 * 	Snake can not be used as "instance" if created using this constructor
 	 * 
-	 * @TODO bessere lšsung als equals immer snake.getId().equals zu machen?
+	 * @TODO ist das eine bessere lšsung als bei equals immer snake.getId().equals zu machen? i think so!
 	 * 
 	 * @param id
 	 */
@@ -35,7 +39,7 @@ public class Snake {
 	}
 	
 	public Snake() {
-		
+		id = UUID.randomUUID();
 		// dataholder has same id as Snake (SnakeDataHolder represents snake in space)
 		dataHolder = new SnakeDataHolder(getId());
 		
@@ -88,8 +92,24 @@ public class Snake {
 	public SnakeDataHolder getSnakeDataHolder()	{
 		return getSnakeDataHolder(false);
 	}
+	
+	/**
+	 * sets the dimensions of the gamepanel, set in GamePanel for each Snake
+	 * 	snake needs this information to calculate collision
+	 * 
+	 * @param Dimension size
+	 */
+	public void setGamePanelDimensions(Dimension size) {
+		this.gamePanelDimension = size;
+	}
+	
 	/** END GETTER / SETTER **/
 	
+	/**
+	 * stores all snake data to snakeDataHolder, which can be shared over a space
+	 * 
+	 * @return SnakeDataHolder
+	 */
 	public SnakeDataHolder getSnakeDataHolder(boolean full)	{
 		
 		dataHolder.reset();
@@ -135,14 +155,58 @@ public class Snake {
 		SnakePart tail = snakeParts.remove(snakeParts.size()-1);
 
 		// use tail as new head, lulz
-		tail.setX((int)(head.getX() - xOffset));
-		tail.setY((int)(head.getY() - yOffset));
+		int newPosX = (int)(head.getX() - xOffset),
+			newPosY = (int)(head.getY() - yOffset);
+		
+//		log.info("move to: " + newPosX + "/" + newPosY);
+		
+		/** @credit: Thomas Scheller, Markus Karolus */
+		
+		//head out of left border?
+		if (newPosX < -5)	{
+			
+			/*** @ÊTODO check if new position is free (collision detection)
+			if (gameMap.freePlaceSnake( (int) (pWidth - newPosX), (int) (newPosY)))
+			*/
+			newPosX += gamePanelDimension.getWidth();
+		}
+		//head out of right border?
+		else if (newPosX > gamePanelDimension.getWidth())	{
+			/*** @ÊTODO check if new position is free (collision detection)
+			if (gameMap.freePlaceSnake( (int) (newPosX - pWidth), (int) (newPosY)))
+			*/
+			newPosX -= gamePanelDimension.getWidth();
+		}
+		//head out of top border?
+		if (newPosY < -5)	{
+			/*** @ÊTODO check if new position is free (collision detection)
+			if (gameMap.freePlaceSnake( (int) (newPosX), (int) (pHeight - newPosY)))
+			*/
+			newPosY += gamePanelDimension.getHeight();
+		}
+		//head out of bottom border?
+		else if (newPosY > gamePanelDimension.getHeight())	{
+			/*** @ÊTODO check if new position is free (collision detection)
+			if (gameMap.freePlaceSnake( (int) (newPosX), (int) (newPosY - pHeight)))
+			*/
+			newPosY -= gamePanelDimension.getHeight();
+		}
+		
+//		log.info("	move to: " + newPosX + "/" + newPosY);
+		
+		//set new head position
+		tail.setX(newPosX);
+		tail.setY(newPosY);
 		tail.setDirection(getDirection());
 
 		// unshift
 		snakeParts.add(0, tail);
 	}
 
+	/**
+	 * move snake depending on keyEvent
+	 * @param e
+	 */
 	public void move(KeyEvent e) {
 		int key = e.getKeyCode();
 
@@ -164,12 +228,11 @@ public class Snake {
 	 * 
 	 * @TODO make sure, that own player snake does not get updated (MUST be done in notification - before update call)
 	 * 
-	 * @param sdh
+	 * @param SnakeDataHolder sdh
 	 */
 	public void updateSnakeParts(SnakeDataHolder sdh) {
 		
-		log.info("UPDATE SNAKE PARTS");
-		// check for 2 parts (head and tail
+		// check for 2 parts (head and tail)
 		if(sdh.getParts().size() > 2)	{
 			this.setSnakeParts(sdh.getParts());
 		} else	{
@@ -219,4 +282,5 @@ public class Snake {
 			return false;
 		return true;
 	}
+
 }

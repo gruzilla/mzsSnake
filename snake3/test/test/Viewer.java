@@ -76,7 +76,6 @@ public class Viewer implements NotificationListener {
 	@Override
 	public void entryOperationFinished(Notification notification, Operation operation,
 			List<? extends Serializable> entries) {
-		log.debug("received notification");
 		
 		
 		if (entries != null && operation == Operation.WRITE)	{
@@ -94,7 +93,7 @@ public class Viewer implements NotificationListener {
 				
 				Serializable obj = ((Entry) entry).getValue();
 				
-				log.debug(e.getCoordinationData().toString());
+//				log.debug(e.getCoordinationData().toString());
 				
 				if (obj instanceof SnakeDataHolder) {
 					SnakeDataHolder snakedataholder = (SnakeDataHolder) obj;
