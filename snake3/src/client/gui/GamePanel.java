@@ -31,11 +31,8 @@ public class GamePanel extends JPanel {
 
 	Logger log = LoggerFactory.getLogger(GamePanel.class);
 	
-	public GamePanel() {
-		this(null);
-	}
 	
-	public GamePanel(Snake snake) {
+	public GamePanel() {
 		this.snakes = new ArrayList<Snake>();
 		
 		ImageLoader loader = new ImageLoader();
@@ -46,12 +43,6 @@ public class GamePanel extends JPanel {
 		setMinimumSize(gameMapSize);
 		setMaximumSize(gameMapSize);
 		setLayout(null);
-		
-		// do this at last because dimensions of gamepanel must be known
-		if(snake != null)	{
-			snake.setGamePanelDimensions(gameMapSize);
-			this.snakes.add(snake);
-		}
 		
 	}
 

@@ -33,41 +33,46 @@ public class GameFrame extends JFrame implements Runnable, KeyListener, Notifica
 	private boolean isViewer = false;
 	
 	private Thread gameThread;
+	
+	// THIS IS MY SNAKE (no other instance should ever be created)
 	private Snake snake;
 
 	private Notification gamespaceWriteNotification;
 
 	private static Logger log = LoggerFactory.getLogger(GameFrame.class);
 	
-	/**
-	 * constructor setting isViewer to false
-	 */
-	public GameFrame() {
-		this(false);
-	}
+
 	
-	public GameFrame(boolean isViewer) {
-		this.isViewer = isViewer;
-		if(!this.isViewer)	{
-			snake = new Snake();
-			
-			panel = new GamePanel(snake);
-			
-			addKeyListener(this);
-			
-		} else {
-			panel = new GamePanel();
-		}
+	public GameFrame() {
+		// init game panel
+		panel = new GamePanel();
+		
 		getContentPane().add(panel);
 		pack();
 		setVisible(true);
 		setResizable(false);
+	}
+
+	
+	
+	public void startGame(boolean isViewer, boolean multiplayer)	{
+		
+		this.isViewer = isViewer;
+		if(!this.isViewer)	{
+			// create Snake if player is not a viewer
+			snake = new Snake();
+			
+			addKeyListener(this);
+			// add snake to panel
+			panel.addSnake(snake);
+		}
 		
 		// start thread
 		gameThread = new Thread(this);
 		gameThread.start();
 	}
-
+	
+	
 	/**
 	 * BEGIN WRAPPER
 	 * 	for GamePanel  **/

@@ -23,6 +23,8 @@ import client.gui.GameFrame;
 
 
 /**
+ * DEPRECATED -> viewer does not work anymore
+ *  -> use a second client to demonstrate multiplayer
  * 
  * Viewer, that displays the drawn snake
  * 
@@ -69,7 +71,7 @@ public class Viewer implements NotificationListener {
 			}
 		}
 		
-		gameFrame = new GameFrame(true);
+//		gameFrame = new GameFrame(true);
 	}
 	
 	
