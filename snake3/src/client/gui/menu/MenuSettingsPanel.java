@@ -3,6 +3,7 @@
  */
 package client.gui.menu;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -28,6 +29,8 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
+import client.data.event.MenuEventData;
+import client.data.event.MenuEventEnum;
 import client.data.event.i.MenuEventListener;
 
 /**
@@ -37,7 +40,7 @@ import client.data.event.i.MenuEventListener;
  * @author Jakob Lahmer, Matthias Steinbšck
  *
  */
-public class MenuSettingsPanel extends JDialog {
+public class MenuSettingsPanel extends MenuPanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -70,17 +73,24 @@ public class MenuSettingsPanel extends JDialog {
 
 	JScrollPane jScrollPane1;
 	JList lbSkins;
-	
-	
+
+
 	/**
 	 * @param menuChangeEventListener
 	 */
 	public MenuSettingsPanel(MenuEventListener menuChangeEventListener) {
-		
+		super(menuChangeEventListener);
 	}
 	
+	/**
+	 * inits variables
+	 */
+	@Override
 	protected void initVariables() {
 		panel1 = new JPanel();
+		jPanel1 = new JPanel();
+		jPanel2 = new JPanel();
+		jPanel3 = new JPanel();
 		tfPort = new javax.swing.JTextField();
 		laPort = new javax.swing.JLabel();
 		tfPassword = new javax.swing.JPasswordField();
@@ -93,15 +103,12 @@ public class MenuSettingsPanel extends JDialog {
 		laCokeSiteServer = new javax.swing.JLabel();
 		btAbbrechen = new JButton();
 		btOK = new JButton();
-		jPanel1 = new JPanel();
 		border1 = BorderFactory.createEtchedBorder(Color.white, new Color(
 				156, 156, 158));
 		border2 = new TitledBorder(border1, "XVSM Connection:");
-		jPanel2 = new JPanel();
 		border3 = BorderFactory.createEtchedBorder(Color.white, new Color(
 				156, 156, 158));
 		border4 = new TitledBorder(border3, "Game Settings:");
-		jPanel3 = new JPanel();
 		border5 = BorderFactory.createEtchedBorder(Color.white, new Color(
 				156, 156, 158));
 		border6 = new TitledBorder(border5, "Skin Selection:");
@@ -132,7 +139,7 @@ public class MenuSettingsPanel extends JDialog {
 		lbSkins = new JList();
 	}
 	
-	
+	@Override
 	protected void init()	{
 		panel1.setLayout(null);
 /*
@@ -183,7 +190,8 @@ public class MenuSettingsPanel extends JDialog {
 		laDomain.setFont(new java.awt.Font("Arial", Font.PLAIN, 13));
 		laDomain.setText("Domain:");
 		laDomain.setBounds(new Rectangle(16, 141, 106, 15));
-*/		this.setTitle("Snake Settings");
+		this.setTitle("Snake Settings");
+*/
 		this.addComponentListener(new ComponentListener() {
 			
 			@Override
@@ -212,13 +220,12 @@ public class MenuSettingsPanel extends JDialog {
 		});
 		btAbbrechen.setBounds(new Rectangle(265, 275, 100, 23));
 		btAbbrechen.setToolTipText("");
-		btAbbrechen.setText("Cancel");
+		btAbbrechen.setText("Back");
 		btAbbrechen.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				
+				menuEventListener.menuChanged(new MenuEventData(MenuEventEnum.START_MENU));
 			}
 		});
 		btOK.setBounds(new Rectangle(164, 275, 100, 23));
@@ -298,9 +305,20 @@ public class MenuSettingsPanel extends JDialog {
 		jPanel2.add(tfPlayername);
 		jPanel2.add(laPlayername);
 		panel1.add(jPanel1);
-		this.getContentPane().add(panel1, java.awt.BorderLayout.CENTER);
+//		this.getContentPane().add(panel1, java.awt.BorderLayout.CENTER);
 //		tfXVSMSiteLocal.setText("");
 //		tfXVSMSiteLocal.setBounds(new Rectangle(125, 28, 116, 20));
+		panel1.setSize(523, 310);
+		panel1.setBounds(new Rectangle((gameMapSize.width - 523) / 2, (gameMapSize.height - 310) / 2, 523, 310));
+		this.add(panel1);
+	}
+	
+	/**
+	 * sets the dimensions of the transparent background box for current panel
+	 * @return Dimension
+	 */
+	protected Dimension getBoxDimensions()	{
+		return new Dimension(523, 310);
 	}
 
 }

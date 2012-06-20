@@ -82,6 +82,7 @@ public class SnakeMain implements MenuEventListener {
 
 			/** UTIL **/
 				case SETTINGS:
+					this.menuFrame.showSettingsMenu();
 					break;
 				case EXIT:
 					this.exitGame();

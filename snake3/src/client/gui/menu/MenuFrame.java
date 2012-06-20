@@ -14,8 +14,10 @@ public class MenuFrame extends JFrame /* implements NotificationListener */ {
 	private MenuPanel menuPanel;
 	private MPMenuPanel mpmenuPanel;
 	private MPMenuNewGamePanel mpmenuNewPanel;
+	private MenuSettingsPanel settingsPanel;
 
 	private MenuEventListener listener;
+
 
 
 	private static Logger log = LoggerFactory.getLogger(MenuFrame.class);
@@ -29,6 +31,7 @@ public class MenuFrame extends JFrame /* implements NotificationListener */ {
 		menuPanel = new MenuPanel(this.listener);
 		mpmenuPanel = new MPMenuPanel(this.listener);
 		mpmenuNewPanel = new MPMenuNewGamePanel(this.listener);
+		settingsPanel = new MenuSettingsPanel(this.listener);
 		
 		this.showStartMenu();
 		setVisible(true);
@@ -56,6 +59,13 @@ public class MenuFrame extends JFrame /* implements NotificationListener */ {
 		this.showMenu(mpmenuNewPanel);
 	}
 
+	/**
+	 * shows the settings popup
+	 */
+	public void showSettingsMenu() {
+		this.showMenu(settingsPanel);
+	}
+	
 	/**
 	 * shows the given menupanel
 	 * @param mp
