@@ -41,12 +41,9 @@ public class Settings
 		try
 		{
 			props = new Properties();
-			//InputStream in = ClassLoader.getSystemResourceAsStream(filePath);
 			in = new FileInputStream(filePath);
 			props.load(in);
 
-//			local = props.getProperty("local");
-//			local_port = Integer.parseInt(props.getProperty("local_port"));
 			server = props.getProperty("server");
 			port = Integer.parseInt(props.getProperty("port"));
 			playerName = props.getProperty("playername");
@@ -77,13 +74,8 @@ public class Settings
 		{
 
 			FileOutputStream out = new FileOutputStream(filePath);
-			//Properties props = new Properties();
-//			props.setProperty("local",local);
-//			props.setProperty("local_port",String.valueOf(local_port));
 			props.setProperty("server",server);
 			props.setProperty("port",String.valueOf(port));
-//			props.setProperty("coke_user",username);
-//			props.setProperty("coke_pass",password);
 			props.setProperty("playername",playerName);
 			props.setProperty("snakeskin",snakeSkin);
 
@@ -103,12 +95,8 @@ public class Settings
 	 */
 	private void reset()
 	{
-//		local = "localhost";
-//		local_port = 8282;
 		server = "localhost";
 		port = 4242;
-//		username = "corsouser";
-//		password = "corsopass";
 		connectionUsername = "";
 		connectionPassword = "";
 		playerName = "Player";
@@ -117,30 +105,23 @@ public class Settings
 		snakeSkin = "Snake";
 	}
 
-	/*
-	public void setCokeSiteLocal(String value)
-	{
-		local = value;
-	}
-
-	public String getCokeSiteLocal()
-	{
-		return local;
-	}
-*/
 	public void setServer(String value)
 	{
 		server = value;
 	}
 
-	public String getCokeSiteServer()
+	public String getServer()
 	{
 		return server;
 	}
 
-
+	
 	public int getPort() {
 		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
 	}
 
 

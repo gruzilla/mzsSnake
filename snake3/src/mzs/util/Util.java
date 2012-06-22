@@ -53,26 +53,16 @@ public class Util
 			settings = new Settings();
 			settings.load();
 			log.info("Settings loaded ");
-//			log.debug("		local site:	" + settings.getCokeSiteLocal());
-			log.info("		server site:	" + settings.getCokeSiteServer());
+			log.info("		server site:	" + settings.getServer());
 			log.info("		port:			" + settings.getPort());
 			log.info("		playername:		" + settings.getPlayerName());
-//			log.debug("		xvsm user:		" + settings.getUsername());
 			log.info("");
 
 			// set space
 			space = this.getSettings().getUri();
-			if (server) {
-				core = DefaultMzsCore.newInstance();
-			} else {
-				/*
-				Configuration config = new Configuration();
-				config.setSpaceUri(this.getSettings().getUri(server));
-				config.setEmbeddedSpace(true);
-				config.setXpThreadNumber(-1);
-				*/
-				core = DefaultMzsCore.newInstance();
-			}
+			
+			// XVSM Settings are loaded via config file
+			core = DefaultMzsCore.newInstance();
 		}
 		catch (Exception ex)
 		{

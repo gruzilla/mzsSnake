@@ -19,6 +19,7 @@ import java.awt.event.MouseListener;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -28,6 +29,10 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
+
+import util.Settings;
+
+import mzs.util.Util;
 
 import client.data.event.MenuEventData;
 import client.data.event.MenuEventEnum;
@@ -46,7 +51,7 @@ public class MenuSettingsPanel extends MenuPanel {
 
 	
 	private JPanel panel1;
-	private JTextField tfPort;
+	private JFormattedTextField tfPort;
 	private JLabel laPort;
 	private JPasswordField tfPassword;
 	private JTextField tfUser;
@@ -80,8 +85,21 @@ public class MenuSettingsPanel extends MenuPanel {
 	 */
 	public MenuSettingsPanel(MenuEventListener menuChangeEventListener) {
 		super(menuChangeEventListener);
+		
+		this.setValues();
 	}
 	
+	/**
+	 * set default values to textfields etc
+	 */
+	protected void setValues() {
+		tfXVSMServer.setText(Util.getInstance().getSettings().getServer());
+		tfPort.setText(String.valueOf(Util.getInstance().getSettings().getPort()));
+		tfUser.setText(Util.getInstance().getSettings().getUsername());
+		tfPassword.setText(Util.getInstance().getSettings().getPassword());
+		tfPlayername.setText(Util.getInstance().getSettings().getPlayerName());
+	}
+
 	/**
 	 * inits variables
 	 */
@@ -91,7 +109,9 @@ public class MenuSettingsPanel extends MenuPanel {
 		jPanel1 = new JPanel();
 		jPanel2 = new JPanel();
 		jPanel3 = new JPanel();
-		tfPort = new javax.swing.JTextField();
+		tfPort = new JFormattedTextField();
+		tfPort.setValue(new Integer(0));
+		
 		laPort = new javax.swing.JLabel();
 		tfPassword = new javax.swing.JPasswordField();
 		tfUser = new javax.swing.JTextField();
@@ -138,6 +158,7 @@ public class MenuSettingsPanel extends MenuPanel {
 		jScrollPane1 = new JScrollPane();
 		lbSkins = new JList();
 	}
+	
 	
 	@Override
 	protected void init()	{
@@ -235,7 +256,9 @@ public class MenuSettingsPanel extends MenuPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
+				// store settings
+				storeSettings();
+				menuEventListener.menuChanged(new MenuEventData(MenuEventEnum.START_MENU));
 				
 			}
 		});
@@ -313,6 +336,21 @@ public class MenuSettingsPanel extends MenuPanel {
 		this.add(panel1);
 	}
 	
+	
+
+	/**
+	 * store the settings to the settings file
+	 */
+	private void storeSettings() {
+		Util.getInstance().getSettings().setServer(tfXVSMServer.getText());
+		Util.getInstance().getSettings().setPort(((Number)tfPort.getValue()).intValue());
+		Util.getInstance().getSettings().setUsername(tfUser.getText());
+		Util.getInstance().getSettings().setPassword(new String(tfPassword.getPassword()));
+		Util.getInstance().getSettings().setPlayerName(tfPlayername.getText());
+		Util.getInstance().getSettings().save();
+	}
+	
+
 	/**
 	 * sets the dimensions of the transparent background box for current panel
 	 * @return Dimension
