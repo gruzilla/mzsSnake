@@ -94,7 +94,7 @@ public class MenuSettingsPanel extends MenuPanel {
 	 */
 	protected void setValues() {
 		tfXVSMServer.setText(Util.getInstance().getSettings().getServer());
-		tfPort.setText(String.valueOf(Util.getInstance().getSettings().getPort()));
+		tfPort.setValue(String.valueOf(Util.getInstance().getSettings().getPort()));
 		tfUser.setText(Util.getInstance().getSettings().getUsername());
 		tfPassword.setText(Util.getInstance().getSettings().getPassword());
 		tfPlayername.setText(Util.getInstance().getSettings().getPlayerName());
@@ -111,6 +111,7 @@ public class MenuSettingsPanel extends MenuPanel {
 		jPanel3 = new JPanel();
 		tfPort = new JFormattedTextField();
 		tfPort.setValue(new Integer(0));
+		tfPort.setColumns(4);
 		
 		laPort = new javax.swing.JLabel();
 		tfPassword = new javax.swing.JPasswordField();
