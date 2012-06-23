@@ -23,6 +23,8 @@ import client.gui.GameFrame;
 
 
 /**
+ * DEPRECATED -> viewer does not work anymore
+ *  -> use a second client to demonstrate multiplayer
  * 
  * Viewer, that displays the drawn snake
  * 
@@ -69,14 +71,13 @@ public class Viewer implements NotificationListener {
 			}
 		}
 		
-		gameFrame = new GameFrame(true);
+//		gameFrame = new GameFrame(true);
 	}
 	
 	
 	@Override
 	public void entryOperationFinished(Notification notification, Operation operation,
 			List<? extends Serializable> entries) {
-		log.debug("received notification");
 		
 		
 		if (entries != null && operation == Operation.WRITE)	{
@@ -94,7 +95,7 @@ public class Viewer implements NotificationListener {
 				
 				Serializable obj = ((Entry) entry).getValue();
 				
-				log.debug(e.getCoordinationData().toString());
+//				log.debug(e.getCoordinationData().toString());
 				
 				if (obj instanceof SnakeDataHolder) {
 					SnakeDataHolder snakedataholder = (SnakeDataHolder) obj;
