@@ -1,13 +1,13 @@
 package client.gui.menu;
 
-import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import client.data.event.i.MenuEventListener;
 
-public class MenuFrame extends JFrame /* implements NotificationListener */ {
+public class MenuFrame extends JPanel /* implements NotificationListener */ {
 
 	private static final long serialVersionUID = 1L;
 
@@ -35,7 +35,6 @@ public class MenuFrame extends JFrame /* implements NotificationListener */ {
 		
 		this.showStartMenu();
 		setVisible(true);
-		setResizable(false);
 	}
 
 	/**
@@ -71,9 +70,8 @@ public class MenuFrame extends JFrame /* implements NotificationListener */ {
 	 * @param mp
 	 */
 	private void showMenu(MenuPanel mp)	{
-		this.getContentPane().removeAll();
-		this.getContentPane().add(mp);
-		this.pack();
+		this.removeAll();
+		this.add(mp);
 		this.repaint();
 	}
 }

@@ -43,7 +43,6 @@ public class GamePanel extends JPanel {
 		setMinimumSize(gameMapSize);
 		setMaximumSize(gameMapSize);
 		setLayout(null);
-		
 	}
 
 	public void addSnake(Snake s)	{
@@ -69,7 +68,9 @@ public class GamePanel extends JPanel {
 	
 	@Override
 	public void paintComponent(Graphics g) {
-		g.drawImage(gameMap, 0, 0, null);
+		super.paintComponent(g);
+		//background
+		g.drawImage(gameMap, 0, 0, this);
 		for(Snake s : this.snakes)	{
 			SnakeSprite sprite = new SnakeSprite(s);
 			sprite.draw(g);
