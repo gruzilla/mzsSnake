@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import org.mozartspaces.core.Entry;
 import org.mozartspaces.core.MzsCoreException;
@@ -23,7 +23,7 @@ import mzs.util.Util;
 
 import client.data.Snake;
 
-public class GameFrame extends JFrame implements Runnable, KeyListener, NotificationListener {
+public class GameFrame extends JPanel implements Runnable, KeyListener, NotificationListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -46,22 +46,21 @@ public class GameFrame extends JFrame implements Runnable, KeyListener, Notifica
 	public GameFrame() {
 		// init game panel
 		panel = new GamePanel();
-		
-		getContentPane().add(panel);
-		pack();
-		setVisible(true);
-		setResizable(false);
+		this.removeAll();
+		this.add(panel);
+		this.setFocusable(true);
 	}
 
 	
 	
 	public void startGame(boolean isViewer, boolean multiplayer)	{
+		// the JPanel now has focus, so receives key events
+		this.requestFocusInWindow();
 		
 		this.isViewer = isViewer;
 		if(!this.isViewer)	{
 			// create Snake if player is not a viewer
 			snake = new Snake();
-			
 			addKeyListener(this);
 			// add snake to panel
 			panel.addSnake(snake);
@@ -102,9 +101,9 @@ public class GameFrame extends JFrame implements Runnable, KeyListener, Notifica
 	public void run() {
 		
 		this.registerNotificationListener();
-		
 		boolean first = true;
 		while (running ) {
+			log.info("RUN IT");
 			if(!isViewer)	{
 				snake.moveForward(15);
 				

@@ -1,17 +1,29 @@
 package client;
 
+import javax.swing.JFrame;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.esotericsoftware.minlog.Log;
 
 import client.data.event.MenuEventData;
 import client.data.event.i.MenuEventListener;
 import client.gui.GameFrame;
+import client.gui.graphics.BorderContentPanel;
 import client.gui.menu.MenuFrame;
 
 /**
  * @author Jakob Lahmer, Matthias Steinbšck
  *
  */
-public class SnakeMain implements MenuEventListener {
+public class SnakeMain extends JFrame implements MenuEventListener {
+
+	private static final long serialVersionUID = 1L;
+
+	
+	private static Logger log = LoggerFactory.getLogger(SnakeMain.class);
+
 
 	/**
 	 * Main Function, starts a client
@@ -35,15 +47,17 @@ public class SnakeMain implements MenuEventListener {
 	 * represents a client instance of a snake game
 	 */
 	public SnakeMain() {
-		// init game frame
 		
+		// set the main layout with borders
+		this.setContentPane(new BorderContentPanel());
+		
+		// init menu frame
 		menuFrame = new MenuFrame(this);
 		menuFrame.setVisible(true);
-		
-//		gameFrame = new GameFrame();
-//		gameFrame.getContentPane().add(menuFrame);
-		
-//		gameFrame.startGame(false, false);
+		this.getContentPane().add(menuFrame);
+		this.pack();
+		this.setVisible(true);
+		this.setResizable(false);
 	}
 
 
@@ -61,23 +75,23 @@ public class SnakeMain implements MenuEventListener {
 					this.menuFrame.showStartMenu();
 					break;
 					
-				case MULTIPLAYER_NEW:
-					this.menuFrame.showMultiplayerNewGameMenu();
-					break;
 		
 			/** MULTIPLAYER **/
 				case MULTIPLAYER_MENU:
 					menuFrame.showMultiplayerMenu();
+					break;
+				case MULTIPLAYER_NEW:
+					this.menuFrame.showMultiplayerNewGameMenu();
 					break;
 				case MULTIPLAYER_START:
 					this.startMultiplayer();
 					break;
 					
 			/** SINGLEPLAYER **/
+				// in case there is an singleplayer menu (not existing atm)
 				case SINGLEPLAYER_MENU:
-				break;
 				case SINGLEPLAYER_START:
-					this.startMultiplayer();
+					this.startSinglePlayer();
 					break;
 
 			/** UTIL **/
@@ -87,20 +101,44 @@ public class SnakeMain implements MenuEventListener {
 				case EXIT:
 					this.exitGame();
 					break;
-				
 			default:
 				break;
 		}
+		this.pack();
 	}
 
 
 
 	/**
+	 * starts a Singleplayer game
+	 */
+	private void startSinglePlayer() {
+		// init game
+		this.initGame();
+		gameFrame.startGame(false, false);
+	}
+
+	
+	/**
 	 * starts a Multiplayer Game
 	 */
 	private void startMultiplayer() {
-		// TODO Auto-generated method stub
-		
+		this.initGame();
+		gameFrame.startGame(false, true);
+	}
+
+
+	/**
+	 * inits a new game instance
+	 */
+	private void initGame() {
+		gameFrame = new GameFrame();
+		gameFrame.setVisible(true);
+		// add game
+		this.getContentPane().removeAll();
+		this.getContentPane().add(gameFrame);
+		this.pack();
+		this.setVisible(true);
 	}
 
 

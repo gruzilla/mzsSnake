@@ -3,7 +3,6 @@
  */
 package client.gui.menu;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -18,7 +17,6 @@ import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -29,8 +27,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
-
-import util.Settings;
 
 import mzs.util.Util;
 
@@ -94,7 +90,7 @@ public class MenuSettingsPanel extends MenuPanel {
 	 */
 	protected void setValues() {
 		tfXVSMServer.setText(Util.getInstance().getSettings().getServer());
-		tfPort.setValue(String.valueOf(Util.getInstance().getSettings().getPort()));
+		tfPort.setValue(Util.getInstance().getSettings().getPort());
 		tfUser.setText(Util.getInstance().getSettings().getUsername());
 		tfPassword.setText(Util.getInstance().getSettings().getPassword());
 		tfPlayername.setText(Util.getInstance().getSettings().getPlayerName());
