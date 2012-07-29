@@ -75,7 +75,6 @@ public class SnakeMain extends JFrame implements MenuEventListener {
 					this.menuFrame.showStartMenu();
 					break;
 					
-		
 			/** MULTIPLAYER **/
 				case MULTIPLAYER_MENU:
 					menuFrame.showMultiplayerMenu();
@@ -151,13 +150,5 @@ public class SnakeMain extends JFrame implements MenuEventListener {
 	}
 
 }
-
-
-
-
-
-
-
-
 
 

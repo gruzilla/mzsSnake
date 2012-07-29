@@ -12,7 +12,6 @@ import org.mozartspaces.core.Entry;
 import org.mozartspaces.core.MzsCoreException;
 import org.mozartspaces.notifications.Notification;
 import org.mozartspaces.notifications.NotificationListener;
-import org.mozartspaces.notifications.NotificationManager;
 import org.mozartspaces.notifications.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +27,10 @@ public class GameFrame extends JPanel implements Runnable, KeyListener, Notifica
 	private static final long serialVersionUID = 1L;
 
 	private GamePanel panel;
-	private boolean running = true;
+	private boolean running = true;						// game is running
 	
-	private boolean isViewer = false;
+	private boolean isViewer = false;					// game is in view mode
+	private boolean isMultiplayer = false;				// game is multiplayer game
 	
 	private Thread gameThread;
 	
@@ -38,6 +38,7 @@ public class GameFrame extends JPanel implements Runnable, KeyListener, Notifica
 	private Snake snake;
 
 	private Notification gamespaceWriteNotification;
+
 
 	private static Logger log = LoggerFactory.getLogger(GameFrame.class);
 	
@@ -53,10 +54,11 @@ public class GameFrame extends JPanel implements Runnable, KeyListener, Notifica
 
 	
 	
-	public void startGame(boolean isViewer, boolean multiplayer)	{
+	public void startGame(boolean isViewer, boolean isMultiplayer)	{
 		// the JPanel now has focus, so receives key events
 		this.requestFocusInWindow();
 		
+		this.isMultiplayer = isMultiplayer;
 		this.isViewer = isViewer;
 		if(!this.isViewer)	{
 			// create Snake if player is not a viewer
@@ -99,21 +101,24 @@ public class GameFrame extends JPanel implements Runnable, KeyListener, Notifica
 	
 	@Override
 	public void run() {
-		
-		this.registerNotificationListener();
+		/*
+		 * @TODO check if this is the best solution, or create an MPGameFrame extending this one
+		 */
+		if(this.isMultiplayer)
+			this.registerNotificationListener();
 		boolean first = true;
 		while (running ) {
-			log.info("RUN IT");
 			if(!isViewer)	{
 				snake.moveForward(15);
 				
-				// update own snake in space
-				// first update contains all snakeparts, further updates contain tail and headpart
-				Util.getInstance().update(
-						ContainerCoordinatorMapper.GAME_LIST, 
-						snake.getSnakeDataHolder(first),
-						snake.getId().toString());
-				
+				if(isMultiplayer)	{
+					// update own snake in space
+					// first update contains all snakeparts, further updates contain tail and headpart
+					Util.getInstance().update(
+							ContainerCoordinatorMapper.GAME_LIST, 
+							snake.getSnakeDataHolder(first),
+							snake.getId().toString());
+				}
 				// first only in first iteration true => all snakeparts are written to space, not just head an last
 				// => force all parts being transported to make it possible, that snake is drawn completely in second window later
 //				if(first) first = false;

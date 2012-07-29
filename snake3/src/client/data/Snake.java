@@ -208,18 +208,22 @@ public class Snake {
 	 * @param e
 	 */
 	public void move(KeyEvent e) {
+//		log.info(e.toString());
 		int key = e.getKeyCode();
 
 		switch (key) {
 		case KeyEvent.VK_LEFT:
+//			log.info("left");
 			direction -= 15;
 			break;
 		case KeyEvent.VK_RIGHT:
+//			log.info("right");
 			direction += 15;
 			break;
 		}
 
 		direction %= 360;
+//		log.info("dir" + direction);
 	}
 	
 	
