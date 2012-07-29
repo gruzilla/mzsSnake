@@ -150,7 +150,7 @@ public class MPMenuNewGamePanel extends MenuPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
+				menuEventListener.menuChanged(new MenuEventData(MenuEventEnum.MULTIPLAYER_START));
 				
 			}
 		});
