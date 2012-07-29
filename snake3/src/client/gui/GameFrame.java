@@ -39,6 +39,9 @@ public class GameFrame extends JPanel implements Runnable, KeyListener, Notifica
 
 	private Notification gamespaceWriteNotification;
 
+	private boolean headRight = false;
+	private boolean headLeft = false;
+
 
 	private static Logger log = LoggerFactory.getLogger(GameFrame.class);
 	
@@ -109,7 +112,12 @@ public class GameFrame extends JPanel implements Runnable, KeyListener, Notifica
 		boolean first = true;
 		while (running ) {
 			if(!isViewer)	{
-				snake.moveForward(15);
+				if (headRight) {
+					snake.move(+20);
+				} else if (headLeft) {
+					snake.move(-20);
+				}
+				snake.moveForward();
 				
 				if(isMultiplayer)	{
 					// update own snake in space
@@ -127,7 +135,7 @@ public class GameFrame extends JPanel implements Runnable, KeyListener, Notifica
 			panel.repaint();
 			
 			try {
-				Thread.sleep(150);
+				Thread.sleep(200);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -215,11 +223,31 @@ public class GameFrame extends JPanel implements Runnable, KeyListener, Notifica
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		snake.move(e);
+		int key = e.getKeyCode();
+
+		switch (key) {
+		case KeyEvent.VK_LEFT:
+			headRight = false;
+			headLeft = true;
+			break;
+		case KeyEvent.VK_RIGHT:
+			headLeft = false;
+			headRight = true;
+			break;
+		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
+		int key = e.getKeyCode();
+
+		switch (key) {
+		case KeyEvent.VK_LEFT:
+		case KeyEvent.VK_RIGHT:
+			headRight = false;
+			headLeft = false;
+			break;
+		}
 	}
 
 	@Override

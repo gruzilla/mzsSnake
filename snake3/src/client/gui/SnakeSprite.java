@@ -19,8 +19,7 @@ public class SnakeSprite {
 		BufferedImage part = snakePartImageLoader.loadImage("res/skins/Snake/snakepart.png", false);
 		BufferedImage head = snakePartImageLoader.loadImage("res/skins/Snake/snakehead.png", false);
 		BufferedImage tail = snakePartImageLoader.loadImage("res/skins/Snake/snaketail.png", false);
-		
-		
+
 		for (int i = 0; i < snake.getSnakeParts().size(); i++) {
 			SnakePart p = snake.getSnakeParts().get(i);
 

@@ -145,7 +145,7 @@ public class Snake {
 		}
 	}
 
-	public void moveForward(int forward) {
+	public void moveForward() {
 		double xOffset = Math.sin((360 - getDirection()) * Math.PI / 180) * distance;
 		double yOffset = Math.cos((360 - getDirection()) * Math.PI / 180) * distance;
 		
@@ -207,23 +207,9 @@ public class Snake {
 	 * move snake depending on keyEvent
 	 * @param e
 	 */
-	public void move(KeyEvent e) {
-//		log.info(e.toString());
-		int key = e.getKeyCode();
-
-		switch (key) {
-		case KeyEvent.VK_LEFT:
-//			log.info("left");
-			direction -= 15;
-			break;
-		case KeyEvent.VK_RIGHT:
-//			log.info("right");
-			direction += 15;
-			break;
-		}
-
+	public void move(int directionDifference) {
+		direction += directionDifference;
 		direction %= 360;
-//		log.info("dir" + direction);
 	}
 	
 	
