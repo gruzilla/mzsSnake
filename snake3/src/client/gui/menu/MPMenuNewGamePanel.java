@@ -9,10 +9,12 @@ import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
@@ -22,6 +24,12 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import mzs.event.DataChangeEventData;
+import mzs.event.DataChangeEventGameData;
+import mzs.event.i.DataChangeEventListener;
+
+import client.data.game.Game;
+import client.data.player.Player;
 import client.event.MenuEventData;
 import client.event.MenuEventType;
 import client.event.i.MenuEventListener;
@@ -30,7 +38,7 @@ import client.event.i.MenuEventListener;
  * @author Jakob Lahmer, Matthias Steinbšck
  *
  */
-public class MPMenuNewGamePanel extends MenuPanel {
+public class MPMenuNewGamePanel extends MenuPanel implements DataChangeEventListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -39,18 +47,12 @@ public class MPMenuNewGamePanel extends MenuPanel {
 	private JLabel laLevelPreview;
 	private JLabel laLevelName;
 	private JButton btStart;
-	private JTextField tfPlayer1;
-	private JTextField tfPlayer2;
-	private JTextField tfPlayer3;
-	private JTextField tfPlayer4;
+	private ArrayList<JTextField> tfPlayer;
+	private ArrayList<JLabel> laPlayerReady;
 	private JLabel laPlayer1;
 	private JLabel laPlayer2;
 	private JLabel laPlayer3;
 	private JLabel laPlayer4;
-	private JLabel laPlayer1Ready;
-	private JLabel laPlayer2Ready;
-	private JLabel laPlayer3Ready;
-	private JLabel laPlayer4Ready;
 	private JLabel laCollision;
 	private JCheckBox chCollisionOwn;
 	private JCheckBox chCollisionEnemy;
@@ -76,23 +78,26 @@ public class MPMenuNewGamePanel extends MenuPanel {
 
 	@Override
 	protected void initVariables() {
+		tfPlayer = new ArrayList<JTextField>();
+		tfPlayer.add(new JTextField());
+		tfPlayer.add(new JTextField());
+		tfPlayer.add(new JTextField());
+		tfPlayer.add(new JTextField());
+		laPlayerReady = new ArrayList<JLabel>();
+		laPlayerReady.add(new JLabel());
+		laPlayerReady.add(new JLabel());
+		laPlayerReady.add(new JLabel());
+		laPlayerReady.add(new JLabel());
+		
 		btLevel = new JButton();
 		btExit = new JButton();
-		tfPlayer2 = new JTextField();
 		laLevelPreview = new JLabel();
 		btStart = new JButton();
-		tfPlayer3 = new JTextField();
-		tfPlayer4 = new JTextField();
-		tfPlayer1 = new JTextField();
 		laPlayer2 = new JLabel();
 		laLevelName = new JLabel();
 		laPlayer3 = new JLabel();
 		laPlayer4 = new JLabel();
 		laPlayer1 = new JLabel();
-		laPlayer3Ready = new JLabel();
-		laPlayer2Ready = new JLabel();
-		laPlayer4Ready = new JLabel();
-		laPlayer1Ready = new JLabel();
 		laCollision = new JLabel();
 		chCollisionOwn = new JCheckBox();
 		chCollisionEnemy = new JCheckBox();
@@ -139,8 +144,8 @@ public class MPMenuNewGamePanel extends MenuPanel {
 				menuEventListener.menuChanged(new MenuEventData(MenuEventType.MULTIPLAYER_LEAVE));
 			}
 		});
-		tfPlayer2.setEditable(false);
-		tfPlayer2.setBounds(new Rectangle(243, 239, 140, 30));
+		tfPlayer.get(1).setEditable(false);
+		tfPlayer.get(1).setBounds(new Rectangle(243, 239, 140, 30));
 		laLevelPreview.setBorder(BorderFactory.createEtchedBorder());
 		laLevelPreview.setText("Level Preview...");
 		laLevelPreview.setBounds(new Rectangle(411, 172, 160, 120));
@@ -155,15 +160,15 @@ public class MPMenuNewGamePanel extends MenuPanel {
 				menuEventListener.menuChanged(new MenuEventData(MenuEventType.MULTIPLAYER_START));
 			}
 		});
-		tfPlayer3.setEditable(false);
-		tfPlayer3.setText("");
-		tfPlayer3.setBounds(new Rectangle(243, 272, 140, 30));
-		tfPlayer4.setEditable(false);
-		tfPlayer4.setText("");
-		tfPlayer4.setBounds(new Rectangle(243, 305, 140, 30));
-		tfPlayer1.setEditable(false);
-		tfPlayer1.setText("");
-		tfPlayer1.setBounds(new Rectangle(243, 206, 140, 30));
+		tfPlayer.get(2).setEditable(false);
+		tfPlayer.get(2).setText("");
+		tfPlayer.get(2).setBounds(new Rectangle(243, 272, 140, 30));
+		tfPlayer.get(3).setEditable(false);
+		tfPlayer.get(3).setText("");
+		tfPlayer.get(3).setBounds(new Rectangle(243, 305, 140, 30));
+		tfPlayer.get(0).setEditable(false);
+		tfPlayer.get(0).setText("");
+		tfPlayer.get(0).setBounds(new Rectangle(243, 206, 140, 30));
 		laPlayer2.setFont(new java.awt.Font("Dialog", Font.BOLD, 16));
 		laPlayer2.setText("2.");
 		laPlayer2.setBounds(new Rectangle(226, 241, 25, 28));
@@ -179,23 +184,23 @@ public class MPMenuNewGamePanel extends MenuPanel {
 		laPlayer1.setFont(new java.awt.Font("Dialog", Font.BOLD, 16));
 		laPlayer1.setText("1.");
 		laPlayer1.setBounds(new Rectangle(225, 208, 25, 28));
-		laPlayer3Ready.setBackground(Color.red);
-		laPlayer3Ready.setBorder(BorderFactory.createLineBorder(Color.black));
-		laPlayer3Ready.setOpaque(true);
-		laPlayer3Ready.setText("");
-		laPlayer3Ready.setBounds(new Rectangle(387, 279, 16, 16));
-		laPlayer2Ready.setBackground(Color.red);
-		laPlayer2Ready.setBorder(BorderFactory.createLineBorder(Color.black));
-		laPlayer2Ready.setOpaque(true);
-		laPlayer2Ready.setBounds(new Rectangle(387, 246, 16, 16));
-		laPlayer4Ready.setBackground(Color.red);
-		laPlayer4Ready.setBorder(BorderFactory.createLineBorder(Color.black));
-		laPlayer4Ready.setOpaque(true);
-		laPlayer4Ready.setBounds(new Rectangle(387, 311, 16, 16));
-		laPlayer1Ready.setBackground(Color.red);
-		laPlayer1Ready.setBorder(BorderFactory.createLineBorder(Color.black));
-		laPlayer1Ready.setOpaque(true);
-		laPlayer1Ready.setBounds(new Rectangle(387, 214, 16, 16));
+		laPlayerReady.get(2).setBackground(Color.red);
+		laPlayerReady.get(2).setBorder(BorderFactory.createLineBorder(Color.black));
+		laPlayerReady.get(2).setOpaque(true);
+		laPlayerReady.get(2).setText("");
+		laPlayerReady.get(2).setBounds(new Rectangle(387, 279, 16, 16));
+		laPlayerReady.get(1).setBackground(Color.red);
+		laPlayerReady.get(1).setBorder(BorderFactory.createLineBorder(Color.black));
+		laPlayerReady.get(1).setOpaque(true);
+		laPlayerReady.get(1).setBounds(new Rectangle(387, 246, 16, 16));
+		laPlayerReady.get(3).setBackground(Color.red);
+		laPlayerReady.get(3).setBorder(BorderFactory.createLineBorder(Color.black));
+		laPlayerReady.get(3).setOpaque(true);
+		laPlayerReady.get(3).setBounds(new Rectangle(387, 311, 16, 16));
+		laPlayerReady.get(0).setBackground(Color.red);
+		laPlayerReady.get(0).setBorder(BorderFactory.createLineBorder(Color.black));
+		laPlayerReady.get(0).setOpaque(true);
+		laPlayerReady.get(0).setBounds(new Rectangle(387, 214, 16, 16));
 		laCollision.setFont(new java.awt.Font("Dialog", Font.BOLD, 16));
 		laCollision.setToolTipText("");
 		laCollision.setText("Collision with:");
@@ -294,18 +299,18 @@ public class MPMenuNewGamePanel extends MenuPanel {
 		laGameName.setHorizontalAlignment(SwingConstants.CENTER);
 		laGameName.setText("New Game");
 		laGameName.setBounds(new Rectangle(209, 141, 377, 35));
-		this.add(tfPlayer1);
-		this.add(tfPlayer2);
-		this.add(tfPlayer3);
-		this.add(tfPlayer4);
+		this.add(tfPlayer.get(0));
+		this.add(tfPlayer.get(1));
+		this.add(tfPlayer.get(2));
+		this.add(tfPlayer.get(3));
 		this.add(laPlayer1);
 		this.add(laPlayer4);
 		this.add(laPlayer3);
 		this.add(laPlayer2);
-		this.add(laPlayer4Ready);
-		this.add(laPlayer3Ready);
-		this.add(laPlayer2Ready);
-		this.add(laPlayer1Ready);
+		this.add(laPlayerReady.get(3));
+		this.add(laPlayerReady.get(2));
+		this.add(laPlayerReady.get(1));
+		this.add(laPlayerReady.get(0));
 		this.add(btExit);
 		this.add(btStart);
 		this.add(chCollisionWall);
@@ -329,5 +334,65 @@ public class MPMenuNewGamePanel extends MenuPanel {
 	
 	protected Dimension getBoxDimensions()	{
 		return new Dimension(400, 400);
+	}
+
+	public void updateValues(Game game)	{
+		
+		for(int i=0; i < game.getPlayerAnz(); i++)	{
+			if(game.getPlayerAnz() > i)
+				this.updatePlayer(game, i, tfPlayer.get(i), laPlayerReady.get(i));
+			else
+				break;
+		}
+		
+	}
+	
+
+	/**
+	 * @param players
+	 */
+	private void updatePlayer(Game game, int index, JTextField tfPlayer, JLabel laPlayerReady) {
+		
+		if (game.getPlayerAnz() > index)
+		{
+			Player activePlayer = game.getPlayer(index);
+			synchronized (tfPlayer)
+			{
+				//display the playername in the textfield, set the colour to blue if the player is leader
+				tfPlayer.setText(activePlayer.getName());
+				if (activePlayer == game.getLeader())
+				{
+					tfPlayer.setForeground(Color.BLUE);
+				}
+				else
+				{
+					tfPlayer.setForeground(Color.BLACK);
+				}
+			}
+			//display ready information in the label, green if player is ready, otherwise red
+			if (activePlayer.isStateInit() || activePlayer.isStateLoaded()) {
+				laPlayerReady.setBackground(Color.GREEN);
+			} else {
+				laPlayerReady.setBackground(Color.RED);
+			}
+		}
+		else
+		{
+			tfPlayer.setText("");
+			laPlayerReady.setBackground(Color.GRAY);
+		}
+		tfPlayer.repaint(); //repaint because automatic refresh does not work reliable
+		laPlayerReady.repaint(); //repaint because automatic refresh does not work reliable
+	}
+
+
+	/* (non-Javadoc)
+	 * @see mzs.event.i.DataChangeEventListener#dataChanged(mzs.event.DataChangeEventData)
+	 */
+	@Override
+	public void dataChanged(DataChangeEventData changeEvent) {
+		if(changeEvent instanceof DataChangeEventGameData)	{
+			this.updateValues(((DataChangeEventGameData) changeEvent).getGame());
+		}
 	}
 }

@@ -82,4 +82,12 @@ public class MenuFrame extends JPanel /* implements NotificationListener */ {
 	public MPMenuPanel getMPMenuPanel()	{
 		return this.mpmenuPanel;
 	}
+
+	/**
+	 * getter for mpnewgamepanel
+	 * @return MPMenuPanel
+	 */
+	public MPMenuNewGamePanel getMPMenuNewGamePanel()	{
+		return this.mpmenuNewPanel;
+	}
 }

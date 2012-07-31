@@ -55,10 +55,14 @@ public class Game implements Serializable
 	{
 		return leader;
 	}
-
+	
 	public Player getPlayer(int index)
 	{
 		return players.get(index);
+	}
+
+	public ArrayList<Player> getPlayers()	{
+		return players;
 	}
 
 	public UUID getId()
@@ -193,4 +197,5 @@ public class Game implements Serializable
 			return super.equals(obj);
 		}
 	}
+
 }

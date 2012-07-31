@@ -74,6 +74,9 @@ public class SnakeMain extends JFrame implements MenuEventListener {
 		
 		// create Player
 		this.player = new Player(Util.getInstance().getSettings().getPlayerName(), Util.getInstance().getSettings().getSnakeSkin());
+		
+		// init game list
+		this.gameList = new GameList();
 	}
 
 
@@ -137,7 +140,7 @@ public class SnakeMain extends JFrame implements MenuEventListener {
 	 * initialises the multiplayer game (creates the gamelist and loads games from space)
 	 */
 	private boolean initMultiplayer()	{
-		this.gameList = new GameList(this.menuFrame.getMPMenuPanel());
+		this.gameList.setDataChangeEventListener(this.menuFrame.getMPMenuPanel());
 		if(!this.gameList.initGameList()) {
 			Messages.errorMessage(this, "Can't connect to XVSM Server.");
 			return false;
@@ -168,7 +171,8 @@ public class SnakeMain extends JFrame implements MenuEventListener {
 //			}
 
 			gameList.createGame(((MenuEventMPNewData) eventData).getMpName(), this.player);
-			
+			// change data change listener
+			gameList.setDataChangeEventListener(this.menuFrame.getMPMenuNewGamePanel());
 			return true;
 		}
 		Messages.errorMessage(this, "No valid Event Object given");
@@ -192,7 +196,9 @@ public class SnakeMain extends JFrame implements MenuEventListener {
 //				snakeMain.getMyPlayer().setPlayerState(PlayerState.notinit);
 //				//myPlayer.saveToSpace();
 //			}
-			//open new game menu
+			// change data change listener
+			gameList.setDataChangeEventListener(this.menuFrame.getMPMenuNewGamePanel());
+			
 			return true;
 		}
 		Messages.errorMessage(this, "No valid Event Object given");

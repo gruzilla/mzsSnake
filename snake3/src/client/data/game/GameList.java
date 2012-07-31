@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import mzs.event.DataChangeEventData;
+import mzs.event.DataChangeEventGameData;
 import mzs.event.DataChangeEventGameListData;
 import mzs.event.DataChangeEventType;
 import mzs.event.i.DataChangeEventListener;
@@ -31,9 +31,6 @@ import org.slf4j.LoggerFactory;
 import client.data.player.Player;
 import client.data.state.GameState;
 
-import util.Messages;
-
-
 /**
  * @author Jakob Lahmer, Matthias Steinbšck
  *
@@ -49,6 +46,10 @@ public class GameList implements Serializable, NotificationListener {
 	private Logger log = LoggerFactory.getLogger(GameList.class);
 
 	private Notification notification;
+
+	private Game currentGame = null;
+	
+	
 	
 	/**
 	 * create a new game list.
@@ -56,11 +57,18 @@ public class GameList implements Serializable, NotificationListener {
 	 * @param listener DataChangeListener
 	 * @param playerList
 	 */
-	public GameList(DataChangeEventListener listener)	{
+	public GameList()	{
 		this.games = new Vector<Game>();
-		this.listener = listener;
-		
 	}
+	
+	/**
+	 * sets a new datachangelistener
+	 * @param listener
+	 */
+	public void setDataChangeEventListener(DataChangeEventListener listener)	{
+		this.listener = listener;
+	}
+	
 	public boolean initGameList()	{
 		// read current games and add them to the local vector
 		ContainerReference gamesContainer;
@@ -175,6 +183,7 @@ public class GameList implements Serializable, NotificationListener {
 					game,
 					String.valueOf(game.getId())
 			);
+			this.currentGame = game;
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -202,21 +211,24 @@ public class GameList implements Serializable, NotificationListener {
 	 * @param initData LevelData
 	 * @return Game
 	 */
-	public Game createGame(String name, Player leader /*,LevelData initData */)
+	public void createGame(String name, Player leader /*,LevelData initData */)
 	{
 		// create the game, initialize it with nr 0, because our IndexAspect creates teh number
-		Game game = new Game(0, name, leader);
+		this.currentGame = new Game(0, name, leader);
 //		game.setLevelData(initData);
-		games.addElement(game);
+		games.addElement(currentGame);
 		
 		// however we have to write it to the space. but first we have to delete this very game:
 		Util.getInstance().update(
 				ContainerCoordinatorMapper.GAME_LIST,
-				game,
-				String.valueOf(game.getId())
+				currentGame,
+				String.valueOf(currentGame.getId())
 		);
-		
-		return game;
+	}
+	
+	public void leaveCurrentGame()	{
+//		this.currentGame.leave();
+		this.currentGame = null;
 	}
 	
 	
@@ -248,11 +260,13 @@ public class GameList implements Serializable, NotificationListener {
 						//log.debug("comparing "+games.get(i).getNr()+" against "+game.getNr());
 						if (games.get(i).getId().equals(game.getId())) {
 							found = true;
-							// @TODO sync game
 //							games.get(i).syncWith(game);
 							
-							//log.debug("\n\n level: "+game.getLevelDir() +"\n\n");
-							changed = true;
+							this.games.remove(i);
+							this.games.add(i, game);
+							
+							if(this.currentGame == null || this.currentGame.equals(game))
+								changed = true;
 							break;
 						}
 					}
@@ -275,7 +289,7 @@ public class GameList implements Serializable, NotificationListener {
 			break;
 		*/
 		case DELETE:
-			log.debug("\n\n\n GAME DELETED -> delete it from local game list");
+//			log.debug("\n\n\n GAME DELETED -> delete it from local game list");
 			// on the other hand, if the game gets removed, we have to remove it too
 			if (entries != null)
 			for (Serializable entry : entries) {
@@ -301,7 +315,13 @@ public class GameList implements Serializable, NotificationListener {
 		if (changed && listener != null) {
 			log.debug("listener " + listener);
 			log.debug("informing listener about changed data: " + games.size());
-			listener.dataChanged(new DataChangeEventGameListData(DataChangeEventType.GAME, this.games));
+			// no currentgame => user is in multiplayer menu
+			if(this.currentGame == null)	{
+				listener.dataChanged(new DataChangeEventGameListData(DataChangeEventType.GAME, this.games));
+			} else {
+				// user is in new multiplayer game menu
+				listener.dataChanged(new DataChangeEventGameData(DataChangeEventType.GAME, this.currentGame));
+			}
 		}
 	}
 	
