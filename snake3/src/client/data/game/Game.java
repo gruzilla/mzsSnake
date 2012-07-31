@@ -7,12 +7,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import mzs.data.GameState;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import client.data.player.Player;
+import client.data.state.GameState;
 
 /**
  * @author Jakob Lahmer, Matthias Steinbšck
@@ -25,7 +25,7 @@ public class Game implements Serializable
 	public static final int MAXPLAYERS = 4; //up to 4 players
 
 	private ArrayList<Player> players = new ArrayList<Player>();
-	private UUID nr = UUID.randomUUID();
+	private UUID id = UUID.randomUUID();
 	private String name = null;
 //	private String levelDir = snake.LevelsManager.DEFAULTLEVELDIR;
 	private byte[] levelCheckSum;
@@ -61,9 +61,9 @@ public class Game implements Serializable
 		return players.get(index);
 	}
 
-	public UUID getNr()
+	public UUID getId()
 	{
-		return nr;
+		return id;
 	}
 
 	public String getName()
@@ -96,8 +96,8 @@ public class Game implements Serializable
 		return winValue;
 	}
 
-	public boolean hasNr() {
-		return (nr != null);
+	public boolean hasId() {
+		return (id != null);
 	}
 	
 	/**
@@ -186,7 +186,7 @@ public class Game implements Serializable
 	{
 		if (obj instanceof Game)
 		{
-			return (this.getNr().equals(( (Game) obj).getNr()));
+			return (this.getId().equals(( (Game) obj).getId()));
 		}
 		else
 		{

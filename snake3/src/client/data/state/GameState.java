@@ -1,4 +1,4 @@
-package mzs.data;
+package client.data.state;
 
 /**
  * Different states of a game.

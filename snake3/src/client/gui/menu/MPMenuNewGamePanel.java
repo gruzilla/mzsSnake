@@ -135,7 +135,8 @@ public class MPMenuNewGamePanel extends MenuPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				menuEventListener.menuChanged(new MenuEventData(MenuEventType.MULTIPLAYER_MENU));
+				// @ DELETE GAME
+				menuEventListener.menuChanged(new MenuEventData(MenuEventType.MULTIPLAYER_LEAVE));
 			}
 		});
 		tfPlayer2.setEditable(false);
@@ -150,8 +151,8 @@ public class MPMenuNewGamePanel extends MenuPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				// start the game
 				menuEventListener.menuChanged(new MenuEventData(MenuEventType.MULTIPLAYER_START));
-				
 			}
 		});
 		tfPlayer3.setEditable(false);

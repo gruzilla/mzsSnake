@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import mzs.data.GameState;
 import mzs.event.DataChangeEventData;
 import mzs.event.DataChangeEventGameListData;
 import mzs.event.DataChangeEventType;
@@ -30,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import client.data.player.Player;
+import client.data.state.GameState;
 
 import util.Messages;
 
@@ -173,7 +173,7 @@ public class GameList implements Serializable, NotificationListener {
 			Util.getInstance().update(
 					ContainerCoordinatorMapper.GAME_LIST,
 					game,
-					String.valueOf(game.getNr())
+					String.valueOf(game.getId())
 			);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -187,9 +187,7 @@ public class GameList implements Serializable, NotificationListener {
 	 * @param index
 	 * @return
 	 */
-	private boolean isGameJoinable(String name)
-	{
-		//Pruefen ob Spiel beigetreten werden kann (nicht voll und State opened)
+	private boolean isGameJoinable(String name)	{
 		Game game;
 		if((game = this.getGamePerName(name)) != null)	{
 			return (game.getPlayerAnz() < Game.MAXPLAYERS) && (game.getState() == GameState.OPENEND);
@@ -215,7 +213,7 @@ public class GameList implements Serializable, NotificationListener {
 		Util.getInstance().update(
 				ContainerCoordinatorMapper.GAME_LIST,
 				game,
-				String.valueOf(game.getNr())
+				String.valueOf(game.getId())
 		);
 		
 		return game;
@@ -248,7 +246,7 @@ public class GameList implements Serializable, NotificationListener {
 					// log.debug("trying to find game with nr "+game.getNr());
 					for (int i = 0; i < games.size(); i++) {
 						//log.debug("comparing "+games.get(i).getNr()+" against "+game.getNr());
-						if (games.get(i).getNr().equals(game.getNr())) {
+						if (games.get(i).getId().equals(game.getId())) {
 							found = true;
 							// @TODO sync game
 //							games.get(i).syncWith(game);
