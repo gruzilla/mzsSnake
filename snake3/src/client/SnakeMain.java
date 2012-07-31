@@ -2,13 +2,22 @@ package client;
 
 import javax.swing.JFrame;
 
+import mzs.event.DataChangeEventData;
+import mzs.event.i.DataChangeEventListener;
+import mzs.util.Util;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import util.Messages;
+
 import com.esotericsoftware.minlog.Log;
 
-import client.data.event.MenuEventData;
-import client.data.event.i.MenuEventListener;
+import client.data.game.GameList;
+import client.data.player.Player;
+import client.event.MenuEventData;
+import client.event.MenuEventMPNewData;
+import client.event.i.MenuEventListener;
 import client.gui.GameFrame;
 import client.gui.graphics.BorderContentPanel;
 import client.gui.menu.MenuFrame;
@@ -40,7 +49,11 @@ public class SnakeMain extends JFrame implements MenuEventListener {
 	
 	// menu panel
 	private MenuFrame menuFrame;
-	
+
+	// mp gamelist
+	private GameList gameList;
+	// my player
+	private Player player;
 	
 	
 	/**
@@ -58,6 +71,9 @@ public class SnakeMain extends JFrame implements MenuEventListener {
 		this.pack();
 		this.setVisible(true);
 		this.setResizable(false);
+		
+		// create Player
+		this.player = new Player(Util.getInstance().getSettings().getPlayerName(), Util.getInstance().getSettings().getSnakeSkin());
 	}
 
 
@@ -77,10 +93,19 @@ public class SnakeMain extends JFrame implements MenuEventListener {
 					
 			/** MULTIPLAYER **/
 				case MULTIPLAYER_MENU:
-					menuFrame.showMultiplayerMenu();
+					if(this.initMultiplayer())	{
+						menuFrame.showMultiplayerMenu();
+					}
 					break;
 				case MULTIPLAYER_NEW:
-					this.menuFrame.showMultiplayerNewGameMenu();
+					if(this.createNewMultiplayerGame(eventData)) {
+						this.menuFrame.showMultiplayerNewGameMenu();
+					}
+					break;
+				case MULTIPLAYER_JOIN:
+					if(this.joinMultiplayerGame(eventData))	{
+						this.menuFrame.showMultiplayerNewGameMenu();
+					}
 					break;
 				case MULTIPLAYER_START:
 					this.startMultiplayer();
@@ -107,7 +132,77 @@ public class SnakeMain extends JFrame implements MenuEventListener {
 	}
 
 
+	/** MP **/
+	/**
+	 * initialises the multiplayer game (creates the gamelist and loads games from space)
+	 */
+	private boolean initMultiplayer()	{
+		this.gameList = new GameList(this.menuFrame.getMPMenuPanel());
+		if(!this.gameList.initGameList()) {
+			Messages.errorMessage(this, "Can't connect to XVSM Server.");
+			return false;
+		}
+		return true;
+	}
+	/**
+	 * creates a new multiplayer game
+	 * @param menuData
+	 */
+	private boolean createNewMultiplayerGame(MenuEventData eventData) {
+		// check instance
+		if(eventData instanceof MenuEventMPNewData)	{
+			eventData = (MenuEventMPNewData) eventData;
+			
+//			gameListManager.setViewOnly(false, false);
+//			String gameName = tfNeu.getText();
+			//check if name exists
+			if (gameList.gameNameExists(((MenuEventMPNewData) eventData).getMpName()))	{
+				Messages.errorMessage(this,"A game with this name already exists,\nplease choose another name.");
+				return false;
+			}
 
+			//set player state back to not init when necessary
+//			if (snakeMain.getMyPlayer().getPlayerState() != PlayerState.notinit)	{
+//				snakeMain.getMyPlayer().setPlayerState(PlayerState.notinit);
+//				//myPlayer.saveToSpace();
+//			}
+
+			gameList.createGame(((MenuEventMPNewData) eventData).getMpName(), this.player);
+			
+			return true;
+		}
+		Messages.errorMessage(this, "No valid Event Object given");
+		return false;
+	}
+	
+	/**
+	 * 
+	 * join an existing multiplayer game
+	 * @param eventData
+	 * @return
+	 */
+	private boolean joinMultiplayerGame(MenuEventData eventData) {
+		if(eventData instanceof MenuEventMPNewData)	{
+			if (!gameList.joinGame(((MenuEventMPNewData) eventData).getMpName(), this.player))	{
+				Messages.infoMessage(this,"Can't join game, because it's full or already started.");
+				return false;
+			}
+			//set player state back to not init when necessary
+//			if (this.player.getPlayerState() != PlayerState.notinit)	{
+//				snakeMain.getMyPlayer().setPlayerState(PlayerState.notinit);
+//				//myPlayer.saveToSpace();
+//			}
+			//open new game menu
+			return true;
+		}
+		Messages.errorMessage(this, "No valid Event Object given");
+		return false;
+	}
+	
+/** END MP **/
+
+
+/** GAME START **/
 	/**
 	 * starts a Singleplayer game
 	 */
@@ -139,9 +234,10 @@ public class SnakeMain extends JFrame implements MenuEventListener {
 		this.pack();
 		this.setVisible(true);
 	}
+/** END GAME START **/
 
 
-
+/** GAME EXIT **/
 	/**
 	 * exits the game properly, releases resources etc
 	 */

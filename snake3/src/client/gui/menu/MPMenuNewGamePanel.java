@@ -22,9 +22,9 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import client.data.event.MenuEventData;
-import client.data.event.MenuEventEnum;
-import client.data.event.i.MenuEventListener;
+import client.event.MenuEventData;
+import client.event.MenuEventType;
+import client.event.i.MenuEventListener;
 
 /**
  * @author Jakob Lahmer, Matthias Steinbšck
@@ -135,7 +135,7 @@ public class MPMenuNewGamePanel extends MenuPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				menuEventListener.menuChanged(new MenuEventData(MenuEventEnum.MULTIPLAYER_MENU));
+				menuEventListener.menuChanged(new MenuEventData(MenuEventType.MULTIPLAYER_MENU));
 			}
 		});
 		tfPlayer2.setEditable(false);
@@ -150,7 +150,7 @@ public class MPMenuNewGamePanel extends MenuPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				menuEventListener.menuChanged(new MenuEventData(MenuEventEnum.MULTIPLAYER_START));
+				menuEventListener.menuChanged(new MenuEventData(MenuEventType.MULTIPLAYER_START));
 				
 			}
 		});

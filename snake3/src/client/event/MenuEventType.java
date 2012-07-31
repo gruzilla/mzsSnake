@@ -1,13 +1,13 @@
 /**
  * 
  */
-package client.data.event;
+package client.event;
 
 /**
  * @author Jakob Lahmer, Matthias Steinbšck
  *
  */
-public enum MenuEventEnum {
+public enum MenuEventType {
 	
 	// menu navigation
 		START_MENU,

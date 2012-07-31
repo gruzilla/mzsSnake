@@ -30,13 +30,13 @@ import javax.swing.border.TitledBorder;
 
 import mzs.util.Util;
 
-import client.data.event.MenuEventData;
-import client.data.event.MenuEventEnum;
-import client.data.event.i.MenuEventListener;
+import client.event.MenuEventData;
+import client.event.MenuEventType;
+import client.event.i.MenuEventListener;
 
 /**
  * 
- * Settings JDialog, opens in new window - mal schauen ob es nicht sinnvoller ist das auch in ein Overlay zu tun
+ * Settings JDialog
  * 
  * @author Jakob Lahmer, Matthias Steinbšck
  *
@@ -56,7 +56,7 @@ public class MenuSettingsPanel extends MenuPanel {
 	private JLabel laPlayername;
 	private JTextField tfPlayername;
 	private JTextField tfXVSMServer;
-	private JLabel laCokeSiteServer;
+	private JLabel laXVSMServer;
 	private JButton btAbbrechen;
 	private JButton btOK;
 	private JPanel jPanel1;
@@ -108,6 +108,7 @@ public class MenuSettingsPanel extends MenuPanel {
 		tfPort = new JFormattedTextField();
 		tfPort.setValue(new Integer(0));
 		tfPort.setColumns(4);
+		// @TODO disable thousend points
 		
 		laPort = new javax.swing.JLabel();
 		tfPassword = new javax.swing.JPasswordField();
@@ -117,7 +118,7 @@ public class MenuSettingsPanel extends MenuPanel {
 		laPlayername = new javax.swing.JLabel();
 		tfPlayername = new javax.swing.JTextField();
 		tfXVSMServer = new javax.swing.JTextField();
-		laCokeSiteServer = new javax.swing.JLabel();
+		laXVSMServer = new javax.swing.JLabel();
 		btAbbrechen = new JButton();
 		btOK = new JButton();
 		border1 = BorderFactory.createEtchedBorder(Color.white, new Color(
@@ -160,13 +161,6 @@ public class MenuSettingsPanel extends MenuPanel {
 	@Override
 	protected void init()	{
 		panel1.setLayout(null);
-/*
-		tfXVSMSiteLocal.setFont(new java.awt.Font("Lucida Sans", Font.PLAIN,
-				12));
-		laCokeSiteLocal.setFont(new java.awt.Font("Arial", Font.PLAIN, 13));
-		laCokeSiteLocal.setText("XVSM Site Local:");
-		laCokeSiteLocal.setBounds(new Rectangle(16, 32, 106, 15));
-*/
 		tfPort.setFont(new java.awt.Font("Lucida Sans", Font.PLAIN, 12));
 		tfPort.setPreferredSize(new Dimension(110, 21));
 		tfPort.setText("");
@@ -200,16 +194,10 @@ public class MenuSettingsPanel extends MenuPanel {
 				12));
 		tfXVSMServer.setText("");
 		tfXVSMServer.setBounds(new Rectangle(125, 50, 116, 20));
-		laCokeSiteServer.setFont(new java.awt.Font("Arial", Font.PLAIN, 13));
-		laCokeSiteServer.setText("XVSM Site Server:");
-		laCokeSiteServer.setBounds(new Rectangle(16, 54, 106, 15));
-/*		tfDomain.setFont(new java.awt.Font("Lucida Sans", Font.PLAIN, 12));
-		tfDomain.setBounds(new Rectangle(125, 138, 116, 20));
-		laDomain.setFont(new java.awt.Font("Arial", Font.PLAIN, 13));
-		laDomain.setText("Domain:");
-		laDomain.setBounds(new Rectangle(16, 141, 106, 15));
-		this.setTitle("Snake Settings");
-*/
+		laXVSMServer.setFont(new java.awt.Font("Arial", Font.PLAIN, 13));
+		laXVSMServer.setText("XVSM Site Server:");
+		laXVSMServer.setBounds(new Rectangle(16, 54, 106, 15));
+		
 		this.addComponentListener(new ComponentListener() {
 			
 			@Override
@@ -243,7 +231,7 @@ public class MenuSettingsPanel extends MenuPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				menuEventListener.menuChanged(new MenuEventData(MenuEventEnum.START_MENU));
+				menuEventListener.menuChanged(new MenuEventData(MenuEventType.START_MENU));
 			}
 		});
 		btOK.setBounds(new Rectangle(164, 275, 100, 23));
@@ -255,7 +243,7 @@ public class MenuSettingsPanel extends MenuPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				// store settings
 				storeSettings();
-				menuEventListener.menuChanged(new MenuEventData(MenuEventEnum.START_MENU));
+				menuEventListener.menuChanged(new MenuEventData(MenuEventType.START_MENU));
 				
 			}
 		});
@@ -310,7 +298,7 @@ public class MenuSettingsPanel extends MenuPanel {
 		jPanel1.add(laUser);
 		jPanel1.add(laPassword);
 		jPanel1.add(tfPassword);
-		jPanel1.add(laCokeSiteServer);
+		jPanel1.add(laXVSMServer);
 		jPanel1.add(tfXVSMServer);
 		jPanel1.add(tfPort);
 //		jPanel1.add(tfDomain);

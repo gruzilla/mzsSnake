@@ -1,7 +1,7 @@
 /**
  * 
  */
-package client.data.event;
+package client.event;
 
 /**
  * @author Jakob Lahmer, Matthias Steinbšck
@@ -9,30 +9,27 @@ package client.data.event;
  */
 public class MenuEventData {
 
-	private MenuEventEnum menuItem;
-	
-	// here can be menuData set (for example Settings for multiplayer, etc)
+	private MenuEventType menuItem;
 	
 	public MenuEventData()	{
 		
 	}
 	
-	public MenuEventData(MenuEventEnum menuItem)	{
+	public MenuEventData(MenuEventType menuItem)	{
 		this.menuItem = menuItem;
 	}
-	
 	
 	/**
 	 * @return the menuItem
 	 */
-	public MenuEventEnum getMenuItem() {
+	public MenuEventType getMenuItem() {
 		return menuItem;
 	}
 
 	/**
 	 * @param menuItem the menuItem to set
 	 */
-	public void setMenuItem(MenuEventEnum menuItem) {
+	public void setMenuItem(MenuEventType menuItem) {
 		this.menuItem = menuItem;
 	}
 }

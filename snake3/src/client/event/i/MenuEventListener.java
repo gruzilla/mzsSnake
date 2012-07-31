@@ -1,9 +1,9 @@
 /**
  * 
  */
-package client.data.event.i;
+package client.event.i;
 
-import client.data.event.MenuEventData;
+import client.event.MenuEventData;
 
 /**
  * @author Jakob Lahmer, Matthias Steinbšck

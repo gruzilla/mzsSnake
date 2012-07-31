@@ -5,7 +5,7 @@ import javax.swing.JPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import client.data.event.i.MenuEventListener;
+import client.event.i.MenuEventListener;
 
 public class MenuFrame extends JPanel /* implements NotificationListener */ {
 
@@ -73,5 +73,13 @@ public class MenuFrame extends JPanel /* implements NotificationListener */ {
 		this.removeAll();
 		this.add(mp);
 		this.repaint();
+	}
+	
+	/**
+	 * getter for mpmenupanel
+	 * @return MPMenuPanel
+	 */
+	public MPMenuPanel getMPMenuPanel()	{
+		return this.mpmenuPanel;
 	}
 }

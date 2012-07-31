@@ -20,9 +20,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import client.data.Snake;
-import client.data.event.MenuEventData;
-import client.data.event.MenuEventEnum;
-import client.data.event.i.MenuEventListener;
+import client.event.MenuEventData;
+import client.event.MenuEventType;
+import client.event.i.MenuEventListener;
 import client.gui.graphics.GraphicsHelper;
 import client.gui.graphics.ImageLoader;
 
@@ -89,7 +89,7 @@ public class MenuPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				menuEventListener.menuChanged(new MenuEventData(MenuEventEnum.MULTIPLAYER_MENU));
+				menuEventListener.menuChanged(new MenuEventData(MenuEventType.MULTIPLAYER_MENU));
 			}
 		});
 		btSingleplayer.setBounds(new Rectangle(325, 247, 150, 32));
@@ -99,7 +99,7 @@ public class MenuPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				menuEventListener.menuChanged(new MenuEventData(MenuEventEnum.SINGLEPLAYER_MENU));
+				menuEventListener.menuChanged(new MenuEventData(MenuEventType.SINGLEPLAYER_MENU));
 
 			}
 		});
@@ -111,7 +111,7 @@ public class MenuPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				menuEventListener.menuChanged(new MenuEventData(MenuEventEnum.SETTINGS));
+				menuEventListener.menuChanged(new MenuEventData(MenuEventType.SETTINGS));
 			}
 		});
 		btExit.setBounds(new Rectangle(325, 367, 150, 32));
@@ -121,7 +121,7 @@ public class MenuPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				menuEventListener.menuChanged(new MenuEventData(MenuEventEnum.EXIT));
+				menuEventListener.menuChanged(new MenuEventData(MenuEventType.EXIT));
 
 			}
 		});

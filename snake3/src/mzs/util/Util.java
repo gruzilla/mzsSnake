@@ -398,6 +398,8 @@ public class Util
 			);
 
 			Util.getInstance().getConnection().commitTransaction(tx);
+			log.info("WRITTEN TO SPACE: ");
+			log.info(data.toString());
 		} catch (MzsCoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -135,7 +135,7 @@ public class GameFrame extends JPanel implements Runnable, KeyListener, Notifica
 			panel.repaint();
 			
 			try {
-				Thread.sleep(200);
+				Thread.sleep(150);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
