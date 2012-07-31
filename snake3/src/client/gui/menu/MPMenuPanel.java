@@ -215,7 +215,7 @@ public class MPMenuPanel extends MenuPanel implements DataChangeEventListener {
 		if(changeEvent instanceof DataChangeEventGameListData)	{
 			this.fillGameList(((DataChangeEventGameListData) changeEvent).getGameListData());
 		} else {
-			Messages.errorMessage(this, "Error reading Game Data!");
+			Messages.errorMessage(this, "Error reading Game Data! "+changeEvent.getClass());
 		}
 	}
 	

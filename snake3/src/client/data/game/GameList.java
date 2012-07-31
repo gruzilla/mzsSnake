@@ -70,6 +70,7 @@ public class GameList implements Serializable, NotificationListener {
 	}
 	
 	public boolean initGameList()	{
+		games = new Vector<Game>();
 		// read current games and add them to the local vector
 		ContainerReference gamesContainer;
 		try {
