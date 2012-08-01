@@ -227,6 +227,25 @@ public class GameList implements Serializable, NotificationListener {
 		);
 	}
 	
+	/**
+	 * @param player
+	 * @return
+	 */
+	public boolean startGame(Player player) {
+		if(this.currentGame == null)
+			return false;
+		this.currentGame.setPlayerStarted(player);
+		
+		Util.getInstance().update(
+				ContainerCoordinatorMapper.GAME_LIST,
+				currentGame,
+				String.valueOf(currentGame.getId())
+		);
+		
+		return this.currentGame.isReadyToStart();
+	}
+	
+	
 	public void leaveCurrentGame()	{
 //		this.currentGame.leave();
 		this.currentGame = null;
@@ -258,16 +277,21 @@ public class GameList implements Serializable, NotificationListener {
 					// if we have this game already replace it.
 					// log.debug("trying to find game with nr "+game.getNr());
 					for (int i = 0; i < games.size(); i++) {
-						//log.debug("comparing "+games.get(i).getNr()+" against "+game.getNr());
 						if (games.get(i).getId().equals(game.getId())) {
 							found = true;
 //							games.get(i).syncWith(game);
-							
+							log.info("foundgame " + games.get(i));
 							this.games.remove(i);
 							this.games.add(i, game);
+							log.info("newgame " + games.get(i));
 							
-							if(this.currentGame == null || this.currentGame.equals(game))
+							if(this.currentGame == null)
 								changed = true;
+							else if(this.currentGame.equals(game))	{
+								// update current game
+								this.currentGame = this.games.get(i);
+								changed = true;
+							}
 							break;
 						}
 					}
@@ -314,8 +338,8 @@ public class GameList implements Serializable, NotificationListener {
 
 		// trigger data changed event
 		if (changed && listener != null) {
-			log.debug("listener " + listener);
-			log.debug("informing listener about changed data: " + games.size());
+			log.info("listener " + listener);
+			log.info("informing listener about changed data: " + games.size());
 			// no currentgame => user is in multiplayer menu
 			if(this.currentGame == null)	{
 				listener.dataChanged(new DataChangeEventGameListData(DataChangeEventType.GAME, this.games));

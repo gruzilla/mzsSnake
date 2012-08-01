@@ -21,6 +21,7 @@ import mzs.util.ContainerCoordinatorMapper;
 import mzs.util.Util;
 
 import client.data.Snake;
+import client.data.game.Game;
 
 public class GameFrame extends JPanel implements Runnable, KeyListener, NotificationListener {
 
@@ -42,6 +43,8 @@ public class GameFrame extends JPanel implements Runnable, KeyListener, Notifica
 	private boolean headRight = false;
 	private boolean headLeft = false;
 
+	private Game game = null;
+
 
 	private static Logger log = LoggerFactory.getLogger(GameFrame.class);
 	
@@ -55,6 +58,10 @@ public class GameFrame extends JPanel implements Runnable, KeyListener, Notifica
 		this.setFocusable(true);
 	}
 
+	public void startGame(boolean isViewer, boolean isMultiplayer, Game mpGame)	{
+		this.game = mpGame;
+		this.startGame(isViewer, isMultiplayer);
+	}
 	
 	
 	public void startGame(boolean isViewer, boolean isMultiplayer)	{
@@ -150,7 +157,7 @@ public class GameFrame extends JPanel implements Runnable, KeyListener, Notifica
 		// create notification
 		try {
 			this.gamespaceWriteNotification = Util.getInstance().getNotificationManager().createNotification(
-					Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME_LIST),
+					Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME),
 					this,
 					Operation.WRITE);
 			

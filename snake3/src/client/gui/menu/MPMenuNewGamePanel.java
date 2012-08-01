@@ -31,6 +31,7 @@ import mzs.event.i.DataChangeEventListener;
 import client.data.game.Game;
 import client.data.player.Player;
 import client.event.MenuEventData;
+import client.event.MenuEventMPNewData;
 import client.event.MenuEventType;
 import client.event.i.MenuEventListener;
 
@@ -66,6 +67,9 @@ public class MPMenuNewGamePanel extends MenuPanel implements DataChangeEventList
 	private JTextField tfGamePoints;
 	private JTextField tfGameTime;
 	private JLabel laGameName;
+
+
+	private Game currentGame;
 
 
 	/**
@@ -157,7 +161,7 @@ public class MPMenuNewGamePanel extends MenuPanel implements DataChangeEventList
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// start the game
-				menuEventListener.menuChanged(new MenuEventData(MenuEventType.MULTIPLAYER_START));
+				menuEventListener.menuChanged(new MenuEventMPNewData(MenuEventType.MULTIPLAYER_START, currentGame));
 			}
 		});
 		tfPlayer.get(2).setEditable(false);
@@ -336,8 +340,12 @@ public class MPMenuNewGamePanel extends MenuPanel implements DataChangeEventList
 		return new Dimension(400, 400);
 	}
 
+	/**
+	 * updates the values for the given game
+	 * @param game
+	 */
 	public void updateValues(Game game)	{
-		
+		this.currentGame = game;
 		for(int i=0; i < game.getPlayerAnz(); i++)	{
 			if(game.getPlayerAnz() > i)
 				this.updatePlayer(game, i, tfPlayer.get(i), laPlayerReady.get(i));

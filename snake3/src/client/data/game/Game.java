@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import client.data.player.Player;
 import client.data.state.GameState;
+import client.data.state.PlayerState;
 
 /**
  * @author Jakob Lahmer, Matthias Steinbšck
@@ -112,7 +113,6 @@ public class Game implements Serializable
 	public int indexOf(Player player)
 	{
 		return players.indexOf(player);
-		//return playerOids.indexOf(player.getOid());
 	}
 
 	/**
@@ -133,7 +133,6 @@ public class Game implements Serializable
 	 */
 	public boolean joinGame(Player player) {
 		//Spieler zu Spiel hinzufuegen
-		log.debug("current anz: "+ player + " :" +getPlayerAnz()+" index of player is "+indexOf(player)+" and max is "+MAXPLAYERS);
 		if (getPlayerAnz() < MAXPLAYERS && indexOf(player) == -1)	{
 			players.add(player);
 			if (leader == null) {
@@ -143,6 +142,34 @@ public class Game implements Serializable
 		}
 		return false;
 	}
+	
+	/**
+	 * @param player
+	 */
+	public void setPlayerStarted(Player player) {
+		for(Player p : this.players)	{
+			if(p.equals(player))	{
+				p.setPlayerState(PlayerState.INIT);
+				break;
+			}
+		}
+	}
+	
+	/**
+	 * checks if the game can be started
+	 * @return
+	 */
+	public boolean isReadyToStart() {
+		boolean ready = true;
+		for(Player p : this.players)	{
+			if(!p.isStateStarting())	{
+				ready = false;
+				break;
+			}
+		}
+		return ready;
+	}
+	
 	
 	/**
 	 * Return a String representation of the game, giving information about the current

@@ -3,6 +3,8 @@
  */
 package client.event;
 
+import client.data.game.Game;
+
 /**
  * @author Jakob Lahmer, Matthias Steinbšck
  *
@@ -10,7 +12,7 @@ package client.event;
 public class MenuEventMPNewData extends MenuEventData {
 
 	private String mpName;
-	
+	private Game game;
 	public MenuEventMPNewData()	{
 		super();
 	}
@@ -22,6 +24,11 @@ public class MenuEventMPNewData extends MenuEventData {
 	public MenuEventMPNewData(MenuEventType menuItem, String mpName)	{
 		super(menuItem);
 		this.mpName = mpName;
+	}
+	
+	public MenuEventMPNewData(MenuEventType menuItem, Game game)	{
+		super(menuItem);
+		this.game = game;;
 	}
 	
 	/**
@@ -36,5 +43,9 @@ public class MenuEventMPNewData extends MenuEventData {
 	 */
 	public void setMpName(String mpName) {
 		this.mpName = mpName;
+	}
+	
+	public Game getGame()	{
+		return this.game;
 	}
 }

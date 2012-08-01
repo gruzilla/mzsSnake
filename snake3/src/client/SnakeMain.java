@@ -111,7 +111,11 @@ public class SnakeMain extends JFrame implements MenuEventListener {
 					}
 					break;
 				case MULTIPLAYER_START:
-					this.startMultiplayer();
+					// set player state to started
+					if(this.setPlayerReady())	{
+						// if all players started, start the game
+						this.startMultiplayer();
+					}
 					break;
 					
 			/** SINGLEPLAYER **/
@@ -202,6 +206,16 @@ public class SnakeMain extends JFrame implements MenuEventListener {
 			return true;
 		}
 		Messages.errorMessage(this, "No valid Event Object given");
+		return false;
+	}
+	
+	/**
+	 * sets the player to ready (pressed start button)
+	 * @return
+	 */
+	private boolean setPlayerReady()	{
+		if(this.gameList.startGame(this.player))
+			return true;
 		return false;
 	}
 	
