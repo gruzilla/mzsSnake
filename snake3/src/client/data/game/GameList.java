@@ -200,7 +200,7 @@ public class GameList implements Serializable, NotificationListener {
 	private boolean isGameJoinable(String name)	{
 		Game game;
 		if((game = this.getGamePerName(name)) != null)	{
-			return (game.getPlayerAnz() < Game.MAXPLAYERS) && (game.getState() == GameState.OPENEND);
+			return (game.getPlayerCount() < Game.MAXPLAYERS) && (game.getState() == GameState.OPENEND);
 		}
 		return false;
 	}
@@ -232,8 +232,9 @@ public class GameList implements Serializable, NotificationListener {
 	 * @return
 	 */
 	public boolean startGame(Player player) {
-		if(this.currentGame == null)
+		if(this.currentGame == null)	{
 			return false;
+		}
 		this.currentGame.setPlayerStarted(player);
 		
 		Util.getInstance().update(
@@ -280,10 +281,8 @@ public class GameList implements Serializable, NotificationListener {
 						if (games.get(i).getId().equals(game.getId())) {
 							found = true;
 //							games.get(i).syncWith(game);
-							log.info("foundgame " + games.get(i));
 							this.games.remove(i);
 							this.games.add(i, game);
-							log.info("newgame " + games.get(i));
 							
 							if(this.currentGame == null)
 								changed = true;
@@ -338,8 +337,6 @@ public class GameList implements Serializable, NotificationListener {
 
 		// trigger data changed event
 		if (changed && listener != null) {
-			log.info("listener " + listener);
-			log.info("informing listener about changed data: " + games.size());
 			// no currentgame => user is in multiplayer menu
 			if(this.currentGame == null)	{
 				listener.dataChanged(new DataChangeEventGameListData(DataChangeEventType.GAME, this.games));

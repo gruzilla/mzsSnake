@@ -84,7 +84,7 @@ public class Player implements Serializable {
 	}
 
 	public void setPlayerState(PlayerState newState)	{
-		log.debug("\n\nSETTING PLAYER STATE TO "+newState+"\n\n");
+		log.info("\n\nSETTING PLAYER STATE TO "+newState+"\n\n");
 		state = newState;
 	}
 
@@ -99,6 +99,21 @@ public class Player implements Serializable {
 	}
 	public boolean isStateStarting()	{
 		return state == PlayerState.STARTING;
+	}
+	
+	/**
+	 * Checks if object is another player an equal to this player. Two players
+	 * are equal if their oid is the same.
+	 * @param obj Object
+	 * @return true if object is a player and players have the same oids
+	 */
+	public boolean equals(Object obj)	{
+		if (obj instanceof Player)	{
+			return this.id.equals(((Player)obj).getId());
+		}
+		else	{
+			return super.equals(obj);
+		}
 	}
 
 }

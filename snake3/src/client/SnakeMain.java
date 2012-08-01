@@ -159,12 +159,13 @@ public class SnakeMain extends JFrame implements MenuEventListener {
 		// check instance
 		if(eventData instanceof MenuEventMPNewData)	{
 			eventData = (MenuEventMPNewData) eventData;
-			
+			gameList.setDataChangeEventListener(this.menuFrame.getMPMenuNewGamePanel());
 //			gameListManager.setViewOnly(false, false);
 //			String gameName = tfNeu.getText();
 			//check if name exists
 			if (gameList.gameNameExists(((MenuEventMPNewData) eventData).getMpName()))	{
 				Messages.errorMessage(this,"A game with this name already exists,\nplease choose another name.");
+				gameList.setDataChangeEventListener(this.menuFrame.getMPMenuPanel());
 				return false;
 			}
 
@@ -176,7 +177,6 @@ public class SnakeMain extends JFrame implements MenuEventListener {
 
 			gameList.createGame(((MenuEventMPNewData) eventData).getMpName(), this.player);
 			// change data change listener
-			gameList.setDataChangeEventListener(this.menuFrame.getMPMenuNewGamePanel());
 			return true;
 		}
 		Messages.errorMessage(this, "No valid Event Object given");

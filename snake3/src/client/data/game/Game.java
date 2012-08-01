@@ -76,7 +76,7 @@ public class Game implements Serializable
 		return name;
 	}
 
-	public int getPlayerAnz()
+	public int getPlayerCount()
 	{
 		return players.size();
 	}
@@ -133,7 +133,7 @@ public class Game implements Serializable
 	 */
 	public boolean joinGame(Player player) {
 		//Spieler zu Spiel hinzufuegen
-		if (getPlayerAnz() < MAXPLAYERS && indexOf(player) == -1)	{
+		if (getPlayerCount() < MAXPLAYERS && indexOf(player) == -1)	{
 			players.add(player);
 			if (leader == null) {
 				leader = player;

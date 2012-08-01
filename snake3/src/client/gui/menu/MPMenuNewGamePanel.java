@@ -24,10 +24,14 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import mzs.event.DataChangeEventData;
 import mzs.event.DataChangeEventGameData;
 import mzs.event.i.DataChangeEventListener;
 
+import client.SnakeMain;
 import client.data.game.Game;
 import client.data.player.Player;
 import client.event.MenuEventData;
@@ -71,6 +75,7 @@ public class MPMenuNewGamePanel extends MenuPanel implements DataChangeEventList
 
 	private Game currentGame;
 
+	private static Logger log = LoggerFactory.getLogger(MPMenuNewGamePanel.class);
 
 	/**
 	 * @param menuChangeEventListener
@@ -346,9 +351,9 @@ public class MPMenuNewGamePanel extends MenuPanel implements DataChangeEventList
 	 */
 	public void updateValues(Game game)	{
 		this.currentGame = game;
-		for(int i=0; i < game.getPlayerAnz(); i++)	{
-			if(game.getPlayerAnz() > i)
-				this.updatePlayer(game, i, tfPlayer.get(i), laPlayerReady.get(i));
+		for(int i=0; i < this.currentGame.getPlayerCount(); i++)	{
+			if(this.currentGame.getPlayerCount() > i)
+				this.updatePlayer(i, tfPlayer.get(i), laPlayerReady.get(i));
 			else
 				break;
 		}
@@ -359,16 +364,16 @@ public class MPMenuNewGamePanel extends MenuPanel implements DataChangeEventList
 	/**
 	 * @param players
 	 */
-	private void updatePlayer(Game game, int index, JTextField tfPlayer, JLabel laPlayerReady) {
+	private void updatePlayer(int index, JTextField tfPlayer, JLabel laPlayerReady) {
 		
-		if (game.getPlayerAnz() > index)
+		if (this.currentGame.getPlayerCount() > index)
 		{
-			Player activePlayer = game.getPlayer(index);
+			Player activePlayer = this.currentGame.getPlayer(index);
 			synchronized (tfPlayer)
 			{
 				//display the playername in the textfield, set the colour to blue if the player is leader
 				tfPlayer.setText(activePlayer.getName());
-				if (activePlayer == game.getLeader())
+				if (activePlayer == this.currentGame.getLeader())
 				{
 					tfPlayer.setForeground(Color.BLUE);
 				}
