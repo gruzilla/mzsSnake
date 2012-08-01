@@ -275,6 +275,7 @@ public class SnakeMain extends JFrame implements MenuEventListener, GameStateEve
 	 */
 	@Override
 	public void gameStateChanged(Game game) {
+		log.info("I AM STARTED");
 		switch(game.getState())	{
 		case ACTIVE:
 			break;

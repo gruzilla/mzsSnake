@@ -162,7 +162,7 @@ public class Game implements Serializable
 	public boolean isReadyToStart() {
 		boolean ready = true;
 		for(Player p : this.players)	{
-			if(!p.isStateStarting())	{
+			if(!p.isStateInit())	{
 				ready = false;
 				break;
 			}

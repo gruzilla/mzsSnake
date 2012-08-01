@@ -245,6 +245,8 @@ public class GameList implements Serializable, NotificationListener {
 			this.currentGame.startGame();
 		}
 		
+		log.info("GAME STATE: " + currentGame.getState());
+		
 		Util.getInstance().update(
 				ContainerCoordinatorMapper.GAME_LIST,
 				currentGame,

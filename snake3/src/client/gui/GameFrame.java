@@ -131,7 +131,7 @@ public class GameFrame extends JPanel implements Runnable, KeyListener, Notifica
 					// update own snake in space
 					// first update contains all snakeparts, further updates contain tail and headpart
 					Util.getInstance().update(
-							Util.getInstance().getGameContainer(this.game).getId(), 
+							"game_test", 
 							snake.getSnakeDataHolder(first),
 							snake.getId().toString());
 				}
@@ -158,7 +158,7 @@ public class GameFrame extends JPanel implements Runnable, KeyListener, Notifica
 		// create notification
 		try {
 			this.gamespaceWriteNotification = Util.getInstance().getNotificationManager().createNotification(
-					Util.getInstance().getGameContainer(this.game),
+					Util.getInstance().getContainer("game_test"),
 					this,
 					Operation.WRITE);
 		} catch (MzsCoreException e) {

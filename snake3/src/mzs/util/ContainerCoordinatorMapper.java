@@ -45,6 +45,11 @@ public class ContainerCoordinatorMapper {
 		list = new ArrayList<Coordinator>();
 		list.add(new FifoCoordinator());
 		map.put(GAME, list);
+		
+		list = new ArrayList<Coordinator>();
+		list.add(new FifoCoordinator());
+		list.add(new KeyCoordinator());
+		map.put("game_test", list);
 	}
 
 	public static List<Coordinator> getCoordinators(String containerName) {
