@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import client.data.player.Player;
 import client.data.state.GameState;
+import client.event.i.GameStateEventListener;
 
 /**
  * @author Jakob Lahmer, Matthias Steinbšck
@@ -48,6 +49,8 @@ public class GameList implements Serializable, NotificationListener {
 	private Notification notification;
 
 	private Game currentGame = null;
+
+	private GameStateEventListener stateListener;
 	
 	
 	
@@ -57,8 +60,9 @@ public class GameList implements Serializable, NotificationListener {
 	 * @param listener DataChangeListener
 	 * @param playerList
 	 */
-	public GameList()	{
+	public GameList(GameStateEventListener stateListener)	{
 		this.games = new Vector<Game>();
+		this.stateListener = stateListener;
 	}
 	
 	/**
@@ -237,6 +241,10 @@ public class GameList implements Serializable, NotificationListener {
 		}
 		this.currentGame.setPlayerStarted(player);
 		
+		if(this.currentGame.isReadyToStart())	{
+			this.currentGame.startGame();
+		}
+		
 		Util.getInstance().update(
 				ContainerCoordinatorMapper.GAME_LIST,
 				currentGame,
@@ -245,7 +253,6 @@ public class GameList implements Serializable, NotificationListener {
 		
 		return this.currentGame.isReadyToStart();
 	}
-	
 	
 	public void leaveCurrentGame()	{
 //		this.currentGame.leave();
@@ -341,8 +348,11 @@ public class GameList implements Serializable, NotificationListener {
 			if(this.currentGame == null)	{
 				listener.dataChanged(new DataChangeEventGameListData(DataChangeEventType.GAME, this.games));
 			} else {
-				// user is in new multiplayer game menu
-				listener.dataChanged(new DataChangeEventGameData(DataChangeEventType.GAME, this.currentGame));
+				if(this.currentGame.getState() == GameState.READY)	{
+					this.stateListener.gameStateChanged(this.currentGame);
+				} else
+					// user is in new multiplayer game menu
+					listener.dataChanged(new DataChangeEventGameData(DataChangeEventType.GAME, this.currentGame));
 			}
 		}
 	}

@@ -13,10 +13,12 @@ import util.Messages;
 
 import com.esotericsoftware.minlog.Log;
 
+import client.data.game.Game;
 import client.data.game.GameList;
 import client.data.player.Player;
 import client.event.MenuEventData;
 import client.event.MenuEventMPNewData;
+import client.event.i.GameStateEventListener;
 import client.event.i.MenuEventListener;
 import client.gui.GameFrame;
 import client.gui.graphics.BorderContentPanel;
@@ -26,7 +28,7 @@ import client.gui.menu.MenuFrame;
  * @author Jakob Lahmer, Matthias Steinbšck
  *
  */
-public class SnakeMain extends JFrame implements MenuEventListener {
+public class SnakeMain extends JFrame implements MenuEventListener, GameStateEventListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -76,7 +78,7 @@ public class SnakeMain extends JFrame implements MenuEventListener {
 		this.player = new Player(Util.getInstance().getSettings().getPlayerName(), Util.getInstance().getSettings().getSnakeSkin());
 		
 		// init game list
-		this.gameList = new GameList();
+		this.gameList = new GameList(this);
 	}
 
 
@@ -114,7 +116,7 @@ public class SnakeMain extends JFrame implements MenuEventListener {
 					// set player state to started
 					if(this.setPlayerReady())	{
 						// if all players started, start the game
-						this.startMultiplayer();
+//						this.startMultiplayer();
 					}
 					break;
 					
@@ -235,10 +237,11 @@ public class SnakeMain extends JFrame implements MenuEventListener {
 	
 	/**
 	 * starts a Multiplayer Game
+	 * @param game 
 	 */
-	private void startMultiplayer() {
+	private void startMultiplayer(Game game) {
 		this.initGame();
-		gameFrame.startGame(false, true);
+		gameFrame.startGame(false, true, game);
 	}
 
 
@@ -263,6 +266,30 @@ public class SnakeMain extends JFrame implements MenuEventListener {
 	 */
 	private void exitGame() {
 		System.exit(0);
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see client.event.i.GameStateEventListener#gameStateChanged(client.data.game.Game)
+	 */
+	@Override
+	public void gameStateChanged(Game game) {
+		switch(game.getState())	{
+		case ACTIVE:
+			break;
+		case READY:
+			this.startMultiplayer(game);
+			break;
+		case OPENEND:
+			break;
+		case RUNNING:
+			break;
+		case ENDED:
+		case UNKNOWN:
+		default:
+			break;
+		}
 	}
 
 }

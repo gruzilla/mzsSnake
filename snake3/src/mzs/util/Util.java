@@ -26,6 +26,8 @@ import org.mozartspaces.notifications.NotificationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import client.data.game.Game;
+
 import util.Settings;
 
 /**
@@ -156,10 +158,9 @@ public class Util
 	 * creates/returns a container for a certain game. in every game-container, the players and their current position is held 
 	 * @param game
 	 * @return
-	 *
+	 */
 	public ContainerReference getGameContainer(Game game) {
-		System.out.println("getting game container "+game.getNr()+" on "+this.getSpaceUri());
-		String containerName = "game-"+game.getNr();
+		String containerName = "game-"+game.getId();
 		try {
 			return CapiUtil.lookupOrCreateContainer(
 					containerName,
@@ -179,7 +180,6 @@ public class Util
 		}
 		return null;
 	}
-	*/
 	
 	
 	public NotificationManager getNotificationManager() {

@@ -171,6 +171,11 @@ public class Game implements Serializable
 	}
 	
 	
+	public void startGame()	{
+		this.state = GameState.READY;
+	}
+	
+	
 	/**
 	 * Return a String representation of the game, giving information about the current
 	 * number of players and the game state. This is shown in the multiplayer game list.

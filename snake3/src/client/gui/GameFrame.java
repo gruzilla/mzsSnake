@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import javax.swing.JPanel;
 
+import org.mozartspaces.core.ContainerReference;
 import org.mozartspaces.core.Entry;
 import org.mozartspaces.core.MzsCoreException;
 import org.mozartspaces.notifications.Notification;
@@ -130,7 +131,7 @@ public class GameFrame extends JPanel implements Runnable, KeyListener, Notifica
 					// update own snake in space
 					// first update contains all snakeparts, further updates contain tail and headpart
 					Util.getInstance().update(
-							ContainerCoordinatorMapper.GAME_LIST, 
+							Util.getInstance().getGameContainer(this.game).getId(), 
 							snake.getSnakeDataHolder(first),
 							snake.getId().toString());
 				}
@@ -157,10 +158,9 @@ public class GameFrame extends JPanel implements Runnable, KeyListener, Notifica
 		// create notification
 		try {
 			this.gamespaceWriteNotification = Util.getInstance().getNotificationManager().createNotification(
-					Util.getInstance().getContainer(ContainerCoordinatorMapper.GAME),
+					Util.getInstance().getGameContainer(this.game),
 					this,
 					Operation.WRITE);
-			
 		} catch (MzsCoreException e) {
 			log.error("ERROR: could not create notification (mzsexception)");
 			e.printStackTrace();
