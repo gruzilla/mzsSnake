@@ -351,11 +351,10 @@ public class MPMenuNewGamePanel extends MenuPanel implements DataChangeEventList
 	 */
 	public void updateValues(Game game)	{
 		this.currentGame = game;
-		for(int i=0; i < this.currentGame.getPlayerCount(); i++)	{
-			if(this.currentGame.getPlayerCount() > i)
-				this.updatePlayer(i, tfPlayer.get(i), laPlayerReady.get(i));
-			else
-				break;
+		
+		// update playerfields
+		for(int i=0; i < Game.MAXPLAYERS; i++)	{
+			this.updatePlayer(i, tfPlayer.get(i), laPlayerReady.get(i));
 		}
 		
 	}

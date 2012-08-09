@@ -112,6 +112,11 @@ public class SnakeMain extends JFrame implements MenuEventListener, GameStateEve
 						this.menuFrame.showMultiplayerNewGameMenu();
 					}
 					break;
+				case MULTIPLAYER_LEAVE:
+					this.leaveMultiplayerGame();
+					this.menuFrame.showMultiplayerMenu();
+					
+					break;
 				case MULTIPLAYER_START:
 					// set player state to started
 					if(this.setPlayerReady())	{
@@ -193,7 +198,7 @@ public class SnakeMain extends JFrame implements MenuEventListener, GameStateEve
 	 */
 	private boolean joinMultiplayerGame(MenuEventData eventData) {
 		if(eventData instanceof MenuEventMPNewData)	{
-			if (!gameList.joinGame(((MenuEventMPNewData) eventData).getMpName(), this.player))	{
+			if (!gameList.joinGame(((MenuEventMPNewData) eventData).getMpName(), this.player, this.menuFrame.getMPMenuNewGamePanel()))	{
 				Messages.infoMessage(this,"Can't join game, because it's full or already started.");
 				return false;
 			}
@@ -202,13 +207,15 @@ public class SnakeMain extends JFrame implements MenuEventListener, GameStateEve
 //				snakeMain.getMyPlayer().setPlayerState(PlayerState.notinit);
 //				//myPlayer.saveToSpace();
 //			}
-			// change data change listener
-			gameList.setDataChangeEventListener(this.menuFrame.getMPMenuNewGamePanel());
 			
 			return true;
 		}
 		Messages.errorMessage(this, "No valid Event Object given");
 		return false;
+	}
+	
+	private void leaveMultiplayerGame()	{
+		this.gameList.leaveCurrentGame(this.player, this.menuFrame.getMPMenuPanel());
 	}
 	
 	/**

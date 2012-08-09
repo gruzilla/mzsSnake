@@ -112,7 +112,7 @@ public class Game implements Serializable
 	 */
 	public int indexOf(Player player)
 	{
-		return players.indexOf(player);
+		return this.players.indexOf(player);
 	}
 
 	/**
@@ -124,7 +124,6 @@ public class Game implements Serializable
 		{
 			Player newLeader = players.get(0);
 			leader = newLeader;
-			//leaderOID = newLeader.getOid();
 		}
 	}
 
@@ -132,7 +131,6 @@ public class Game implements Serializable
 	 * @param player
 	 */
 	public boolean joinGame(Player player) {
-		//Spieler zu Spiel hinzufuegen
 		if (getPlayerCount() < MAXPLAYERS && indexOf(player) == -1)	{
 			players.add(player);
 			if (leader == null) {
@@ -141,6 +139,17 @@ public class Game implements Serializable
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Remove the player from the game.
+	 * @param player Player
+	 */
+	public void leaveGame(Player player)	{
+		int index = indexOf(player);
+		if (index > -1)	{
+			players.remove(index);
+		}
 	}
 	
 	/**

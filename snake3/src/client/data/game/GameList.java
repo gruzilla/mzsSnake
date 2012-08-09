@@ -173,7 +173,7 @@ public class GameList implements Serializable, NotificationListener {
 	 * @param mpName
 	 * @return
 	 */
-	public boolean joinGame(String mpName, Player player) {
+	public boolean joinGame(String mpName, Player player, DataChangeEventListener newListener) {
 		if(!isGameJoinable(mpName))
 			return false;
 		
@@ -181,19 +181,31 @@ public class GameList implements Serializable, NotificationListener {
 		if(!game.joinGame(player))
 			return false;
 
-		// however we have to write it to the space
-		try {
-			Util.getInstance().update(
-					ContainerCoordinatorMapper.GAME_LIST,
-					game,
-					String.valueOf(game.getId())
-			);
-			this.currentGame = game;
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
+		this.currentGame = game;
+		if(this.updateCurrentGame())	{
+			this.listener = newListener;
+			return true;
 		}
-		return true;
+		
+		this.currentGame = null;
+		return false;
+	}
+	
+	public void leaveCurrentGame(Player player, DataChangeEventListener newListener)	{
+		this.currentGame.leaveGame(player);
+		this.listener = newListener;
+		
+		// check if game has players
+		if(this.currentGame.getPlayerCount() < 1)	{
+			this.removeCurrentGame();
+		} else {
+			// determine new leader
+			if(this.currentGame.getLeader().equals(player))	{
+				this.currentGame.updateLeader();
+			}
+			this.updateCurrentGame();
+		}
+		this.currentGame = null;
 	}
 	
 	/**
@@ -224,11 +236,7 @@ public class GameList implements Serializable, NotificationListener {
 		games.addElement(currentGame);
 		
 		// however we have to write it to the space. but first we have to delete this very game:
-		Util.getInstance().update(
-				ContainerCoordinatorMapper.GAME_LIST,
-				currentGame,
-				String.valueOf(currentGame.getId())
-		);
+		this.updateCurrentGame();
 	}
 	
 	/**
@@ -247,20 +255,41 @@ public class GameList implements Serializable, NotificationListener {
 		
 		log.info("GAME STATE: " + currentGame.getState());
 		
-		Util.getInstance().update(
-				ContainerCoordinatorMapper.GAME_LIST,
-				currentGame,
-				String.valueOf(currentGame.getId())
-		);
+		this.updateCurrentGame();
 		
 		return this.currentGame.isReadyToStart();
 	}
 	
-	public void leaveCurrentGame()	{
-//		this.currentGame.leave();
-		this.currentGame = null;
+	
+	/**
+	 * updates the current game in space
+	 * @return
+	 */
+	private boolean updateCurrentGame()	{
+		try {
+			Util.getInstance().update(
+					ContainerCoordinatorMapper.GAME_LIST,
+					this.currentGame,
+					String.valueOf(this.currentGame.getId())
+			);
+			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
+	/**
+	 * Remove the current game from the list.
+	 * @param game Game
+	 */
+	public void removeCurrentGame()	{
+		if(this.currentGame != null)	{
+			games.remove(this.currentGame);
+			Util.getInstance().delete(ContainerCoordinatorMapper.GAME_LIST, String.valueOf(this.currentGame.getId()));
+		}
+	}
 	
 	/* (non-Javadoc)
 	 * @see org.mozartspaces.notifications.NotificationListener#entryOperationFinished(org.mozartspaces.notifications.Notification, org.mozartspaces.notifications.Operation, java.util.List)
